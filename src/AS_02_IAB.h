@@ -194,6 +194,13 @@ namespace AS_02 {
        */
       Result_t OpenRead(const std::string& filename);
 
+      Result_t GetMDObjectByType(MDD_t ObjectID, InterchangeObject* Object) {
+        return this->m_Reader->m_HeaderPart.GetMDObjectByType(this->m_Reader->m_Dict->Type(ObjectID).ul, &Object);
+      }
+      Result_t GetMDObjectsByType(MDD_t ObjectID, std::list<InterchangeObject*>& ObjectList) {
+        return this->m_Reader->m_HeaderPart.GetMDObjectsByType(this->m_Reader->m_Dict->Type(ObjectID).ul, ObjectList);
+      };
+
       /**
        * Closes the IAB Track File.
        *

@@ -1434,10 +1434,10 @@ ASDCP::MXF::InterchangeObject::WriteToBuffer(ASDCP::FrameBuffer& Buffer)
 void
 ASDCP::MXF::InterchangeObject::Dump(FILE* stream)
 {
-  char identbuf[IdentBufferLen];
+  char identbuf[m_ValueLength];
 
   fputc('\n', stream);
-  KLVPacket::Dump(stream, *m_Dict, false);
+  KLVPacket::Dump(stream, *m_Dict, true);
   fprintf(stream, "             InstanceUID = %s\n",  InstanceUID.EncodeHex(identbuf, IdentBufferLen));
 
   if ( ! GenerationUID.empty() )
