@@ -35,228 +35,228 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <memory.h>
 
 void ConstructFrame(LPSYNCENCODER	pSyncEncoder,
-					INT				iFrameIndex);
+                    INT				iFrameIndex);
 
 FLOAT SEWriteBits(	INT			iSampleRate,		/* In:	Sample rate of signal */
-					FLOAT		*pfAudioBuffer,		/* Out: Audio buffer containing signal */
-					INT			iBits,				/* In:	Number of bits to write */
-					BYTE		*pbyData,			/* In:	Data to write */
-					FLOAT		fSymbolPhase);		/* In:	Symbol phase */
+                    FLOAT		*pfAudioBuffer,		/* Out: Audio buffer containing signal */
+                    INT			iBits,				/* In:	Number of bits to write */
+                    BYTE		*pbyData,			/* In:	Data to write */
+                    FLOAT		fSymbolPhase);		/* In:	Symbol phase */
 
 
 
 INT SyncEncoderInit(LPSYNCENCODER		pSyncEncoder,	/* Out: SYNCENCODER structure to be initialized */
-					INT					iSampleRate,	/* In:	Signal sample rate */
-					INT					iFrameRate,		/* In:	frame rate */
-					LPUUIDINFORMATION	pUUID)			/* In:	UUID */
+                    INT					iSampleRate,	/* In:	Signal sample rate */
+                    INT					iFrameRate,		/* In:	frame rate */
+                    LPUUIDINFORMATION	pUUID)			/* In:	UUID */
 {
-	pSyncEncoder->iError = SYNC_ENCODER_ERROR_NONE;
+  pSyncEncoder->iError = SYNC_ENCODER_ERROR_NONE;
 
-	/* Check and set sample rate */
-	pSyncEncoder->iSymbolLength = 1;
-	switch(iSampleRate){
-		case 48000:
-			pSyncEncoder->iSampleRate = iSampleRate;
-			pSyncEncoder->iSymbolLength = SYMBOL_LENGTH_48;
-		break;
-		case 96000:
-			pSyncEncoder->iSampleRate = iSampleRate;
-			pSyncEncoder->iSymbolLength = SYMBOL_LENGTH_96;
-		break;
-		default:
-			pSyncEncoder->iError = SYNC_ENCODER_ERROR_INVALID_SR;
-	};
+  /* Check and set sample rate */
+  pSyncEncoder->iSymbolLength = 1;
+  switch(iSampleRate){
+    case 48000:
+      pSyncEncoder->iSampleRate = iSampleRate;
+      pSyncEncoder->iSymbolLength = SYMBOL_LENGTH_48;
+      break;
+    case 96000:
+      pSyncEncoder->iSampleRate = iSampleRate;
+      pSyncEncoder->iSymbolLength = SYMBOL_LENGTH_96;
+      break;
+    default:
+      pSyncEncoder->iError = SYNC_ENCODER_ERROR_INVALID_SR;
+  };
 
-	if(pSyncEncoder->iError != SYNC_ENCODER_ERROR_NONE){
-		return pSyncEncoder->iError;
-	}
+  if(pSyncEncoder->iError != SYNC_ENCODER_ERROR_NONE){
+    return pSyncEncoder->iError;
+  }
 
-	/* check and set frame rate */
-	switch(iFrameRate){
-		case 24:
-			pSyncEncoder->iFrameRate = iFrameRate;
-			pSyncEncoder->iFrameRateCode = 0;
-			pSyncEncoder->iPacketsPerFrame = 4;
-		break;
-		case 25:
-			pSyncEncoder->iFrameRate = iFrameRate;
-			pSyncEncoder->iFrameRateCode = 1;
-			pSyncEncoder->iPacketsPerFrame = 4;
-		break;
-		case 30:
-			pSyncEncoder->iFrameRate = iFrameRate;
-			pSyncEncoder->iFrameRateCode = 2;
-			pSyncEncoder->iPacketsPerFrame = 4;
-		break;
-		case 48:
-			pSyncEncoder->iFrameRate = iFrameRate;
-			pSyncEncoder->iFrameRateCode = 3;
-			pSyncEncoder->iPacketsPerFrame = 2;
-		break;
-		case 50:
-			pSyncEncoder->iFrameRate = iFrameRate;
-			pSyncEncoder->iFrameRateCode = 4;
-			pSyncEncoder->iPacketsPerFrame = 2;
-		break;
-		case 60:
-			pSyncEncoder->iFrameRate = iFrameRate;
-			pSyncEncoder->iFrameRateCode = 5;
-			pSyncEncoder->iPacketsPerFrame = 2;
-		break;
-		case 96:
-			pSyncEncoder->iFrameRate = iFrameRate;
-			pSyncEncoder->iFrameRateCode = 6;
-			pSyncEncoder->iPacketsPerFrame = 1;
-		break;
-		case 100:
-			pSyncEncoder->iFrameRate = iFrameRate;
-			pSyncEncoder->iFrameRateCode = 7;
-			pSyncEncoder->iPacketsPerFrame = 1;
-		break;
-		case 120:
-			pSyncEncoder->iFrameRate = iFrameRate;
-			pSyncEncoder->iFrameRateCode = 8;
-			pSyncEncoder->iPacketsPerFrame = 1;
-		break;
-		default:
-			pSyncEncoder->iError = SYNC_ENCODER_ERROR_INVALID_FR;
-	};
+  /* check and set frame rate */
+  switch(iFrameRate){
+    case 24:
+      pSyncEncoder->iFrameRate = iFrameRate;
+      pSyncEncoder->iFrameRateCode = 0;
+      pSyncEncoder->iPacketsPerFrame = 4;
+      break;
+    case 25:
+      pSyncEncoder->iFrameRate = iFrameRate;
+      pSyncEncoder->iFrameRateCode = 1;
+      pSyncEncoder->iPacketsPerFrame = 4;
+      break;
+    case 30:
+      pSyncEncoder->iFrameRate = iFrameRate;
+      pSyncEncoder->iFrameRateCode = 2;
+      pSyncEncoder->iPacketsPerFrame = 4;
+      break;
+    case 48:
+      pSyncEncoder->iFrameRate = iFrameRate;
+      pSyncEncoder->iFrameRateCode = 3;
+      pSyncEncoder->iPacketsPerFrame = 2;
+      break;
+    case 50:
+      pSyncEncoder->iFrameRate = iFrameRate;
+      pSyncEncoder->iFrameRateCode = 4;
+      pSyncEncoder->iPacketsPerFrame = 2;
+      break;
+    case 60:
+      pSyncEncoder->iFrameRate = iFrameRate;
+      pSyncEncoder->iFrameRateCode = 5;
+      pSyncEncoder->iPacketsPerFrame = 2;
+      break;
+    case 96:
+      pSyncEncoder->iFrameRate = iFrameRate;
+      pSyncEncoder->iFrameRateCode = 6;
+      pSyncEncoder->iPacketsPerFrame = 1;
+      break;
+    case 100:
+      pSyncEncoder->iFrameRate = iFrameRate;
+      pSyncEncoder->iFrameRateCode = 7;
+      pSyncEncoder->iPacketsPerFrame = 1;
+      break;
+    case 120:
+      pSyncEncoder->iFrameRate = iFrameRate;
+      pSyncEncoder->iFrameRateCode = 8;
+      pSyncEncoder->iPacketsPerFrame = 1;
+      break;
+    default:
+      pSyncEncoder->iError = SYNC_ENCODER_ERROR_INVALID_FR;
+  };
 
-	if(pSyncEncoder->iError != SYNC_ENCODER_ERROR_NONE){
-		return pSyncEncoder->iError;
-	}
+  if(pSyncEncoder->iError != SYNC_ENCODER_ERROR_NONE){
+    return pSyncEncoder->iError;
+  }
 
-	/* calculate required buffer length */
-	pSyncEncoder->iAudioBufferLength = pSyncEncoder->iSampleRate / pSyncEncoder->iFrameRate;
+  /* calculate required buffer length */
+  pSyncEncoder->iAudioBufferLength = pSyncEncoder->iSampleRate / pSyncEncoder->iFrameRate;
 
-	/* Calculate total packet bits including wash bits */
-	pSyncEncoder->iPacketBits = pSyncEncoder->iAudioBufferLength / (pSyncEncoder->iSymbolLength * pSyncEncoder->iPacketsPerFrame);
+  /* Calculate total packet bits including wash bits */
+  pSyncEncoder->iPacketBits = pSyncEncoder->iAudioBufferLength / (pSyncEncoder->iSymbolLength * pSyncEncoder->iPacketsPerFrame);
 
-	/* Initialize symbol phase */
-	pSyncEncoder->fSymbolPhase = 1.0f;
+  /* Initialize symbol phase */
+  pSyncEncoder->fSymbolPhase = 1.0f;
 
-	/* Initialize UUD information */
-	pSyncEncoder->iUUIDSubIndex = 0;
-	memcpy(&pSyncEncoder->UUID,pUUID,sizeof(UUIDINFORMATION));
+  /* Initialize UUD information */
+  pSyncEncoder->iUUIDSubIndex = 0;
+  memcpy(&pSyncEncoder->UUID,pUUID,sizeof(UUIDINFORMATION));
 
-	return pSyncEncoder->iError;
+  return pSyncEncoder->iError;
 }
 
 INT GetSyncEncoderAudioBufferLength(LPSYNCENCODER pSyncEncoder)	/* In: Sync encoder structure */
 {
-	if(pSyncEncoder->iError != SYNC_ENCODER_ERROR_NONE){
-		return pSyncEncoder->iError;
-	}
+  if(pSyncEncoder->iError != SYNC_ENCODER_ERROR_NONE){
+    return pSyncEncoder->iError;
+  }
 
-	return pSyncEncoder->iAudioBufferLength;
+  return pSyncEncoder->iAudioBufferLength;
 }
 
 
 
 INT EncodeSync(	LPSYNCENCODER	pSyncEncoder,	/* In:	Sync encoder structure */
-				INT				iBufferLength,	/* In:	Length of audio buffer */
-				FLOAT			*pfAudioBuffer,	/* Out: Audio buffer with signal */
-				INT				iFrameIndex)	/* In:	Frame Index */
+                 INT				iBufferLength,	/* In:	Length of audio buffer */
+                 FLOAT			*pfAudioBuffer,	/* Out: Audio buffer with signal */
+                 INT				iFrameIndex)	/* In:	Frame Index */
 {
-	INT		n;
-	INT		iBufferIndex;
+  INT		n;
+  INT		iBufferIndex;
 
 
-	if(pSyncEncoder->iError != SYNC_ENCODER_ERROR_NONE){
-		return pSyncEncoder->iError;
-	}
-	if(iBufferLength != pSyncEncoder->iAudioBufferLength){
-		return SYNC_ENCODER_ERROR_INVALID_BL;
-	}
+  if(pSyncEncoder->iError != SYNC_ENCODER_ERROR_NONE){
+    return pSyncEncoder->iError;
+  }
+  if(iBufferLength != pSyncEncoder->iAudioBufferLength){
+    return SYNC_ENCODER_ERROR_INVALID_BL;
+  }
 
-	iBufferIndex = 0;
-	for(n = 0; n < pSyncEncoder->iPacketsPerFrame; n ++){
-		/* Construct message */
-		ConstructFrame(pSyncEncoder,iFrameIndex);
+  iBufferIndex = 0;
+  for(n = 0; n < pSyncEncoder->iPacketsPerFrame; n ++){
+    /* Construct message */
+    ConstructFrame(pSyncEncoder,iFrameIndex);
 
-		/* Write Message */
-		pSyncEncoder->fSymbolPhase = SEWriteBits(pSyncEncoder->iSampleRate,
-												&pfAudioBuffer[iBufferIndex],
-												pSyncEncoder->iPacketBits,
-												pSyncEncoder->abyPacket,
-												pSyncEncoder->fSymbolPhase);
+    /* Write Message */
+    pSyncEncoder->fSymbolPhase = SEWriteBits(pSyncEncoder->iSampleRate,
+                                             &pfAudioBuffer[iBufferIndex],
+                                             pSyncEncoder->iPacketBits,
+                                             pSyncEncoder->abyPacket,
+                                             pSyncEncoder->fSymbolPhase);
 
-		iBufferIndex += (pSyncEncoder->iPacketBits * pSyncEncoder->iSymbolLength);
+    iBufferIndex += (pSyncEncoder->iPacketBits * pSyncEncoder->iSymbolLength);
 
-	}
+  }
 
-	return pSyncEncoder->iError;
+  return pSyncEncoder->iError;
 }
 
 void ConstructFrame(LPSYNCENCODER	pSyncEncoder,
-					INT				iFrameIndex)
+                    INT				iFrameIndex)
 {
-	USHORT	ushCRC;
-	BYTE	byByte;
-	INT		iUUIDIndex;
+  USHORT	ushCRC;
+  BYTE	byByte;
+  INT		iUUIDIndex;
 
-	/* Flush the packet buffer */
-	memset(pSyncEncoder->abyPacket,0,MAX_PACKET);
+  /* Flush the packet buffer */
+  memset(pSyncEncoder->abyPacket,0,MAX_PACKET);
 
-	/* Sync Header */
-	pSyncEncoder->abyPacket[0] = SYNC_HEADER1;
-	pSyncEncoder->abyPacket[1] = SYNC_HEADER2;
+  /* Sync Header */
+  pSyncEncoder->abyPacket[0] = SYNC_HEADER1;
+  pSyncEncoder->abyPacket[1] = SYNC_HEADER2;
 
-	/* Frame Rate code */
-	byByte = 0;
-	byByte = (unsigned char)(pSyncEncoder->iFrameRateCode << 4);
+  /* Frame Rate code */
+  byByte = 0;
+  byByte = (unsigned char)(pSyncEncoder->iFrameRateCode << 4);
 
-	/* UUID sub index */
-	byByte |= (unsigned char)(pSyncEncoder->iUUIDSubIndex & 0x3);
+  /* UUID sub index */
+  byByte |= (unsigned char)(pSyncEncoder->iUUIDSubIndex & 0x3);
 
-	pSyncEncoder->abyPacket[2] = byByte;
+  pSyncEncoder->abyPacket[2] = byByte;
 
-	/* UUID Sub */
-	iUUIDIndex = pSyncEncoder->iUUIDSubIndex << 2;
-	pSyncEncoder->abyPacket[3] = pSyncEncoder->UUID.abyUUIDBytes[iUUIDIndex];
-	pSyncEncoder->abyPacket[4] = pSyncEncoder->UUID.abyUUIDBytes[iUUIDIndex + 1];
-	pSyncEncoder->abyPacket[5] = pSyncEncoder->UUID.abyUUIDBytes[iUUIDIndex + 2];
-	pSyncEncoder->abyPacket[6] = pSyncEncoder->UUID.abyUUIDBytes[iUUIDIndex + 3];
+  /* UUID Sub */
+  iUUIDIndex = pSyncEncoder->iUUIDSubIndex << 2;
+  pSyncEncoder->abyPacket[3] = pSyncEncoder->UUID.abyUUIDBytes[iUUIDIndex];
+  pSyncEncoder->abyPacket[4] = pSyncEncoder->UUID.abyUUIDBytes[iUUIDIndex + 1];
+  pSyncEncoder->abyPacket[5] = pSyncEncoder->UUID.abyUUIDBytes[iUUIDIndex + 2];
+  pSyncEncoder->abyPacket[6] = pSyncEncoder->UUID.abyUUIDBytes[iUUIDIndex + 3];
 
-	/* Update UUID sub index */
-	pSyncEncoder->iUUIDSubIndex ++;
-	pSyncEncoder->iUUIDSubIndex &= 0x3;
+  /* Update UUID sub index */
+  pSyncEncoder->iUUIDSubIndex ++;
+  pSyncEncoder->iUUIDSubIndex &= 0x3;
 
-	/* Frame Index */
-	byByte = (unsigned char)((iFrameIndex >> 16) & 0XFF);
-	pSyncEncoder->abyPacket[7] = byByte;
-	byByte = (unsigned char)((iFrameIndex >> 8) & 0XFF);
-	pSyncEncoder->abyPacket[8] = byByte;
-	byByte = (unsigned char)(iFrameIndex & 0XFF);
-	pSyncEncoder->abyPacket[9] = byByte;
+  /* Frame Index */
+  byByte = (unsigned char)((iFrameIndex >> 16) & 0XFF);
+  pSyncEncoder->abyPacket[7] = byByte;
+  byByte = (unsigned char)((iFrameIndex >> 8) & 0XFF);
+  pSyncEncoder->abyPacket[8] = byByte;
+  byByte = (unsigned char)(iFrameIndex & 0XFF);
+  pSyncEncoder->abyPacket[9] = byByte;
 
-	/* calculate CRC */
-	ushCRC = CRC16(&pSyncEncoder->abyPacket[2],MESSAGE_TOTAL_BYTES - 4);
+  /* calculate CRC */
+  ushCRC = CRC16(&pSyncEncoder->abyPacket[2],MESSAGE_TOTAL_BYTES - 4);
 
-	/* Insert CRC */
-	byByte = (unsigned char)((ushCRC >> 8) & 0XFF);
-	pSyncEncoder->abyPacket[10] = byByte;
-	byByte = (unsigned char)(ushCRC & 0XFF);
-	pSyncEncoder->abyPacket[11] = byByte;
+  /* Insert CRC */
+  byByte = (unsigned char)((ushCRC >> 8) & 0XFF);
+  pSyncEncoder->abyPacket[10] = byByte;
+  byByte = (unsigned char)(ushCRC & 0XFF);
+  pSyncEncoder->abyPacket[11] = byByte;
 
 }
 
 static FLOAT g_afSymbol0_48[SYMBOL_LENGTH_48] = {
-	0.3827f,
+    0.3827f,
     0.9239f,
     0.9239f,
     0.3827f,
 };
 
 static FLOAT g_afSymbol1_48[SYMBOL_LENGTH_48] = {
-	0.7071f,
     0.7071f,
-   -0.7071f,
-   -0.7071f,
+    0.7071f,
+    -0.7071f,
+    -0.7071f,
 };
 
 static FLOAT g_afSymbol0_96[SYMBOL_LENGTH_96] = {
-	0.1951f,
+    0.1951f,
     0.5556f,
     0.8315f,
     0.9808f,
@@ -267,80 +267,80 @@ static FLOAT g_afSymbol0_96[SYMBOL_LENGTH_96] = {
 };
 
 static FLOAT g_afSymbol1_96[SYMBOL_LENGTH_96] = {
-	0.3827f,
+    0.3827f,
     0.9239f,
     0.9239f,
     0.3827f,
-   -0.3827f,
-   -0.9239f,
-   -0.9239f,
-   -0.3827f,
+    -0.3827f,
+    -0.9239f,
+    -0.9239f,
+    -0.3827f,
 };
 
 /* Symbol gain */
 static FLOAT g_fGain = 0.1f;
 
 FLOAT SEWriteBits(	INT			iSampleRate,		/* In:	Sample rate of signal */
-					FLOAT		*pfAudioBuffer,		/* Out: Audio buffer containing signal */
-					INT			iBits,				/* In:	Number of bits to write */
-					BYTE		*pbyData,			/* In:	Data to write */
-					FLOAT		fSymbolPhase)		/* In:	Symbol phase */
+                    FLOAT		*pfAudioBuffer,		/* Out: Audio buffer containing signal */
+                    INT			iBits,				/* In:	Number of bits to write */
+                    BYTE		*pbyData,			/* In:	Data to write */
+                    FLOAT		fSymbolPhase)		/* In:	Symbol phase */
 {
-	INT		n;
-	INT		i;
-	INT		iSymbolLength;
-	FLOAT	*pfSymbol0;
-	FLOAT	*pfSymbol1;
-	BYTE	byByte;
+  INT		n;
+  INT		i;
+  INT		iSymbolLength;
+  FLOAT	*pfSymbol0;
+  FLOAT	*pfSymbol1;
+  BYTE	byByte;
 
-	/* Select the correct symbol length and symbol signal based on sample rate */
-	switch (iSampleRate){
-		case 96000:
-			iSymbolLength = SYMBOL_LENGTH_96;
-			pfSymbol0 = g_afSymbol0_96;
-			pfSymbol1 = g_afSymbol1_96;
-		break;
-		case 48000:
-			iSymbolLength = SYMBOL_LENGTH_48;
-			pfSymbol0 = g_afSymbol0_48;
-			pfSymbol1 = g_afSymbol1_48;
-		break;
-		default:
-			iSymbolLength = 0;
-			pfSymbol0 = g_afSymbol0_96;
-			pfSymbol1 = g_afSymbol1_96;
-	};
+  /* Select the correct symbol length and symbol signal based on sample rate */
+  switch (iSampleRate){
+    case 96000:
+      iSymbolLength = SYMBOL_LENGTH_96;
+      pfSymbol0 = g_afSymbol0_96;
+      pfSymbol1 = g_afSymbol1_96;
+      break;
+    case 48000:
+      iSymbolLength = SYMBOL_LENGTH_48;
+      pfSymbol0 = g_afSymbol0_48;
+      pfSymbol1 = g_afSymbol1_48;
+      break;
+    default:
+      iSymbolLength = 0;
+      pfSymbol0 = g_afSymbol0_96;
+      pfSymbol1 = g_afSymbol1_96;
+  };
 
-	/* Write bits */
-	n = 0;
-	i = 0;
-	while(n < iBits){
-		INT		k;
-		FLOAT	*pfSymbol;
+  /* Write bits */
+  n = 0;
+  i = 0;
+  while(n < iBits){
+    INT		k;
+    FLOAT	*pfSymbol;
 
-		/* Grab next byte of data */
-		if(i == 0){
-			byByte = *pbyData;
-			pbyData ++;
-		}
+    /* Grab next byte of data */
+    if(i == 0){
+      byByte = *pbyData;
+      pbyData ++;
+    }
 
-		pfSymbol = (byByte & 0x80) ? pfSymbol1 : pfSymbol0;
+    pfSymbol = (byByte & 0x80) ? pfSymbol1 : pfSymbol0;
 
-		for(k = 0; k < iSymbolLength; k ++){
-			*pfAudioBuffer =  *pfSymbol * fSymbolPhase * g_fGain;
-			pfAudioBuffer ++;
-			pfSymbol ++;
-		}
+    for(k = 0; k < iSymbolLength; k ++){
+      *pfAudioBuffer =  *pfSymbol * fSymbolPhase * g_fGain;
+      pfAudioBuffer ++;
+      pfSymbol ++;
+    }
 
-		fSymbolPhase *= (byByte & 0x80) ? 1.0f : -1.0f;
+    fSymbolPhase *= (byByte & 0x80) ? 1.0f : -1.0f;
 
-		byByte <<= 1;
+    byByte <<= 1;
 
-		n ++;
+    n ++;
 
-		i ++;
-		i &= 0x7;
-	}
+    i ++;
+    i &= 0x7;
+  }
 
-	return fSymbolPhase;
+  return fSymbolPhase;
 }

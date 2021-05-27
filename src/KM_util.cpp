@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    KM_util.cpp
-    \version $Id$
-    \brief   Utility functions
-  */
+/*! \file    KM_util.cpp
+  \version $Id$
+  \brief   Utility functions
+*/
 
 #include <KM_util.h>
 #include <KM_prng.h>
@@ -78,10 +78,10 @@ Kumu::Result_t::Find(int v)
   AutoMutex L(*s_MapLock);
 
   for ( ui32_t i = 0; i < s_MapSize; ++i )
-    {
-      if ( s_ResultMap[i].rcode == v )
-	return *s_ResultMap[i].result;
-    }
+  {
+    if ( s_ResultMap[i].rcode == v )
+      return *s_ResultMap[i].result;
+  }
 
   return RESULT_UNKNOWN;
 }
@@ -91,25 +91,25 @@ Kumu::Result_t
 Kumu::Result_t::Delete(int v)
 {
   if ( v < -99 || v > 99 )
-    {
-      DefaultLogSink().Error("Cannot delete core result code: %ld\n", v);
-      return RESULT_FAIL;
-    }
+  {
+    DefaultLogSink().Error("Cannot delete core result code: %ld\n", v);
+    return RESULT_FAIL;
+  }
 
   assert(s_MapLock);
   AutoMutex L(*s_MapLock);
 
   for ( ui32_t i = 0; i < s_MapSize; ++i )
+  {
+    if ( s_ResultMap[i].rcode == v )
     {
-      if ( s_ResultMap[i].rcode == v )
-	{
-	  for ( ++i; i < s_MapSize; ++i )
-	    s_ResultMap[i-1] = s_ResultMap[i];
+      for ( ++i; i < s_MapSize; ++i )
+        s_ResultMap[i-1] = s_ResultMap[i];
 
-	  --s_MapSize;
-	  return RESULT_OK;
-	}
+      --s_MapSize;
+      return RESULT_OK;
     }
+  }
 
   return RESULT_FALSE;
 }
@@ -148,10 +148,10 @@ Kumu::Result_t::Result_t(int v, const std::string& s, const std::string& l) : va
   AutoMutex L(*s_MapLock);
 
   for ( ui32_t i = 0; i < s_MapSize; ++i )
-    {
-      if ( s_ResultMap[i].rcode == v )
-	return;
-    }
+  {
+    if ( s_ResultMap[i].rcode == v )
+      return;
+  }
 
   assert(s_MapSize+1 < MapMax);
 
@@ -228,7 +228,7 @@ Kumu::Result_t::operator()(const std::string& message, const int& line, const ch
 static int s_DTraceSequence = 0;
 
 Kumu::DTrace_t::DTrace_t(const char* Label, Kumu::Result_t* Watch, int Line, const char* File)
-  : m_Label(Label), m_Watch(Watch), m_Line(Line), m_File(File)
+    : m_Label(Label), m_Watch(Watch), m_Line(Line), m_File(File)
 {
   m_Sequence = s_DTraceSequence++;
   DefaultLogSink().Debug("@enter %s[%d] (%s at %d)\n", m_Label, m_Sequence, m_File, m_Line);
@@ -249,39 +249,39 @@ const char  fill = '=';
 const char* base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 const byte_t decode_map[] =
-{ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 62,   0xff, 0xff, 0xff, 63,
-  52,   53,   54,   55,   56,   57,   58,   59,
-  60,   61,   0xff, 0xff, 0xff, 0xfe, 0xff, 0xff,
-  0xff, 0,    1,    2,    3,    4,    5,    6,
-  7,    8,    9,    10,   11,   12,   13,   14,
-  15,   16,   17,   18,   19,   20,   21,   22,
-  23,   24,   25,   0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 26,   27,   28,   29,   30,   31,   32,
-  33,   34,   35,   36,   37,   38,   39,   40,
-  41,   42,   43,   44,   45,   46,   47,   48,
-  49,   50,   51,   0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
-};
+    { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 62,   0xff, 0xff, 0xff, 63,
+      52,   53,   54,   55,   56,   57,   58,   59,
+      60,   61,   0xff, 0xff, 0xff, 0xfe, 0xff, 0xff,
+      0xff, 0,    1,    2,    3,    4,    5,    6,
+      7,    8,    9,    10,   11,   12,   13,   14,
+      15,   16,   17,   18,   19,   20,   21,   22,
+      23,   24,   25,   0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 26,   27,   28,   29,   30,   31,   32,
+      33,   34,   35,   36,   37,   38,   39,   40,
+      41,   42,   43,   44,   45,   46,   47,   48,
+      49,   50,   51,   0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+    };
 
 
 // Convert a binary string to NULL-terminated UTF-8 hexadecimal, returns the buffer
@@ -307,35 +307,35 @@ Kumu::base64encode(const byte_t* buf, ui32_t buf_len, char* strbuf, ui32_t strbu
     block_len--;
 
   for ( i = 0; i < block_len; i += 3 )
-    {
-      strbuf[out_char++] = base64_chars[( buf[0] >> 2 )];
-      strbuf[out_char++] = base64_chars[( ( ( buf[0] & 0x03 ) << 4 ) | ( buf[1] >> 4 ) )];
-      strbuf[out_char++] = base64_chars[( ( ( buf[1] & 0x0f ) << 2 ) | ( buf[2] >> 6 ) )];
-      strbuf[out_char++] = base64_chars[( buf[2] & 0x3f )];
-      buf += 3;
-    }
+  {
+    strbuf[out_char++] = base64_chars[( buf[0] >> 2 )];
+    strbuf[out_char++] = base64_chars[( ( ( buf[0] & 0x03 ) << 4 ) | ( buf[1] >> 4 ) )];
+    strbuf[out_char++] = base64_chars[( ( ( buf[1] & 0x0f ) << 2 ) | ( buf[2] >> 6 ) )];
+    strbuf[out_char++] = base64_chars[( buf[2] & 0x3f )];
+    buf += 3;
+  }
 
   if ( i < buf_len )
+  {
+    diff = buf_len - i;
+    assert(diff > 0);
+    assert(diff < 3);
+
+    strbuf[out_char++] = base64_chars[( buf[0] >> 2 )];
+
+    if ( diff == 1 )
     {
-      diff = buf_len - i;
-      assert(diff > 0);
-      assert(diff < 3);
-      
-      strbuf[out_char++] = base64_chars[( buf[0] >> 2 )];
-
-      if ( diff == 1 )
-	{
-	  strbuf[out_char++] = base64_chars[( ( ( buf[0] & 0x03 ) << 4 ) )];
-	  strbuf[out_char++] = fill;
-	}
-      else if ( diff == 2 )
-	{
-	  strbuf[out_char++] = base64_chars[( ( ( buf[0] & 0x03 ) << 4 ) | ( buf[1] >> 4 ) )];
-	  strbuf[out_char++] = base64_chars[( ( ( buf[1] & 0x0f ) << 2 ) )];
-	}
-
+      strbuf[out_char++] = base64_chars[( ( ( buf[0] & 0x03 ) << 4 ) )];
       strbuf[out_char++] = fill;
     }
+    else if ( diff == 2 )
+    {
+      strbuf[out_char++] = base64_chars[( ( ( buf[0] & 0x03 ) << 4 ) | ( buf[1] >> 4 ) )];
+      strbuf[out_char++] = base64_chars[( ( ( buf[1] & 0x0f ) << 2 ) )];
+    }
+
+    strbuf[out_char++] = fill;
+  }
 
   strbuf[out_char] = 0;
   return strbuf;;
@@ -361,33 +361,33 @@ Kumu::base64decode(const char* str, byte_t* buf, ui32_t buf_len, ui32_t* char_co
     return -1;
 
   while ( *str != 0 && i < buf_len )
+  {
+    c = decode_map[(int)*str++];
+    if ( c == 0xff ) continue;
+    if ( c == 0xfe ) break;
+
+    switch ( phase++ )
     {
-      c = decode_map[(int)*str++];
-      if ( c == 0xff ) continue;
-      if ( c == 0xfe ) break;
+      case 0:
+        buf[i++] =  c << 2;
+        break;
 
-      switch ( phase++ )
-	{
-	case 0:
-	  buf[i++] =  c << 2;
-	  break;
+      case 1:
+        buf[i - 1] |= c >> 4;
+        d = c;
+        break;
 
-	case 1:
-	  buf[i - 1] |= c >> 4;
-	  d = c;
-	  break;
+      case 2:
+        buf[i++] =  ( d << 4 ) | ( c >> 2 );
+        d = c;
+        break;
 
-	case 2:
-	  buf[i++] =  ( d << 4 ) | ( c >> 2 );
-	  d = c;
-	  break;
-
-	case 3:
-	  buf[i++] =  ( d << 6 ) | c;
-	  phase = 0;
-	  break;
-	}
+      case 3:
+        buf[i++] =  ( d << 6 ) | c;
+        phase = 0;
+        break;
     }
+  }
 
   *char_count = i;
   return 0;
@@ -409,10 +409,10 @@ Kumu::hex2bin(const char* str, byte_t* buf, ui32_t buf_len, ui32_t* conv_size)
     return 0;
 
   for ( int j = 0; str[j]; j++ )
-    {
-      if ( isxdigit(str[j]) )
-	(*conv_size)++;
-    }
+  {
+    if ( isxdigit(str[j]) )
+      (*conv_size)++;
+  }
 
   if ( *conv_size & 0x01 ) (*conv_size)++;
   *conv_size /= 2;
@@ -426,24 +426,24 @@ Kumu::hex2bin(const char* str, byte_t* buf, ui32_t buf_len, ui32_t* conv_size)
 
   // for each character, fill in the high nybble then the low
   for ( int i = 0; str[i]; i++ )
+  {
+    if ( ! isxdigit(str[i]) )
+      continue;
+
+    byte_t val = str[i] - ( isdigit(str[i]) ? 0x30 : ( isupper(str[i]) ? 0x37 : 0x57 ) );
+
+    if ( phase == 0 )
     {
-      if ( ! isxdigit(str[i]) )
-        continue;
-
-      byte_t val = str[i] - ( isdigit(str[i]) ? 0x30 : ( isupper(str[i]) ? 0x37 : 0x57 ) );
-
-      if ( phase == 0 )
-        {
-          buf[*conv_size] = val << 4;
-          phase++;
-        }
-      else
-        {
-          buf[*conv_size] |= val;
-          phase = 0;
-          (*conv_size)++;
-        }
+      buf[*conv_size] = val << 4;
+      phase++;
     }
+    else
+    {
+      buf[*conv_size] |= val;
+      phase = 0;
+      (*conv_size)++;
+    }
+  }
 
   return 0;
 }
@@ -500,15 +500,15 @@ Kumu::bin2hex(const byte_t* bin_buf, ui32_t bin_len, char* str_buf, ui32_t str_l
   char* p = str_buf;
 
   for ( ui32_t i = 0; i < bin_len; i++ )
-    {
-      *p = (bin_buf[i] >> 4) & 0x0f;
-      *p += *p < 10 ? 0x30 : 0x61 - 10;
-      p++;
+  {
+    *p = (bin_buf[i] >> 4) & 0x0f;
+    *p += *p < 10 ? 0x30 : 0x61 - 10;
+    p++;
 
-      *p = bin_buf[i] & 0x0f;
-      *p += *p < 10 ? 0x30 : 0x61 - 10;
-      p++;
-    }
+    *p = bin_buf[i] & 0x0f;
+    *p += *p < 10 ? 0x30 : 0x61 - 10;
+    p++;
+  }
 
   *p = '\0';
   return str_buf;
@@ -530,23 +530,23 @@ Kumu::hexdump(const byte_t* buf, ui32_t dump_len, FILE* stream)
   const byte_t* end_p = p + dump_len;
 
   for ( ui32_t line = 0; p < end_p; line++ )
-    {
-      fprintf(stream, "  %06x: ", line);
-      ui32_t i;
-      const byte_t* pp;
+  {
+    fprintf(stream, "  %06x: ", line);
+    ui32_t i;
+    const byte_t* pp;
 
-      for ( pp = p, i = 0; i < row_len && pp < end_p; i++, pp++ )
-	fprintf(stream, "%02x ", *pp);
+    for ( pp = p, i = 0; i < row_len && pp < end_p; i++, pp++ )
+      fprintf(stream, "%02x ", *pp);
 
-      while ( i++ < row_len )
-	fputs("   ", stream);
+    while ( i++ < row_len )
+      fputs("   ", stream);
 
-      for ( pp = p, i = 0; i < row_len && pp < end_p; i++, pp++ )
-	fputc((isprint(*pp) ? *pp : '.'), stream);
+    for ( pp = p, i = 0; i < row_len && pp < end_p; i++, pp++ )
+      fputc((isprint(*pp) ? *pp : '.'), stream);
 
-      fputc('\n', stream);
-      p += row_len;
-    }
+    fputc('\n', stream);
+    p += row_len;
+  }
 }
 
 //
@@ -567,15 +567,15 @@ Kumu::bin2UUIDhex(const byte_t* bin_buf, ui32_t bin_len, char* str_buf, ui32_t s
 
   // shift the time (mid+hi+clk)
   for ( k = 15, j = 3; k > 6; k -= 4, j-- )
-    {
-      for ( i = 4; i > 0; i-- )
-        str_buf[k+i+j] = str_buf[k+i];
-    }
+  {
+    for ( i = 4; i > 0; i-- )
+      str_buf[k+i+j] = str_buf[k+i];
+  }
 
   // add in the hyphens and trainling null
   for ( i = 8; i < 24; i += 5 )
     str_buf[i] = '-';
-  
+
   str_buf[36] = 0;
   return str_buf;
 }
@@ -632,10 +632,10 @@ Kumu::read_test_BER(byte_t **buf, ui64_t test_value)
     return false;
 
   for ( ui8_t i = 1; i < ber_size; i++ )
-    {
-      if ( (*buf)[i] > 0 )
-        val |= (ui64_t)((*buf)[i]) << ( ( ( ber_size - 1 ) - i ) * 8 );
-    }
+  {
+    if ( (*buf)[i] > 0 )
+      val |= (ui64_t)((*buf)[i]) << ( ( ( ber_size - 1 ) - i ) * 8 );
+  }
 
   *buf += ber_size;
   return ( val == test_value );
@@ -647,7 +647,7 @@ bool
 Kumu::read_BER(const byte_t* buf, ui64_t* val)
 {
   ui8_t ber_size, i;
-  
+
   if ( buf == 0 || val == 0 )
     return false;
 
@@ -661,32 +661,32 @@ Kumu::read_BER(const byte_t* buf, ui64_t* val)
     return false;
 
   for ( i = 1; i < ber_size; i++ )
-    {
-      if ( buf[i] > 0 )
-	*val |= (ui64_t)buf[i] << ( ( ( ber_size - 1 ) - i ) * 8 );
-    }
+  {
+    if ( buf[i] > 0 )
+      *val |= (ui64_t)buf[i] << ( ( ( ber_size - 1 ) - i ) * 8 );
+  }
 
   return true;
 }
 
 
 static const ui64_t ber_masks[9] =
-  { ui64_C(0xffffffffffffffff), ui64_C(0xffffffffffffff00), 
-    ui64_C(0xffffffffffff0000), ui64_C(0xffffffffff000000),
-    ui64_C(0xffffffff00000000), ui64_C(0xffffff0000000000),
-    ui64_C(0xffff000000000000), ui64_C(0xff00000000000000),
-    0
-  };
+    { ui64_C(0xffffffffffffffff), ui64_C(0xffffffffffffff00),
+      ui64_C(0xffffffffffff0000), ui64_C(0xffffffffff000000),
+      ui64_C(0xffffffff00000000), ui64_C(0xffffff0000000000),
+      ui64_C(0xffff000000000000), ui64_C(0xff00000000000000),
+      0
+    };
 
 //
 ui32_t
 Kumu::get_BER_length_for_value(ui64_t val)
 {
   for ( ui32_t i = 0; i < 9; i++ )
-    {
-      if ( ( val & ber_masks[i] ) == 0 )
-	return i + 1;
-    }
+  {
+    if ( ( val & ber_masks[i] ) == 0 )
+      return i + 1;
+  }
 
   ui64Printer tmp_i(val);
   DefaultLogSink().Error("BER integer encoding not supported for large value %s\n", tmp_i.c_str());
@@ -701,37 +701,37 @@ Kumu::write_BER(byte_t* buf, ui64_t val, ui32_t ber_len)
     return false;
 
   if ( ber_len == 0 )
-    { // calculate default length
-      if ( val < 0x01000000L )
-        ber_len = 4;
-      else if ( val < ui64_C(0x0100000000000000) )
-        ber_len = 8;
-      else
-        ber_len = 9;
-    }
+  { // calculate default length
+    if ( val < 0x01000000L )
+      ber_len = 4;
+    else if ( val < ui64_C(0x0100000000000000) )
+      ber_len = 8;
+    else
+      ber_len = 9;
+  }
   else
-    { // sanity check BER length
-      if ( ber_len > 9 )
-        {
-          DefaultLogSink().Error("BER integer length %u exceeds maximum size of 9\n", ber_len);
-          return false;
-        }
-      
-      if ( ( val & ber_masks[ber_len - 1] ) != 0 )
-        {
-	  ui64Printer tmp_i(val);
-          DefaultLogSink().Error("BER integer length %u too small for value %s\n", ber_len, tmp_i.c_str());
-          return false;
-        }
+  { // sanity check BER length
+    if ( ber_len > 9 )
+    {
+      DefaultLogSink().Error("BER integer length %u exceeds maximum size of 9\n", ber_len);
+      return false;
     }
+
+    if ( ( val & ber_masks[ber_len - 1] ) != 0 )
+    {
+      ui64Printer tmp_i(val);
+      DefaultLogSink().Error("BER integer length %u too small for value %s\n", ber_len, tmp_i.c_str());
+      return false;
+    }
+  }
 
   buf[0] = 0x80 + ( ber_len - 1 );
 
   for ( ui32_t i = ber_len - 1; i > 0; i-- )
-    {
-      buf[i] = (ui8_t)(val & 0xff);
-      val >>= 8;
-    }
+  {
+    buf[i] = (ui8_t)(val & 0xff);
+    val >>= 8;
+  }
 
   return true;
 }
@@ -788,7 +788,7 @@ bool Kumu::Timestamp::operator!=(const Timestamp& rhs) const {
 //
 void
 Kumu::Timestamp::GetComponents(ui16_t& Year, ui8_t&  Month, ui8_t&  Day,
-			       ui8_t&  Hour, ui8_t&  Minute, ui8_t&  Second) const
+                               ui8_t&  Hour, ui8_t&  Minute, ui8_t&  Second) const
 {
   TAI::caltime ct;
   ct = m_Timestamp;
@@ -803,7 +803,7 @@ Kumu::Timestamp::GetComponents(ui16_t& Year, ui8_t&  Month, ui8_t&  Day,
 //
 void
 Kumu::Timestamp::SetComponents(const ui16_t& Year, const ui8_t&  Month, const ui8_t&  Day,
-			       const ui8_t&  Hour, const ui8_t&  Minute, const ui8_t&  Second)
+                               const ui8_t&  Hour, const ui8_t&  Minute, const ui8_t&  Second)
 {
   TAI::caltime ct;
   ct.date.year = Year;
@@ -843,28 +843,28 @@ Kumu::Timestamp::EncodeString(char* str_buf, ui32_t buf_len) const
   char direction = '+';
 
   if ( m_TZOffsetMinutes == 0 )
-    {
-      GetComponents(year, month, day, hour, minute, second);
-    }
+  {
+    GetComponents(year, month, day, hour, minute, second);
+  }
   else
-    {
-      // calculate local time
-      Kumu::Timestamp tmp_t(*this);
-      tmp_t.AddMinutes(m_TZOffsetMinutes);
-      tmp_t.GetComponents(year, month, day, hour, minute, second);
+  {
+    // calculate local time
+    Kumu::Timestamp tmp_t(*this);
+    tmp_t.AddMinutes(m_TZOffsetMinutes);
+    tmp_t.GetComponents(year, month, day, hour, minute, second);
 
-      ofst_hours = Kumu::xabs(m_TZOffsetMinutes) / 60;
-      ofst_minutes = Kumu::xabs(m_TZOffsetMinutes) % 60;
+    ofst_hours = Kumu::xabs(m_TZOffsetMinutes) / 60;
+    ofst_minutes = Kumu::xabs(m_TZOffsetMinutes) % 60;
 
-      if ( m_TZOffsetMinutes < 0 )
-	direction = '-';
-    }
-  
+    if ( m_TZOffsetMinutes < 0 )
+      direction = '-';
+  }
+
   // 2004-05-01T13:20:00+00:00
   snprintf(str_buf, buf_len,
-	   "%04hu-%02hhu-%02hhuT%02hhu:%02hhu:%02hhu%c%02u:%02u",
-	   year, month, day, hour, minute, second,
-	   direction, ofst_hours, ofst_minutes);
+           "%04hu-%02hhu-%02hhuT%02hhu:%02hhu:%02hhu%c%02u:%02u",
+           year, month, day, hour, minute, second,
+           direction, ofst_hours, ofst_minutes);
 
   return str_buf;
 }
@@ -889,80 +889,80 @@ Kumu::Timestamp::DecodeString(const char* datestr)
   YMDhms.date.year = strtol(datestr, 0, 10);
   YMDhms.date.month = strtol(datestr + 5, 0, 10);
   YMDhms.date.day = strtol(datestr + 8, 0, 10);
- 
+
   if ( datestr[10] == 'T' )
+  {
+    if ( ! ( isdigit(datestr[11]) && isdigit(datestr[12]) )
+         || datestr[13] != ':'
+         || ! ( isdigit(datestr[14]) && isdigit(datestr[15]) ) )
+      return false;
+
+    char_count += 6;
+    YMDhms.hour = strtol(datestr + 11, 0, 10);
+    YMDhms.minute = strtol(datestr + 14, 0, 10);
+
+    if ( datestr[16] == ':' )
     {
-      if ( ! ( isdigit(datestr[11]) && isdigit(datestr[12]) )
-	   || datestr[13] != ':'
-	   || ! ( isdigit(datestr[14]) && isdigit(datestr[15]) ) )
-	return false;
+      if ( ! ( isdigit(datestr[17]) && isdigit(datestr[18]) ) )
+        return false;
+
+      char_count += 3;
+      YMDhms.second = strtol(datestr + 17, 0, 10);
+    }
+
+    if ( datestr[19] == '.' )
+    {
+      if ( ! isdigit(datestr[20]) )
+      {
+        return false;
+      }
+
+      // we don't carry the ms value
+      while ( isdigit(datestr[20]) )
+      {
+        ++datestr;
+      }
+
+      ++datestr;
+    }
+
+    if ( datestr[19] == '-' || datestr[19] == '+' )
+    {
+      if ( ! ( isdigit(datestr[20]) && isdigit(datestr[21]) )
+           || datestr[22] != ':'
+           || ! ( isdigit(datestr[23]) && isdigit(datestr[24]) ) )
+        return false;
 
       char_count += 6;
-      YMDhms.hour = strtol(datestr + 11, 0, 10);
-      YMDhms.minute = strtol(datestr + 14, 0, 10);
 
-      if ( datestr[16] == ':' )
-	{
-	  if ( ! ( isdigit(datestr[17]) && isdigit(datestr[18]) ) )
-	    return false;
+      ui32_t TZ_hh = strtol(datestr + 20, 0, 10);
+      ui32_t TZ_mm = strtol(datestr + 23, 0, 10);
+      if ((TZ_hh > 14) || (TZ_mm > 59) || ((TZ_hh == 14) && (TZ_mm > 0)))
+        return false;
 
-	  char_count += 3;
-	  YMDhms.second = strtol(datestr + 17, 0, 10);
-	}
+      i32_t TZ_offset = 60 * TZ_hh + TZ_mm;
+      if (datestr[19] == '-')
+        TZ_offset = -TZ_offset;
+      /* at this point, TZ_offset reflects the contents of the string */
 
-      if ( datestr[19] == '.' )
-	{
-	  if ( ! isdigit(datestr[20]) )
-	    {
-	      return false;
-	    }
-
-	  // we don't carry the ms value
-	  while ( isdigit(datestr[20]) )
-	    {
-	      ++datestr;
-	    }
-
-	  ++datestr;
-	}
-
-      if ( datestr[19] == '-' || datestr[19] == '+' )
-	{
-	  if ( ! ( isdigit(datestr[20]) && isdigit(datestr[21]) )
-	       || datestr[22] != ':'
-	       || ! ( isdigit(datestr[23]) && isdigit(datestr[24]) ) )
-	    return false;
-
-	  char_count += 6;
-
-	  ui32_t TZ_hh = strtol(datestr + 20, 0, 10);
-	  ui32_t TZ_mm = strtol(datestr + 23, 0, 10);
-	  if ((TZ_hh > 14) || (TZ_mm > 59) || ((TZ_hh == 14) && (TZ_mm > 0)))
-	    return false;
-
-	  i32_t TZ_offset = 60 * TZ_hh + TZ_mm;
-	  if (datestr[19] == '-')
-	    TZ_offset = -TZ_offset;
-	  /* at this point, TZ_offset reflects the contents of the string */
-
-	  /* a negative offset is behind UTC and so needs to increment to
-	   * convert, while a positive offset must do the reverse */
-	  YMDhms.offset = TZ_offset;
-	}
-      else if (datestr[19] == 'Z')
-	{
-	  /* act as if the offset were +00:00 */
-	  char_count++;
-	}
+      /* a negative offset is behind UTC and so needs to increment to
+       * convert, while a positive offset must do the reverse */
+      YMDhms.offset = TZ_offset;
     }
+    else if (datestr[19] == 'Z')
+    {
+      /* act as if the offset were +00:00 */
+      char_count++;
+    }
+  }
 
   if ( datestr[char_count] != 0 )
-    {
-      Kumu::DefaultLogSink().Error("Unexpected extra characters in string: %s (%ld)\n",
-				   datestr, char_count);
-      return false;
-    }
-  
+  {
+    Kumu::DefaultLogSink().Error("Unexpected extra characters in string: %s (%ld)\n",
+                                 datestr, char_count);
+    return false;
+  }
+
   m_Timestamp = YMDhms;
   m_TZOffsetMinutes = YMDhms.offset;
   return true;
@@ -1004,7 +1004,7 @@ Kumu::Timestamp::Archive(MemIOWriter* Writer) const
   ui8_t month, day, hour, minute, second, tick = 0;
   GetComponents(year, month, day, hour, minute, second);
 
-  if ( ! Writer->WriteUi16BE(year) ) return false;	
+  if ( ! Writer->WriteUi16BE(year) ) return false;
   if ( ! Writer->WriteUi8(month) ) return false;
   if ( ! Writer->WriteUi8(day) ) return false;
   if ( ! Writer->WriteUi8(hour) ) return false;
@@ -1034,7 +1034,7 @@ Kumu::Timestamp::SetCTime(const ui64_t& ctime)
 //------------------------------------------------------------------------------------------
 
 Kumu::MemIOWriter::MemIOWriter(ByteString* Buf)
-  : m_p(0), m_capacity(0), m_size(0)
+    : m_p(0), m_capacity(0), m_size(0)
 {
   m_p = Buf->Data();
   m_capacity = Buf->Capacity();
@@ -1056,7 +1056,7 @@ Kumu::MemIOWriter:: WriteBER(ui64_t i, ui32_t ber_len)
 
 
 Kumu::MemIOReader::MemIOReader(const ByteString* Buf)
-  : m_p(0), m_capacity(0), m_size(0)
+    : m_p(0), m_capacity(0), m_size(0)
 {
   m_p = Buf->RoData();
   m_capacity = Buf->Length();
@@ -1134,23 +1134,23 @@ Kumu::ByteString::Capacity(ui32_t cap_size)
 
   byte_t* tmp_data = 0;
   if ( m_Data != 0 )
-    {
-      if ( m_Length > 0 )
-	tmp_data = m_Data;
-      else
-	free(m_Data);
-    }
-		
+  {
+    if ( m_Length > 0 )
+      tmp_data = m_Data;
+    else
+      free(m_Data);
+  }
+
   if ( ( m_Data = (byte_t*)malloc(cap_size) ) == 0 )
     return RESULT_ALLOC;
 
   if ( tmp_data != 0 )
-    {
-      assert(m_Length > 0);
-      memcpy(m_Data, tmp_data, m_Length);
-      free(tmp_data);
-    }
-		
+  {
+    assert(m_Length > 0);
+    memcpy(m_Data, tmp_data, m_Length);
+    free(tmp_data);
+  }
+
   m_Capacity = cap_size;
   return RESULT_OK;
 }
@@ -1166,10 +1166,10 @@ Kumu::ByteString::Append(const ByteString& Buf)
     result = Capacity(m_Capacity + Buf.Length());
 
   if ( KM_SUCCESS(result) )
-    {
-      memcpy(m_Data + m_Length, Buf.RoData(), Buf.Length());
-      m_Length += Buf.Length();
-    }
+  {
+    memcpy(m_Data + m_Length, Buf.RoData(), Buf.Length());
+    m_Length += Buf.Length();
+  }
 
   return result;
 }
@@ -1185,10 +1185,10 @@ Kumu::ByteString::Append(const byte_t* buf, ui32_t buf_len)
     result = Capacity(m_Capacity + buf_len);
 
   if ( KM_SUCCESS(result) )
-    {
-      memcpy(m_Data + m_Length, buf, buf_len);
-      m_Length += buf_len;
-    }
+  {
+    memcpy(m_Data + m_Length, buf, buf_len);
+    m_Length += buf_len;
+  }
 
   return result;
 }
@@ -1203,23 +1203,23 @@ Kumu::km_strnstr(const char *s, const char *find, size_t slen)
   size_t len;
 
   if ( ( c = *find++ ) != '\0' )
+  {
+    len = strlen(find);
+    do
     {
-      len = strlen(find);
       do
-	{
-	  do
-	    {
-	      if ( slen-- < 1 || ( sc = *s++ ) == '\0' )
-		return 0;
-	    }
-	  while ( sc != c );
+      {
+        if ( slen-- < 1 || ( sc = *s++ ) == '\0' )
+          return 0;
+      }
+      while ( sc != c );
 
-	  if ( len > slen )
-	    return 0;
-	}
-      while ( strncmp(s, find, len) != 0 );
-      --s;
+      if ( len > slen )
+        return 0;
     }
+    while ( strncmp(s, find, len) != 0 );
+    --s;
+  }
 
   return s;
 }
@@ -1233,15 +1233,15 @@ Kumu::km_token_split(const std::string& str, const std::string& separator)
   const char* r = strstr(pstr, separator.c_str());
 
   while ( r != 0 )
-    {
-      assert(r >= pstr);
-      std::string tmp_str;
-      tmp_str.assign(pstr, r - pstr);
-      components.push_back(tmp_str);
-      pstr = r + separator.size();
-      r = strstr(pstr, separator.c_str());
-    }
-      
+  {
+    assert(r >= pstr);
+    std::string tmp_str;
+    tmp_str.assign(pstr, r - pstr);
+    components.push_back(tmp_str);
+    pstr = r + separator.size();
+    r = strstr(pstr, separator.c_str());
+  }
+
   components.push_back(std::string(pstr));
   return components;
 }

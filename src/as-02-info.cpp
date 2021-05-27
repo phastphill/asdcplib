@@ -75,7 +75,7 @@ Copyright (c) 2003-2015 John Hurst\n\n\
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME);
+          PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME);
 }
 
 //
@@ -100,7 +100,7 @@ Options:\n\
 \n\
   NOTES: o There is no option grouping, all options must be distinct arguments.\n\
          o All option arguments must be separated from the option by whitespace.\n\n",
-	  PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, PROGRAM_NAME);
 
 }
 
@@ -126,70 +126,70 @@ public:
 
   //
   CommandOptions(int argc, const char** argv) :
-    error_flag(true), version_flag(false), help_flag(false), verbose_flag(false),
-    showindex_flag(false), showheader_flag(false),
-    showid_flag(false), showdescriptor_flag(false), showcoding_flag(false),
-    showrate_flag(false), max_bitrate_flag(false), max_bitrate(0.0)
+      error_flag(true), version_flag(false), help_flag(false), verbose_flag(false),
+      showindex_flag(false), showheader_flag(false),
+      showid_flag(false), showdescriptor_flag(false), showcoding_flag(false),
+      showrate_flag(false), max_bitrate_flag(false), max_bitrate(0.0)
   {
     for ( int i = 1; i < argc; ++i )
+    {
+
+      if ( (strcmp( argv[i], "-help") == 0) )
       {
-
-	if ( (strcmp( argv[i], "-help") == 0) )
-	  {
-	    help_flag = true;
-	    continue;
-	  }
-
-	if ( argv[i][0] == '-'
-	     && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) )
-	     && argv[i][2] == 0 )
-	  {
-	    switch ( argv[i][1] )
-	      {
-	      case 'c': showcoding_flag = true; break;
-	      case 'd': showdescriptor_flag = true; break;
-	      case 'H': showheader_flag = true; break;
-	      case 'h': help_flag = true; break;
-	      case 'i': showid_flag = true; break;
-	      case 'n': showindex_flag = true; break;
-	      case 'r': showrate_flag = true; break;
-
-	      case 't':
-		TEST_EXTRA_ARG(i, 't');
-		max_bitrate = Kumu::xabs(strtol(argv[i], 0, 10));
-		max_bitrate_flag = true;
-		break;
-
-	      case 'V': version_flag = true; break;
-	      case 'v': verbose_flag = true; break;
-
-	      default:
-		fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-		return;
-	      }
-	  }
-	else
-	  {
-	    if ( argv[i][0] != '-' )
-	      {
-		filenames.push_back(argv[i]);
-	      }
-	    else
-	      {
-		fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
-		return;
-	      }
-	  }
+        help_flag = true;
+        continue;
       }
+
+      if ( argv[i][0] == '-'
+           && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) )
+           && argv[i][2] == 0 )
+      {
+        switch ( argv[i][1] )
+        {
+          case 'c': showcoding_flag = true; break;
+          case 'd': showdescriptor_flag = true; break;
+          case 'H': showheader_flag = true; break;
+          case 'h': help_flag = true; break;
+          case 'i': showid_flag = true; break;
+          case 'n': showindex_flag = true; break;
+          case 'r': showrate_flag = true; break;
+
+          case 't':
+            TEST_EXTRA_ARG(i, 't');
+            max_bitrate = Kumu::xabs(strtol(argv[i], 0, 10));
+            max_bitrate_flag = true;
+            break;
+
+          case 'V': version_flag = true; break;
+          case 'v': verbose_flag = true; break;
+
+          default:
+            fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+            return;
+        }
+      }
+      else
+      {
+        if ( argv[i][0] != '-' )
+        {
+          filenames.push_back(argv[i]);
+        }
+        else
+        {
+          fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
+          return;
+        }
+      }
+    }
 
     if ( help_flag || version_flag )
       return;
 
     if ( filenames.empty() )
-      {
-	fputs("At least one filename argument is required.\n", stderr);
-	return;
-      }
+    {
+      fputs("At least one filename argument is required.\n", stderr);
+      return;
+    }
 
     error_flag = false;
   }
@@ -221,140 +221,140 @@ class MyPictureDescriptor : public JP2K::PictureDescriptor
   CDCIEssenceDescriptor *m_CDCIDescriptor;
   JPEG2000PictureSubDescriptor *m_JP2KSubDescriptor;
 
- public:
+public:
   MyPictureDescriptor() :
-    m_RGBADescriptor(0),
-    m_CDCIDescriptor(0),
-    m_JP2KSubDescriptor(0) {}
+      m_RGBADescriptor(0),
+      m_CDCIDescriptor(0),
+      m_JP2KSubDescriptor(0) {}
 
   void FillDescriptor(AS_02::JP2K::MXFReader& Reader)
   {
     m_CDCIDescriptor = get_descriptor_by_type<AS_02::JP2K::MXFReader, CDCIEssenceDescriptor>
-      (Reader, DefaultCompositeDict().ul(MDD_CDCIEssenceDescriptor));
+        (Reader, DefaultCompositeDict().ul(MDD_CDCIEssenceDescriptor));
 
     m_RGBADescriptor = get_descriptor_by_type<AS_02::JP2K::MXFReader, RGBAEssenceDescriptor>
-      (Reader, DefaultCompositeDict().ul(MDD_RGBAEssenceDescriptor));
+        (Reader, DefaultCompositeDict().ul(MDD_RGBAEssenceDescriptor));
 
     if ( m_RGBADescriptor != 0 )
-      {
-    	SampleRate = m_RGBADescriptor->SampleRate;
-    	ContainerDuration = m_RGBADescriptor->ContainerDuration;
-      }
+    {
+      SampleRate = m_RGBADescriptor->SampleRate;
+      ContainerDuration = m_RGBADescriptor->ContainerDuration;
+    }
     else if ( m_CDCIDescriptor != 0 )
-      {
-    	SampleRate = m_CDCIDescriptor->SampleRate;
-    	ContainerDuration = m_CDCIDescriptor->ContainerDuration;
-      }
+    {
+      SampleRate = m_CDCIDescriptor->SampleRate;
+      ContainerDuration = m_CDCIDescriptor->ContainerDuration;
+    }
     else
-      {
-	DefaultLogSink().Error("Picture descriptor not found.\n");
-      }
+    {
+      DefaultLogSink().Error("Picture descriptor not found.\n");
+    }
 
     m_JP2KSubDescriptor = get_descriptor_by_type<AS_02::JP2K::MXFReader, JPEG2000PictureSubDescriptor>
-      (Reader, DefaultCompositeDict().ul(MDD_JPEG2000PictureSubDescriptor));
+        (Reader, DefaultCompositeDict().ul(MDD_JPEG2000PictureSubDescriptor));
 
     if ( m_JP2KSubDescriptor == 0 )
-      {
-	DefaultLogSink().Error("JPEG2000PictureSubDescriptor not found.\n");
-      }
+    {
+      DefaultLogSink().Error("JPEG2000PictureSubDescriptor not found.\n");
+    }
 
     std::list<InterchangeObject*> ObjectList;
     Reader.OP1aHeader().GetMDObjectsByType(DefaultCompositeDict().ul(MDD_Track), ObjectList);
-    
+
     if ( ObjectList.empty() )
-      {
-	DefaultLogSink().Error("MXF Metadata contains no Track Sets.\n");
-      }
+    {
+      DefaultLogSink().Error("MXF Metadata contains no Track Sets.\n");
+    }
 
     EditRate = ((Track*)ObjectList.front())->EditRate;
   }
 
   void MyDump(FILE* stream) {
     if ( stream == 0 )
-      {
-	stream = stderr;
-      }
+    {
+      stream = stderr;
+    }
 
     if ( m_CDCIDescriptor != 0 )
-      {
-	m_CDCIDescriptor->Dump(stream);
-      }
+    {
+      m_CDCIDescriptor->Dump(stream);
+    }
     else if ( m_RGBADescriptor != 0 )
-      {
-	m_RGBADescriptor->Dump(stream);
-      }
+    {
+      m_RGBADescriptor->Dump(stream);
+    }
     else
-      {
-	return;
-      }
+    {
+      return;
+    }
 
     if ( m_JP2KSubDescriptor != 0 )
+    {
+      m_JP2KSubDescriptor->Dump(stream);
+
+      fprintf(stream, "    ImageComponents: (max=%d)\n", JP2K::MaxComponents);
+
+      //
+      ui32_t component_sizing = m_JP2KSubDescriptor->PictureComponentSizing.const_get().Length();
+      JP2K::ImageComponent_t image_components[JP2K::MaxComponents];
+
+      if ( component_sizing == 17 ) // ( 2 * sizeof(ui32_t) ) + 3 components * 3 byte each
       {
-	m_JP2KSubDescriptor->Dump(stream);
-
-	fprintf(stream, "    ImageComponents: (max=%d)\n", JP2K::MaxComponents);
-
-	//
-	ui32_t component_sizing = m_JP2KSubDescriptor->PictureComponentSizing.const_get().Length();
-	JP2K::ImageComponent_t image_components[JP2K::MaxComponents];
-
-	if ( component_sizing == 17 ) // ( 2 * sizeof(ui32_t) ) + 3 components * 3 byte each
-	  {
-	    memcpy(&image_components,
-		   m_JP2KSubDescriptor->PictureComponentSizing.const_get().RoData() + 8,
-		   component_sizing - 8);
-	  }
-	else
-	  {
-	    DefaultLogSink().Warn("Unexpected PictureComponentSizing size: %u, should be 17.\n", component_sizing);
-	  }
-
-	fprintf(stream, "  bits  h-sep v-sep\n");
-
-	for ( int i = 0; i < m_JP2KSubDescriptor->Csize && i < JP2K::MaxComponents; i++ )
-	  {
-	    fprintf(stream, "  %4d  %5d %5d\n",
-		    image_components[i].Ssize + 1, // See ISO 15444-1, Table A11, for the origin of '+1'
-		    image_components[i].XRsize,
-		    image_components[i].YRsize
-		    );
-	  }
-
-	//
-	JP2K::CodingStyleDefault_t coding_style_default;
-
-	memcpy(&coding_style_default,
-	       m_JP2KSubDescriptor->CodingStyleDefault.const_get().RoData(),
-	       m_JP2KSubDescriptor->CodingStyleDefault.const_get().Length());
-
-	fprintf(stream, "               Scod: %hhu\n", coding_style_default.Scod);
-	fprintf(stream, "   ProgressionOrder: %hhu\n", coding_style_default.SGcod.ProgressionOrder);
-	fprintf(stream, "     NumberOfLayers: %hd\n",
-		KM_i16_BE(Kumu::cp2i<ui16_t>(coding_style_default.SGcod.NumberOfLayers)));
-    
-	fprintf(stream, " MultiCompTransform: %hhu\n", coding_style_default.SGcod.MultiCompTransform);
-	fprintf(stream, "DecompositionLevels: %hhu\n", coding_style_default.SPcod.DecompositionLevels);
-	fprintf(stream, "     CodeblockWidth: %hhu\n", coding_style_default.SPcod.CodeblockWidth);
-	fprintf(stream, "    CodeblockHeight: %hhu\n", coding_style_default.SPcod.CodeblockHeight);
-	fprintf(stream, "     CodeblockStyle: %hhu\n", coding_style_default.SPcod.CodeblockStyle);
-	fprintf(stream, "     Transformation: %hhu\n", coding_style_default.SPcod.Transformation);
-    
-	ui32_t precinct_set_size = 0;
-
-	for ( int i = 0; coding_style_default.SPcod.PrecinctSize[i] != 0 && i < JP2K::MaxPrecincts; ++i )
-	  {
-	    ++precinct_set_size;
-	  }
-
-	fprintf(stream, "          Precincts: %u\n", precinct_set_size);
-	fprintf(stream, "precinct dimensions:\n");
-
-	for ( unsigned int i = 0; i < precinct_set_size && i < JP2K::MaxPrecincts; i++ )
-	  fprintf(stream, "    %d: %d x %d\n", i + 1,
-		  s_exp_lookup[coding_style_default.SPcod.PrecinctSize[i]&0x0f],
-		  s_exp_lookup[(coding_style_default.SPcod.PrecinctSize[i]>>4)&0x0f]
-		  );
+        memcpy(&image_components,
+               m_JP2KSubDescriptor->PictureComponentSizing.const_get().RoData() + 8,
+               component_sizing - 8);
       }
+      else
+      {
+        DefaultLogSink().Warn("Unexpected PictureComponentSizing size: %u, should be 17.\n", component_sizing);
+      }
+
+      fprintf(stream, "  bits  h-sep v-sep\n");
+
+      for ( int i = 0; i < m_JP2KSubDescriptor->Csize && i < JP2K::MaxComponents; i++ )
+      {
+        fprintf(stream, "  %4d  %5d %5d\n",
+                image_components[i].Ssize + 1, // See ISO 15444-1, Table A11, for the origin of '+1'
+                image_components[i].XRsize,
+                image_components[i].YRsize
+        );
+      }
+
+      //
+      JP2K::CodingStyleDefault_t coding_style_default;
+
+      memcpy(&coding_style_default,
+             m_JP2KSubDescriptor->CodingStyleDefault.const_get().RoData(),
+             m_JP2KSubDescriptor->CodingStyleDefault.const_get().Length());
+
+      fprintf(stream, "               Scod: %hhu\n", coding_style_default.Scod);
+      fprintf(stream, "   ProgressionOrder: %hhu\n", coding_style_default.SGcod.ProgressionOrder);
+      fprintf(stream, "     NumberOfLayers: %hd\n",
+              KM_i16_BE(Kumu::cp2i<ui16_t>(coding_style_default.SGcod.NumberOfLayers)));
+
+      fprintf(stream, " MultiCompTransform: %hhu\n", coding_style_default.SGcod.MultiCompTransform);
+      fprintf(stream, "DecompositionLevels: %hhu\n", coding_style_default.SPcod.DecompositionLevels);
+      fprintf(stream, "     CodeblockWidth: %hhu\n", coding_style_default.SPcod.CodeblockWidth);
+      fprintf(stream, "    CodeblockHeight: %hhu\n", coding_style_default.SPcod.CodeblockHeight);
+      fprintf(stream, "     CodeblockStyle: %hhu\n", coding_style_default.SPcod.CodeblockStyle);
+      fprintf(stream, "     Transformation: %hhu\n", coding_style_default.SPcod.Transformation);
+
+      ui32_t precinct_set_size = 0;
+
+      for ( int i = 0; coding_style_default.SPcod.PrecinctSize[i] != 0 && i < JP2K::MaxPrecincts; ++i )
+      {
+        ++precinct_set_size;
+      }
+
+      fprintf(stream, "          Precincts: %u\n", precinct_set_size);
+      fprintf(stream, "precinct dimensions:\n");
+
+      for ( unsigned int i = 0; i < precinct_set_size && i < JP2K::MaxPrecincts; i++ )
+        fprintf(stream, "    %d: %d x %d\n", i + 1,
+                s_exp_lookup[coding_style_default.SPcod.PrecinctSize[i]&0x0f],
+                s_exp_lookup[(coding_style_default.SPcod.PrecinctSize[i]>>4)&0x0f]
+        );
+    }
   }
 };
 
@@ -364,43 +364,43 @@ class MyACESPictureDescriptor : public AS_02::ACES::PictureDescriptor
   std::list<ACESPictureSubDescriptor*> m_ACESPictureSubDescriptorList;
   std::list<TargetFrameSubDescriptor*> m_TargetFrameSubDescriptorList;
 
- public:
+public:
   MyACESPictureDescriptor() :
-    m_RGBADescriptor(0) {}
+      m_RGBADescriptor(0) {}
 
   void FillDescriptor(AS_02::ACES::MXFReader& Reader)
   {
     m_RGBADescriptor = get_descriptor_by_type<AS_02::ACES::MXFReader, RGBAEssenceDescriptor>
-      (Reader, DefaultCompositeDict().ul(MDD_RGBAEssenceDescriptor));
+        (Reader, DefaultCompositeDict().ul(MDD_RGBAEssenceDescriptor));
 
     if ( m_RGBADescriptor != 0 )
-      {
-    	SampleRate = m_RGBADescriptor->SampleRate;
-    	ContainerDuration = m_RGBADescriptor->ContainerDuration;
-      }
+    {
+      SampleRate = m_RGBADescriptor->SampleRate;
+      ContainerDuration = m_RGBADescriptor->ContainerDuration;
+    }
     else
-      {
-	DefaultLogSink().Error("Picture descriptor not found.\n");
-      }
+    {
+      DefaultLogSink().Error("Picture descriptor not found.\n");
+    }
 
     std::list<InterchangeObject*> object_list;
     Reader.OP1aHeader().GetMDObjectsByType(DefaultCompositeDict().ul(MDD_ACESPictureSubDescriptor), object_list);
 
     std::list<InterchangeObject*>::iterator i = object_list.begin();
     for ( ; i != object_list.end(); ++i )
-      {
-    	ACESPictureSubDescriptor *p = dynamic_cast<ACESPictureSubDescriptor*>(*i);
+    {
+      ACESPictureSubDescriptor *p = dynamic_cast<ACESPictureSubDescriptor*>(*i);
 
-	if ( p )
-	  {
-		m_ACESPictureSubDescriptorList.push_back(p);
-	  }
-	else
-	  {
-	    char buf[64];
-	    DefaultLogSink().Error("ACESPictureSubDescriptor type error.\n", (**i).InstanceUID.EncodeHex(buf, 64));
-	  }
+      if ( p )
+      {
+        m_ACESPictureSubDescriptorList.push_back(p);
       }
+      else
+      {
+        char buf[64];
+        DefaultLogSink().Error("ACESPictureSubDescriptor type error.\n", (**i).InstanceUID.EncodeHex(buf, 64));
+      }
+    }
 
     object_list.clear();
 
@@ -408,55 +408,55 @@ class MyACESPictureDescriptor : public AS_02::ACES::PictureDescriptor
 
     i = object_list.begin();
     for ( ; i != object_list.end(); ++i )
-      {
-    	TargetFrameSubDescriptor *p = dynamic_cast<TargetFrameSubDescriptor*>(*i);
+    {
+      TargetFrameSubDescriptor *p = dynamic_cast<TargetFrameSubDescriptor*>(*i);
 
-	if ( p )
-	  {
-		m_TargetFrameSubDescriptorList.push_back(p);
-	  }
-	else
-	  {
-	    char buf[64];
-	    DefaultLogSink().Error("TargetFrameSubDescriptor type error.\n", (**i).InstanceUID.EncodeHex(buf, 64));
-	  }
+      if ( p )
+      {
+        m_TargetFrameSubDescriptorList.push_back(p);
       }
+      else
+      {
+        char buf[64];
+        DefaultLogSink().Error("TargetFrameSubDescriptor type error.\n", (**i).InstanceUID.EncodeHex(buf, 64));
+      }
+    }
 
     object_list.clear();
 
     Reader.OP1aHeader().GetMDObjectsByType(DefaultCompositeDict().ul(MDD_Track), object_list);
 
     if ( object_list.empty() )
-      {
-	DefaultLogSink().Error("MXF Metadata contains no Track Sets.\n");
-      }
+    {
+      DefaultLogSink().Error("MXF Metadata contains no Track Sets.\n");
+    }
 
     EditRate = ((Track*)object_list.front())->EditRate;
   }
 
   void MyDump(FILE* stream) {
     if ( stream == 0 )
-      {
-	stream = stderr;
-      }
+    {
+      stream = stderr;
+    }
 
     if ( m_RGBADescriptor != 0 )
-      {
-	m_RGBADescriptor->Dump(stream);
-      }
+    {
+      m_RGBADescriptor->Dump(stream);
+    }
     else
-      {
-	return;
-      }
+    {
+      return;
+    }
 
-	for ( std::list<ACESPictureSubDescriptor*>::iterator i = m_ACESPictureSubDescriptorList.begin(); i != m_ACESPictureSubDescriptorList.end(); ++i )
-	{
-	  (*i)->Dump(stream);
-	}
-	for ( std::list<TargetFrameSubDescriptor*>::iterator i = m_TargetFrameSubDescriptorList.begin(); i != m_TargetFrameSubDescriptorList.end(); ++i )
-	{
-	  (*i)->Dump(stream);
-	}
+    for ( std::list<ACESPictureSubDescriptor*>::iterator i = m_ACESPictureSubDescriptorList.begin(); i != m_ACESPictureSubDescriptorList.end(); ++i )
+    {
+      (*i)->Dump(stream);
+    }
+    for ( std::list<TargetFrameSubDescriptor*>::iterator i = m_TargetFrameSubDescriptorList.begin(); i != m_TargetFrameSubDescriptorList.end(); ++i )
+    {
+      (*i)->Dump(stream);
+    }
   }
 };
 
@@ -465,22 +465,22 @@ class MyAudioDescriptor : public PCM::AudioDescriptor
   WaveAudioDescriptor *m_WaveAudioDescriptor;
   std::list<MCALabelSubDescriptor*> m_ChannelDescriptorList;
 
- public:
+public:
   MyAudioDescriptor() : m_WaveAudioDescriptor(0) {}
   void FillDescriptor(AS_02::PCM::MXFReader& Reader)
   {
     m_WaveAudioDescriptor = get_descriptor_by_type<AS_02::PCM::MXFReader, WaveAudioDescriptor>
-      (Reader, DefaultCompositeDict().ul(MDD_WaveAudioDescriptor));
+        (Reader, DefaultCompositeDict().ul(MDD_WaveAudioDescriptor));
 
     if ( m_WaveAudioDescriptor != 0 )
-      {
-	AudioSamplingRate = m_WaveAudioDescriptor->SampleRate;
-	ContainerDuration = m_WaveAudioDescriptor->ContainerDuration;
-      }
+    {
+      AudioSamplingRate = m_WaveAudioDescriptor->SampleRate;
+      ContainerDuration = m_WaveAudioDescriptor->ContainerDuration;
+    }
     else
-      {
-	DefaultLogSink().Error("Audio descriptor not found.\n");
-      }
+    {
+      DefaultLogSink().Error("Audio descriptor not found.\n");
+    }
 
     std::list<InterchangeObject*> object_list;
     Reader.OP1aHeader().GetMDObjectsByType(DefaultCompositeDict().ul(MDD_AudioChannelLabelSubDescriptor), object_list);
@@ -489,58 +489,58 @@ class MyAudioDescriptor : public PCM::AudioDescriptor
 
     std::list<InterchangeObject*>::iterator i = object_list.begin();
     for ( ; i != object_list.end(); ++i )
-      {
-	MCALabelSubDescriptor *p = dynamic_cast<MCALabelSubDescriptor*>(*i);
+    {
+      MCALabelSubDescriptor *p = dynamic_cast<MCALabelSubDescriptor*>(*i);
 
-	if ( p )
-	  {
-	    m_ChannelDescriptorList.push_back(p);
-	  }
-	else
-	  {
-	    char buf[64];
-	    DefaultLogSink().Error("Audio sub-descriptor type error.\n", (**i).InstanceUID.EncodeHex(buf, 64));
-	  }
+      if ( p )
+      {
+        m_ChannelDescriptorList.push_back(p);
       }
+      else
+      {
+        char buf[64];
+        DefaultLogSink().Error("Audio sub-descriptor type error.\n", (**i).InstanceUID.EncodeHex(buf, 64));
+      }
+    }
 
     object_list.clear();
     Reader.OP1aHeader().GetMDObjectsByType(DefaultCompositeDict().ul(MDD_Track), object_list);
-    
+
     if ( object_list.empty() )
-      {
-	DefaultLogSink().Error("MXF Metadata contains no Track Sets.\n");
-      }
+    {
+      DefaultLogSink().Error("MXF Metadata contains no Track Sets.\n");
+    }
 
     EditRate = ((Track*)object_list.front())->EditRate;
   }
 
   void MyDump(FILE* stream) {
     if ( stream == 0 )
-      {
-	stream = stderr;
-      }
+    {
+      stream = stderr;
+    }
 
     if ( m_WaveAudioDescriptor != 0 )
-      {
-	m_WaveAudioDescriptor->Dump(stream);
-      }
+    {
+      m_WaveAudioDescriptor->Dump(stream);
+    }
 
     if ( ! m_ChannelDescriptorList.empty() )
-      {
-	fprintf(stream, "Audio Channel Subdescriptors:\n");
+    {
+      fprintf(stream, "Audio Channel Subdescriptors:\n");
 
-	std::list<MCALabelSubDescriptor*>::const_iterator i = m_ChannelDescriptorList.begin();
-	for ( ; i != m_ChannelDescriptorList.end(); ++i )
-	  {
-	    (**i).Dump(stream);
-	  }
+      std::list<MCALabelSubDescriptor*>::const_iterator i = m_ChannelDescriptorList.begin();
+      for ( ; i != m_ChannelDescriptorList.end(); ++i )
+      {
+        (**i).Dump(stream);
       }
+    }
   }
 };
 
 class MyTextDescriptor : public TimedText::TimedTextDescriptor
 {
- public:
+public:
   void FillDescriptor(TimedText::MXFReader& Reader) {
     Reader.FillTimedTextDescriptor(*this);
   }
@@ -616,12 +616,12 @@ class FileInfoWrapper
   template <class T>
   Result_t OpenRead(const T& m, const CommandOptions& Options)
   {
-  	return m.OpenRead(Options.filenames.front().c_str());
+    return m.OpenRead(Options.filenames.front().c_str());
   };
   Result_t OpenRead(const AS_02::PCM::MXFReader& m, const CommandOptions& Options)
   {
-  	return m.OpenRead(Options.filenames.front().c_str(), EditRate_24);
-  	//Result_t OpenRead(const std::string& filename, const ASDCP::Rational& EditRate);
+    return m.OpenRead(Options.filenames.front().c_str(), EditRate_24);
+    //Result_t OpenRead(const std::string& filename, const ASDCP::Rational& EditRate);
   };
 
 public:
@@ -633,48 +633,48 @@ public:
   {
     assert(type_string);
     if ( stream == 0 )
-      {
-	stream = stdout;
-      }
+    {
+      stream = stdout;
+    }
 
     Result_t result = RESULT_OK;
     result = OpenRead(m_Reader, Options);
 
     if ( ASDCP_SUCCESS(result) )
+    {
+      m_Desc.FillDescriptor(m_Reader);
+      m_Reader.FillWriterInfo(m_WriterInfo);
+
+      fprintf(stdout, "%s file essence type is %s, (%d edit unit%s).\n",
+              ( m_WriterInfo.LabelSetType == LS_MXF_SMPTE ? "SMPTE 2067-5" : "Unknown" ),
+              type_string,
+              (m_Desc.ContainerDuration != 0 ? m_Desc.ContainerDuration : m_Reader.AS02IndexReader().GetDuration()),
+              (m_Desc.ContainerDuration == (ui64_t)1 ? "":"s"));
+
+      if ( Options.showheader_flag )
       {
-	m_Desc.FillDescriptor(m_Reader);
-	m_Reader.FillWriterInfo(m_WriterInfo);
-
-	fprintf(stdout, "%s file essence type is %s, (%d edit unit%s).\n",
-		( m_WriterInfo.LabelSetType == LS_MXF_SMPTE ? "SMPTE 2067-5" : "Unknown" ),
-		type_string,
-		(m_Desc.ContainerDuration != 0 ? m_Desc.ContainerDuration : m_Reader.AS02IndexReader().GetDuration()),
-		(m_Desc.ContainerDuration == (ui64_t)1 ? "":"s"));
-
-	if ( Options.showheader_flag )
-	  {
-	    m_Reader.DumpHeaderMetadata(stream);
-	  }
-
-	if ( Options.showid_flag )
-	  {
-	    WriterInfoDump(m_WriterInfo, stream);
-	  }
-
-	if ( Options.showdescriptor_flag )
-	  {
-	    m_Desc.MyDump(stream);
-	  }
-
-	if ( Options.showindex_flag )
-	  {
-	    m_Reader.DumpIndex(stream);
-	  }
+        m_Reader.DumpHeaderMetadata(stream);
       }
+
+      if ( Options.showid_flag )
+      {
+        WriterInfoDump(m_WriterInfo, stream);
+      }
+
+      if ( Options.showdescriptor_flag )
+      {
+        m_Desc.MyDump(stream);
+      }
+
+      if ( Options.showindex_flag )
+      {
+        m_Reader.DumpIndex(stream);
+      }
+    }
     else if ( result == RESULT_FORMAT && Options.showheader_flag )
-      {
-	m_Reader.DumpHeaderMetadata(stream);
-      }
+    {
+      m_Reader.DumpHeaderMetadata(stream);
+    }
 
     return result;
   }
@@ -687,15 +687,15 @@ public:
     MXF::CDCIEssenceDescriptor *cdci_descriptor = 0;
 
     Result_t result = m_Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_RGBAEssenceDescriptor),
-							      reinterpret_cast<MXF::InterchangeObject**>(&rgba_descriptor));
+                                                              reinterpret_cast<MXF::InterchangeObject**>(&rgba_descriptor));
 
     if ( KM_SUCCESS(result) && rgba_descriptor)
       m_PictureEssenceCoding = rgba_descriptor->PictureEssenceCoding;
     else{
-    	result = m_Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_CDCIEssenceDescriptor),
-    								      reinterpret_cast<MXF::InterchangeObject**>(&cdci_descriptor));
-        if ( KM_SUCCESS(result) && cdci_descriptor)
-          m_PictureEssenceCoding = cdci_descriptor->PictureEssenceCoding;
+      result = m_Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_CDCIEssenceDescriptor),
+                                                       reinterpret_cast<MXF::InterchangeObject**>(&cdci_descriptor));
+      if ( KM_SUCCESS(result) && cdci_descriptor)
+        m_PictureEssenceCoding = cdci_descriptor->PictureEssenceCoding;
     }
   }
 
@@ -706,23 +706,23 @@ public:
     char buf[64];
 
     if ( m_PictureEssenceCoding.HasValue() )
+    {
+      std::string encoding_ul_type = "**UNKNOWN**";
+
+      rate_info_map::const_iterator rate_i = g_rate_info.find(m_PictureEssenceCoding);
+      if ( rate_i == g_rate_info.end() )
       {
-	std::string encoding_ul_type = "**UNKNOWN**";
-
-	rate_info_map::const_iterator rate_i = g_rate_info.find(m_PictureEssenceCoding);
-	if ( rate_i == g_rate_info.end() )
-	  {
-	    fprintf(stderr, "Unknown PictureEssenceCoding UL: %s\n", m_PictureEssenceCoding.EncodeString(buf, 64));
-	  }
-	else
-	  {
-	    encoding_ul_type = rate_i->second.label;
-	  }
-
-	fprintf(stream, "PictureEssenceCoding: %s (%s)\n",
-		m_PictureEssenceCoding.EncodeString(buf, 64),
-		encoding_ul_type.c_str());
+        fprintf(stderr, "Unknown PictureEssenceCoding UL: %s\n", m_PictureEssenceCoding.EncodeString(buf, 64));
       }
+      else
+      {
+        encoding_ul_type = rate_i->second.label;
+      }
+
+      fprintf(stream, "PictureEssenceCoding: %s (%s)\n",
+              m_PictureEssenceCoding.EncodeString(buf, 64),
+              encoding_ul_type.c_str());
+    }
   }
 
   //
@@ -735,21 +735,21 @@ public:
 
     rate_info_map::const_iterator rate_i = g_rate_info.find(m_PictureEssenceCoding);
     if ( rate_i == g_rate_info.end() )
-      {
-	fprintf(stderr, "Unknown PictureEssenceCoding UL: %s\n", m_PictureEssenceCoding.EncodeString(buf, 64));
-      }
+    {
+      fprintf(stderr, "Unknown PictureEssenceCoding UL: %s\n", m_PictureEssenceCoding.EncodeString(buf, 64));
+    }
     else
-      {
-	max_bitrate = rate_i->second.bitrate;
-      }
+    {
+      max_bitrate = rate_i->second.bitrate;
+    }
 
     max_bitrate = Options.max_bitrate_flag ? Options.max_bitrate : max_bitrate;
 
     if ( m_MaxBitrate > max_bitrate )
-      {
-	fprintf(stream, "Bitrate %0.0f Mb/s exceeds maximum %0.0f Mb/s\n", m_MaxBitrate, max_bitrate);
-	++errors;
-      }
+    {
+      fprintf(stream, "Bitrate %0.0f Mb/s exceeds maximum %0.0f Mb/s\n", m_MaxBitrate, max_bitrate);
+      ++errors;
+    }
 
     return errors ? RESULT_FAIL : RESULT_OK;
   }
@@ -766,49 +766,49 @@ public:
     ui64_t duration = 0;
 
     if ( m_Desc.EditRate.Numerator == 0 || m_Desc.EditRate.Denominator == 0 )
-      {
-	fprintf(stderr, "Broken edit rate, unable to calculate essence bitrate.\n");
-	return;
-      }
+    {
+      fprintf(stderr, "Broken edit rate, unable to calculate essence bitrate.\n");
+      return;
+    }
 
     duration = m_Desc.ContainerDuration;
     if ( duration == 0 )
-      {
-    	fprintf(stderr, "ContainerDuration not set in file descriptor, attempting to use index duration.\n");
-    	duration = m_Reader.AS02IndexReader().GetDuration();
-      }
+    {
+      fprintf(stderr, "ContainerDuration not set in file descriptor, attempting to use index duration.\n");
+      duration = m_Reader.AS02IndexReader().GetDuration();
+    }
 
     for ( ui32_t i = 0; KM_SUCCESS(result) && i < duration; ++i )
+    {
+      MXF::IndexTableSegment::IndexEntry entry;
+      result = footer.Lookup(i, entry);
+
+      if ( KM_SUCCESS(result) )
       {
-	MXF::IndexTableSegment::IndexEntry entry;
-	result = footer.Lookup(i, entry);
+        if ( last_stream_offset != 0 )
+        {
+          ui64_t this_frame_size = entry.StreamOffset - last_stream_offset - 20; // do not count the bytes that represent the KLV wrapping
+          total_frame_bytes += this_frame_size;
 
-	if ( KM_SUCCESS(result) )
-	  {
-	    if ( last_stream_offset != 0 )
-	      {
-		ui64_t this_frame_size = entry.StreamOffset - last_stream_offset - 20; // do not count the bytes that represent the KLV wrapping
-		total_frame_bytes += this_frame_size;
+          if ( this_frame_size > largest_frame )
+            largest_frame = (ui32_t)this_frame_size;
+        }
 
-		if ( this_frame_size > largest_frame )
-		  largest_frame = (ui32_t)this_frame_size;
-	      }
-
-	    last_stream_offset = entry.StreamOffset;
-	  }
+        last_stream_offset = entry.StreamOffset;
       }
+    }
 
     if ( KM_SUCCESS(result) )
-      {
-	// scale bytes to megabits
-	static const double mega_const = 1.0 / ( 1000000 / 8.0 );
+    {
+      // scale bytes to megabits
+      static const double mega_const = 1.0 / ( 1000000 / 8.0 );
 
-	// we did not accumulate the last, so duration -= 1
-	double avg_bytes_frame = (double)(total_frame_bytes / ( duration - 1 ));
+      // we did not accumulate the last, so duration -= 1
+      double avg_bytes_frame = (double)(total_frame_bytes / ( duration - 1 ));
 
-	m_MaxBitrate = largest_frame * mega_const * m_Desc.EditRate.Quotient();
-	m_AvgBitrate = avg_bytes_frame * mega_const * m_Desc.EditRate.Quotient();
-      }
+      m_MaxBitrate = largest_frame * mega_const * m_Desc.EditRate.Quotient();
+      m_AvgBitrate = avg_bytes_frame * mega_const * m_Desc.EditRate.Quotient();
+    }
   }
 
   //
@@ -826,13 +826,13 @@ public:
     MXF::WaveAudioDescriptor *descriptor = 0;
 
     Result_t result = m_Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_WaveAudioDescriptor),
-							      reinterpret_cast<MXF::InterchangeObject**>(&descriptor));
+                                                              reinterpret_cast<MXF::InterchangeObject**>(&descriptor));
 
     if ( KM_SUCCESS(result) )
-      {
-    	char buf[64];
-    	fprintf(stream, "ChannelAssignment: %s\n", descriptor->ChannelAssignment.const_get().EncodeString(buf, 64));
-      }
+    {
+      char buf[64];
+      fprintf(stream, "ChannelAssignment: %s\n", descriptor->ChannelAssignment.const_get().EncodeString(buf, 64));
+    }
   }
 
 };
@@ -850,92 +850,92 @@ show_file_info(CommandOptions& Options)
     return result;
 
   if ( EssenceType == ESS_AS02_JPEG_2000 )
+  {
+    FileInfoWrapper<AS_02::JP2K::MXFReader, MyPictureDescriptor> wrapper;
+    result = wrapper.file_info(Options, "JPEG 2000 pictures");
+
+    if ( KM_SUCCESS(result) )
     {
-	  FileInfoWrapper<AS_02::JP2K::MXFReader, MyPictureDescriptor> wrapper;
-	  result = wrapper.file_info(Options, "JPEG 2000 pictures");
+      wrapper.get_PictureEssenceCoding();
+      wrapper.calc_Bitrate(stdout);
 
-	  if ( KM_SUCCESS(result) )
-	    {
-	      wrapper.get_PictureEssenceCoding();
-	      wrapper.calc_Bitrate(stdout);
+      if ( Options.showcoding_flag )
+      {
+        wrapper.dump_PictureEssenceCoding(stdout);
+      }
 
-	      if ( Options.showcoding_flag )
-		{
-		  wrapper.dump_PictureEssenceCoding(stdout);
-		}
+      if ( Options.showrate_flag )
+      {
+        wrapper.dump_Bitrate(stdout);
+      }
 
-	      if ( Options.showrate_flag )
-		{
-		  wrapper.dump_Bitrate(stdout);
-		}
-
-	      result = wrapper.test_rates(Options, stdout);
-	    }
+      result = wrapper.test_rates(Options, stdout);
     }
+  }
 
   else if ( EssenceType == ESS_AS02_ACES )
+  {
+    FileInfoWrapper<AS_02::ACES::MXFReader, MyACESPictureDescriptor> wrapper;
+    result = wrapper.file_info(Options, "ACES pictures");
+
+    if ( KM_SUCCESS(result) )
     {
-	  FileInfoWrapper<AS_02::ACES::MXFReader, MyACESPictureDescriptor> wrapper;
-	  result = wrapper.file_info(Options, "ACES pictures");
+      wrapper.get_PictureEssenceCoding();
+      wrapper.calc_Bitrate(stdout);
 
-	  if ( KM_SUCCESS(result) )
-	    {
-	      wrapper.get_PictureEssenceCoding();
-	      wrapper.calc_Bitrate(stdout);
+      if ( Options.showcoding_flag )
+      {
+        wrapper.dump_PictureEssenceCoding(stdout);
+      }
 
-	      if ( Options.showcoding_flag )
-		{
-		  wrapper.dump_PictureEssenceCoding(stdout);
-		}
+      if ( Options.showrate_flag )
+      {
+        wrapper.dump_Bitrate(stdout);
+      }
 
-	      if ( Options.showrate_flag )
-		{
-		  wrapper.dump_Bitrate(stdout);
-		}
-
-	      result = wrapper.test_rates(Options, stdout);
-	    }
+      result = wrapper.test_rates(Options, stdout);
     }
+  }
 
   else if ( EssenceType == ESS_AS02_PCM_24b_48k || EssenceType == ESS_AS02_PCM_24b_96k )
-    {
-      FileInfoWrapper<AS_02::PCM::MXFReader, MyAudioDescriptor> wrapper;
-      result = wrapper.file_info(Options, "PCM audio");
+  {
+    FileInfoWrapper<AS_02::PCM::MXFReader, MyAudioDescriptor> wrapper;
+    result = wrapper.file_info(Options, "PCM audio");
 
-      if ( ASDCP_SUCCESS(result) && Options.showcoding_flag )
-	wrapper.dump_WaveAudioDescriptor(stdout);
-    }
+    if ( ASDCP_SUCCESS(result) && Options.showcoding_flag )
+      wrapper.dump_WaveAudioDescriptor(stdout);
+  }
   else
+  {
+    fprintf(stderr, "Unknown/unsupported essence type: %s\n", Options.filenames.front().c_str());
+    Kumu::FileReader   Reader;
+    const Dictionary* Dict = &DefaultCompositeDict();
+    MXF::OP1aHeader TestHeader(Dict);
+
+    result = Reader.OpenRead(Options.filenames.front().c_str());
+
+    if ( ASDCP_SUCCESS(result) )
+      result = TestHeader.InitFromFile(Reader); // test UL and OP
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      fprintf(stderr, "Unknown/unsupported essence type: %s\n", Options.filenames.front().c_str());
-      Kumu::FileReader   Reader;
-      const Dictionary* Dict = &DefaultCompositeDict();
-      MXF::OP1aHeader TestHeader(Dict);
+      TestHeader.Partition::Dump(stdout);
 
-      result = Reader.OpenRead(Options.filenames.front().c_str());
-
-      if ( ASDCP_SUCCESS(result) )
-	result = TestHeader.InitFromFile(Reader); // test UL and OP
-
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  TestHeader.Partition::Dump(stdout);
-
-	  if ( MXF::Identification* ID = TestHeader.GetIdentification() )
-	    ID->Dump(stdout);
-	  else
-	    fputs("File contains no Identification object.\n", stdout);
-
-	  if ( MXF::SourcePackage* SP = TestHeader.GetSourcePackage() )
-	    SP->Dump(stdout);
-	  else
-	    fputs("File contains no SourcePackage object.\n", stdout);
-	}
+      if ( MXF::Identification* ID = TestHeader.GetIdentification() )
+        ID->Dump(stdout);
       else
-	{
-	  fputs("File is not MXF.\n", stdout);
-	}
+        fputs("File contains no Identification object.\n", stdout);
+
+      if ( MXF::SourcePackage* SP = TestHeader.GetSourcePackage() )
+        SP->Dump(stdout);
+      else
+        fputs("File contains no SourcePackage object.\n", stdout);
     }
+    else
+    {
+      fputs("File is not MXF.\n", stdout);
+    }
+  }
 
   return result;
 }
@@ -957,31 +957,31 @@ main(int argc, const char** argv)
     return 0;
 
   if ( Options.error_flag )
-    {
-      fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
-      return 3;
-    }
+  {
+    fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
+    return 3;
+  }
 
   init_rate_info();
 
   while ( ! Options.filenames.empty() && ASDCP_SUCCESS(result) )
-    {
-      result = show_file_info(Options);
-      Options.filenames.pop_front();
-    }
+  {
+    result = show_file_info(Options);
+    Options.filenames.pop_front();
+  }
 
   if ( ASDCP_FAILURE(result) )
+  {
+    fputs("Program stopped on error.\n", stderr);
+
+    if ( result != RESULT_FAIL )
     {
-      fputs("Program stopped on error.\n", stderr);
-
-      if ( result != RESULT_FAIL )
-	{
-	  fputs(result, stderr);
-	  fputc('\n', stderr);
-	}
-
-      return 1;
+      fputs(result, stderr);
+      fputc('\n', stderr);
     }
+
+    return 1;
+  }
 
   return 0;
 }

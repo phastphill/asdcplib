@@ -46,7 +46,7 @@ ASDCP::derive_timecode_rate_from_edit_rate(const ASDCP::Rational& edit_rate)
 // add DMS CryptographicFramework entry to source package
 void
 ASDCP::AddDmsCrypt(Partition& HeaderPart, SourcePackage& Package,
-		   WriterInfo& Descr, const UL& WrappingUL, const Dictionary*& Dict)
+                   WriterInfo& Descr, const UL& WrappingUL, const Dictionary*& Dict)
 {
   assert(Dict);
   // Essence Track
@@ -90,19 +90,19 @@ id_batch_contains(const Array<Kumu::UUID>& batch, const Kumu::UUID& value)
 {
   Array<Kumu::UUID>::const_iterator i;
   for ( i = batch.begin(); i != batch.end(); ++i )
+  {
+    if ( *i == value )
     {
-      if ( *i == value )
-	{
-	  return true;
-	}
+      return true;
     }
+  }
   return false;
 }
 
 //
 Result_t
 ASDCP::AddDmsTrackGenericPartUtf8Text(Kumu::FileWriter& file_writer, MXF::OP1aHeader& header_part,
-				      SourcePackage& source_package, MXF::RIP& rip, const Dictionary*& Dict)
+                                      SourcePackage& source_package, MXF::RIP& rip, const Dictionary*& Dict)
 {
   Sequence* Sequence_obj = 0;
   InterchangeObject* tmp_iobj = 0;
@@ -112,60 +112,60 @@ ASDCP::AddDmsTrackGenericPartUtf8Text(Kumu::FileWriter& file_writer, MXF::OP1aHe
   header_part.GetMDObjectByType(Dict->ul(MDD_SourcePackage), &tmp_iobj);
   SourcePackage *SourcePackage_obj = dynamic_cast<SourcePackage*>(tmp_iobj);
   if ( SourcePackage_obj == 0 )
-    {
-      DefaultLogSink().Error("MXF Metadata contains no SourcePackage Set.\n");
-      return RESULT_FORMAT;
-    }
+  {
+    DefaultLogSink().Error("MXF Metadata contains no SourcePackage Set.\n");
+    return RESULT_FORMAT;
+  }
 
   // find the first StaticTrack object, having the right label, that is ref'd by the source package
   StaticTrack *StaticTrack_obj = 0;
   header_part.GetMDObjectsByType(Dict->ul(MDD_StaticTrack), object_list);
   std::list<InterchangeObject*>::iterator j;
   for ( j = object_list.begin(); j != object_list.end(); ++j )
+  {
+    StaticTrack_obj = dynamic_cast<StaticTrack*>(*j);
+    assert(StaticTrack_obj);
+    if ( id_batch_contains(SourcePackage_obj->Tracks, StaticTrack_obj->InstanceUID)
+         && StaticTrack_obj->TrackName.get() == rp2057_static_track_label )
     {
-      StaticTrack_obj = dynamic_cast<StaticTrack*>(*j);
-      assert(StaticTrack_obj);
-      if ( id_batch_contains(SourcePackage_obj->Tracks, StaticTrack_obj->InstanceUID)
-	   && StaticTrack_obj->TrackName.get() == rp2057_static_track_label )
-	{
-	  break;
-	}
-      StaticTrack_obj = 0;
+      break;
     }
+    StaticTrack_obj = 0;
+  }
 
   // find the Sequence associated with this Track
   if ( StaticTrack_obj )
+  {
+    object_list.clear();
+    header_part.GetMDObjectsByType(Dict->ul(MDD_Sequence), object_list);
+    for ( j = object_list.begin(); j != object_list.end(); ++j )
     {
-      object_list.clear();
-      header_part.GetMDObjectsByType(Dict->ul(MDD_Sequence), object_list);
-      for ( j = object_list.begin(); j != object_list.end(); ++j )
-	{
-	  Sequence_obj = dynamic_cast<Sequence*>(*j);
-	  assert(Sequence_obj);
-	  if ( Sequence_obj->InstanceUID == StaticTrack_obj->Sequence )
-	    {
-	      break;
-	    }
-	  Sequence_obj = 0;
-	}
+      Sequence_obj = dynamic_cast<Sequence*>(*j);
+      assert(Sequence_obj);
+      if ( Sequence_obj->InstanceUID == StaticTrack_obj->Sequence )
+      {
+        break;
+      }
+      Sequence_obj = 0;
     }
+  }
 
   if ( Sequence_obj == 0 )
-    {
-      // this is the first insertion, create the static track
-      assert(Dict);
-      StaticTrack* static_track = new StaticTrack(Dict);
-      header_part.AddChildObject(static_track);
-      source_package.Tracks.push_back(static_track->InstanceUID);
-      static_track->TrackName = "Descriptive Track";
-      static_track->TrackID = 4;
+  {
+    // this is the first insertion, create the static track
+    assert(Dict);
+    StaticTrack* static_track = new StaticTrack(Dict);
+    header_part.AddChildObject(static_track);
+    source_package.Tracks.push_back(static_track->InstanceUID);
+    static_track->TrackName = "Descriptive Track";
+    static_track->TrackID = 4;
 
-      Sequence_obj = new Sequence(Dict);
-      header_part.AddChildObject(Sequence_obj);
-      static_track->Sequence = Sequence_obj->InstanceUID;
-      Sequence_obj->DataDefinition = UL(Dict->ul(MDD_DescriptiveMetaDataDef));
-      header_part.m_Preface->DMSchemes.push_back(UL(Dict->ul(MDD_MXFTextBasedFramework)));
-    }
+    Sequence_obj = new Sequence(Dict);
+    header_part.AddChildObject(Sequence_obj);
+    static_track->Sequence = Sequence_obj->InstanceUID;
+    Sequence_obj->DataDefinition = UL(Dict->ul(MDD_DescriptiveMetaDataDef));
+    header_part.m_Preface->DMSchemes.push_back(UL(Dict->ul(MDD_MXFTextBasedFramework)));
+  }
 
   assert(Sequence_obj);
   // Create the DM segment and framework packs
@@ -187,18 +187,18 @@ ASDCP::AddDmsTrackGenericPartUtf8Text(Kumu::FileWriter& file_writer, MXF::OP1aHe
   ui32_t max_sid = 0;
   ASDCP::MXF::RIP::pair_iterator i;
   for ( i = rip.PairArray.begin(); i != rip.PairArray.end(); ++i )
+  {
+    if ( max_sid < i->BodySID )
     {
-      if ( max_sid < i->BodySID )
-	{
-	  max_sid = i->BodySID;
-	}
+      max_sid = i->BodySID;
     }
+  }
 
   if ( max_sid == 0 )
-    {
-      DefaultLogSink().Error("Unable to add a GS Partition before the essence container has been established.\n");
-      return RESULT_FORMAT;
-    }
+  {
+    DefaultLogSink().Error("Unable to add a GS Partition before the essence container has been established.\n");
+    return RESULT_FORMAT;
+  }
 
   rip.PairArray.push_back(RIP::PartitionPair(max_sid + 1, file_writer.Tell()));
 
@@ -208,13 +208,13 @@ ASDCP::AddDmsTrackGenericPartUtf8Text(Kumu::FileWriter& file_writer, MXF::OP1aHe
   gst_obj->InstanceUID = dmf_obj->ObjectRef;
   gst_obj->GenericStreamSID = max_sid + 1;
   gst_obj->PayloadSchemeID = UL(Dict->ul(MDD_MXFTextBasedFramework));
-  
+
   return RESULT_OK;
 }
 
 //
 ASDCP::h__ASDCPWriter::h__ASDCPWriter(const Dictionary& d) :
-  MXF::TrackFileWriter<OP1aHeader>(d), m_BodyPart(m_Dict), m_FooterPart(m_Dict) {}
+    MXF::TrackFileWriter<OP1aHeader>(d), m_BodyPart(m_Dict), m_FooterPart(m_Dict) {}
 
 ASDCP::h__ASDCPWriter::~h__ASDCPWriter() {}
 
@@ -228,38 +228,38 @@ ASDCP::h__ASDCPWriter::CreateBodyPart(const MXF::Rational& EditRate, ui32_t Byte
 
   // create a body partition if we're writing proper 429-3/OP-Atom
   if ( m_Info.LabelSetType == LS_MXF_SMPTE )
-    {
-      // Body Partition
-      m_BodyPart.EssenceContainers = m_HeaderPart.EssenceContainers;
-      m_BodyPart.ThisPartition = m_File.Tell();
-      m_BodyPart.BodySID = 1;
-      UL OPAtomUL(m_Dict->ul(MDD_OPAtom));
-      m_BodyPart.OperationalPattern = OPAtomUL;
-      m_RIP.PairArray.push_back(RIP::PartitionPair(1, m_BodyPart.ThisPartition)); // Second RIP Entry
-      
-      UL BodyUL(m_Dict->ul(MDD_ClosedCompleteBodyPartition));
-      result = m_BodyPart.WriteToFile(m_File, BodyUL);
-    }
+  {
+    // Body Partition
+    m_BodyPart.EssenceContainers = m_HeaderPart.EssenceContainers;
+    m_BodyPart.ThisPartition = m_File.Tell();
+    m_BodyPart.BodySID = 1;
+    UL OPAtomUL(m_Dict->ul(MDD_OPAtom));
+    m_BodyPart.OperationalPattern = OPAtomUL;
+    m_RIP.PairArray.push_back(RIP::PartitionPair(1, m_BodyPart.ThisPartition)); // Second RIP Entry
+
+    UL BodyUL(m_Dict->ul(MDD_ClosedCompleteBodyPartition));
+    result = m_BodyPart.WriteToFile(m_File, BodyUL);
+  }
   else
-    {
-      m_HeaderPart.BodySID = 1;
-    }
+  {
+    m_HeaderPart.BodySID = 1;
+  }
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      // Index setup
-      Kumu::fpos_t ECoffset = m_File.Tell();
-      m_FooterPart.IndexSID = 129;
+  {
+    // Index setup
+    Kumu::fpos_t ECoffset = m_File.Tell();
+    m_FooterPart.IndexSID = 129;
 
-      if ( BytesPerEditUnit == 0 )
-	{
-	  m_FooterPart.SetIndexParamsVBR(&m_HeaderPart.m_Primer, EditRate, ECoffset);
-	}
-      else
-	{
-	  m_FooterPart.SetIndexParamsCBR(&m_HeaderPart.m_Primer, BytesPerEditUnit, EditRate);
-	}
+    if ( BytesPerEditUnit == 0 )
+    {
+      m_FooterPart.SetIndexParamsVBR(&m_HeaderPart.m_Primer, EditRate, ECoffset);
     }
+    else
+    {
+      m_FooterPart.SetIndexParamsCBR(&m_HeaderPart.m_Primer, BytesPerEditUnit, EditRate);
+    }
+  }
 
   return result;
 }
@@ -267,20 +267,20 @@ ASDCP::h__ASDCPWriter::CreateBodyPart(const MXF::Rational& EditRate, ui32_t Byte
 //
 Result_t
 ASDCP::h__ASDCPWriter::WriteASDCPHeader(const std::string& PackageLabel, const UL& WrappingUL,
-					const std::string& TrackName, const UL& EssenceUL, const UL& DataDefinition,
-					const MXF::Rational& EditRate, ui32_t TCFrameRate, ui32_t BytesPerEditUnit)
+                                        const std::string& TrackName, const UL& EssenceUL, const UL& DataDefinition,
+                                        const MXF::Rational& EditRate, ui32_t TCFrameRate, ui32_t BytesPerEditUnit)
 {
   InitHeader(MXFVersion_2004);
 
   // First RIP Entry
   if ( m_Info.LabelSetType == LS_MXF_SMPTE )  // ERK
-    {
-      m_RIP.PairArray.push_back(RIP::PartitionPair(0, 0)); // 3-part, no essence in header
-    }
+  {
+    m_RIP.PairArray.push_back(RIP::PartitionPair(0, 0)); // 3-part, no essence in header
+  }
   else
-    {
-      m_RIP.PairArray.push_back(RIP::PartitionPair(1, 0)); // 2-part, essence in header
-    }
+  {
+    m_RIP.PairArray.push_back(RIP::PartitionPair(1, 0)); // 2-part, essence in header
+  }
 
   // timecode rate and essence rate are the same
   AddSourceClip(EditRate, EditRate, TCFrameRate, TrackName, EssenceUL, DataDefinition, PackageLabel);
@@ -302,12 +302,12 @@ ASDCP::h__ASDCPWriter::WriteASDCPHeader(const std::string& PackageLabel, const U
 //
 Result_t
 ASDCP::h__ASDCPWriter::WriteEKLVPacket(const ASDCP::FrameBuffer& FrameBuf,const byte_t* EssenceUL,
-				       const ui32_t& MinEssenceElementBerLength,	       
-				       AESEncContext* Ctx, HMACContext* HMAC)
+                                       const ui32_t& MinEssenceElementBerLength,
+                                       AESEncContext* Ctx, HMACContext* HMAC)
 {
   return Write_EKLV_Packet(m_File, *m_Dict, m_HeaderPart, m_Info, m_CtFrameBuf, m_FramesWritten,
-			   m_StreamOffset, FrameBuf, EssenceUL, MinEssenceElementBerLength,
-			   Ctx, HMAC);
+                           m_StreamOffset, FrameBuf, EssenceUL, MinEssenceElementBerLength,
+                           Ctx, HMAC);
 }
 
 // standard method of writing the header and footer of a completed MXF file
@@ -319,9 +319,9 @@ ASDCP::h__ASDCPWriter::WriteASDCPFooter()
   DurationElementList_t::iterator dli = m_DurationUpdateList.begin();
 
   for (; dli != m_DurationUpdateList.end(); ++dli )
-    {
-      **dli = m_FramesWritten;
-    }
+  {
+    **dli = m_FramesWritten;
+  }
 
   m_EssenceDescriptor->ContainerDuration = m_FramesWritten;
   m_FooterPart.PreviousPartition = m_RIP.PairArray.back().ByteOffset;
@@ -364,10 +364,10 @@ ASDCP::h__ASDCPWriter::WriteASDCPFooter()
 // standard method of writing a plaintext or encrypted frame
 Result_t
 ASDCP::Write_EKLV_Packet(Kumu::FileWriter& File, const ASDCP::Dictionary& Dict, const MXF::OP1aHeader& HeaderPart,
-			 const ASDCP::WriterInfo& Info, ASDCP::FrameBuffer& CtFrameBuf, ui32_t& FramesWritten,
-			 ui64_t & StreamOffset, const ASDCP::FrameBuffer& FrameBuf, const byte_t* EssenceUL,
-			 const ui32_t& MinEssenceElementBerLength,
-			 AESEncContext* Ctx, HMACContext* HMAC)
+                         const ASDCP::WriterInfo& Info, ASDCP::FrameBuffer& CtFrameBuf, ui32_t& FramesWritten,
+                         ui64_t & StreamOffset, const ASDCP::FrameBuffer& FrameBuf, const byte_t* EssenceUL,
+                         const ui32_t& MinEssenceElementBerLength,
+                         AESEncContext* Ctx, HMACContext* HMAC)
 {
   Result_t result = RESULT_OK;
   IntegrityPack IntPack;
@@ -385,125 +385,125 @@ ASDCP::Write_EKLV_Packet(Kumu::FileWriter& File, const ASDCP::Dictionary& Dict, 
   Kumu::MemIOWriter HMACOverhead(hmoverhead, 512);
 
   if ( FrameBuf.Size() == 0 )
-    {
-      DefaultLogSink().Error("Cannot write empty frame buffer\n");
-      return RESULT_EMPTY_FB;
-    }
+  {
+    DefaultLogSink().Error("Cannot write empty frame buffer\n");
+    return RESULT_EMPTY_FB;
+  }
 
   if ( Info.EncryptedEssence )
-    {
-      if ( ! Ctx )
-	return RESULT_CRYPT_CTX;
+  {
+    if ( ! Ctx )
+      return RESULT_CRYPT_CTX;
 
-      if ( Info.UsesHMAC && ! HMAC )
-	return RESULT_HMAC_CTX;
+    if ( Info.UsesHMAC && ! HMAC )
+      return RESULT_HMAC_CTX;
 
-      if ( FrameBuf.PlaintextOffset() > FrameBuf.Size() )
-	return RESULT_LARGE_PTO;
+    if ( FrameBuf.PlaintextOffset() > FrameBuf.Size() )
+      return RESULT_LARGE_PTO;
 
-      // encrypt the essence data (create encrypted source value)
-      result = EncryptFrameBuffer(FrameBuf, CtFrameBuf, Ctx);
+    // encrypt the essence data (create encrypted source value)
+    result = EncryptFrameBuffer(FrameBuf, CtFrameBuf, Ctx);
 
-      // create HMAC
-      if ( ASDCP_SUCCESS(result) && Info.UsesHMAC )
-      	result = IntPack.CalcValues(CtFrameBuf, Info.AssetUUID, FramesWritten + 1, HMAC);
+    // create HMAC
+    if ( ASDCP_SUCCESS(result) && Info.UsesHMAC )
+      result = IntPack.CalcValues(CtFrameBuf, Info.AssetUUID, FramesWritten + 1, HMAC);
 
-      if ( ASDCP_SUCCESS(result) )
-	{ // write UL
-	  Overhead.WriteRaw(Dict.ul(MDD_CryptEssence), SMPTE_UL_LENGTH);
+    if ( ASDCP_SUCCESS(result) )
+    { // write UL
+      Overhead.WriteRaw(Dict.ul(MDD_CryptEssence), SMPTE_UL_LENGTH);
 
-	  // construct encrypted triplet header
-	  ui32_t ETLength = klv_cryptinfo_size + CtFrameBuf.Size();
-	  ui32_t essence_element_BER_length = MinEssenceElementBerLength;
-
-	  if ( Info.UsesHMAC )
-	    ETLength += klv_intpack_size;
-	  else
-	    ETLength += (MXF_BER_LENGTH * 3); // for empty intpack
-
-	  if ( ETLength > 0x00ffffff ) // Need BER integer longer than MXF_BER_LENGTH bytes
-	    {
-	      essence_element_BER_length = Kumu::get_BER_length_for_value(ETLength);
-
-	      // the packet is longer by the difference in expected vs. actual BER length
-	      ETLength += essence_element_BER_length - MXF_BER_LENGTH;
-
-	      if ( essence_element_BER_length == 0 )
-		result = RESULT_KLV_CODING;
-	    }
-
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      if ( ! ( Overhead.WriteBER(ETLength, essence_element_BER_length)                      // write encrypted triplet length
-		       && Overhead.WriteBER(UUIDlen, MXF_BER_LENGTH)                // write ContextID length
-		       && Overhead.WriteRaw(Info.ContextID, UUIDlen)              // write ContextID
-		       && Overhead.WriteBER(sizeof(ui64_t), MXF_BER_LENGTH)         // write PlaintextOffset length
-		       && Overhead.WriteUi64BE(FrameBuf.PlaintextOffset())          // write PlaintextOffset
-		       && Overhead.WriteBER(SMPTE_UL_LENGTH, MXF_BER_LENGTH)        // write essence UL length
-		       && Overhead.WriteRaw((byte_t*)EssenceUL, SMPTE_UL_LENGTH)    // write the essence UL
-		       && Overhead.WriteBER(sizeof(ui64_t), MXF_BER_LENGTH)         // write SourceLength length
-		       && Overhead.WriteUi64BE(FrameBuf.Size())                     // write SourceLength
-		       && Overhead.WriteBER(CtFrameBuf.Size(), essence_element_BER_length) ) )    // write ESV length
-		{
-		  result = RESULT_KLV_CODING;
-		}
-	    }
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = File.Writev(Overhead.Data(), Overhead.Length());
-	}
-
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  StreamOffset += Overhead.Length();
-	  // write encrypted source value
-	  result = File.Writev((byte_t*)CtFrameBuf.RoData(), CtFrameBuf.Size());
-	}
-
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  StreamOffset += CtFrameBuf.Size();
-
-	  // write the HMAC
-	  if ( Info.UsesHMAC )
-	    {
-	      HMACOverhead.WriteRaw(IntPack.Data, klv_intpack_size);
-	    }
-	  else
-	    { // we still need the var-pack length values if the intpack is empty
-	      for ( ui32_t i = 0; i < 3 ; i++ )
-		HMACOverhead.WriteBER(0, MXF_BER_LENGTH);
-	    }
-
-	  // write HMAC
-	  result = File.Writev(HMACOverhead.Data(), HMACOverhead.Length());
-	  StreamOffset += HMACOverhead.Length();
-	}
-    }
-  else
-    {
+      // construct encrypted triplet header
+      ui32_t ETLength = klv_cryptinfo_size + CtFrameBuf.Size();
       ui32_t essence_element_BER_length = MinEssenceElementBerLength;
 
-      if ( FrameBuf.Size() > 0x00ffffff ) // Need BER integer longer than MXF_BER_LENGTH bytes
-	{
-	  essence_element_BER_length = Kumu::get_BER_length_for_value(FrameBuf.Size());
+      if ( Info.UsesHMAC )
+        ETLength += klv_intpack_size;
+      else
+        ETLength += (MXF_BER_LENGTH * 3); // for empty intpack
 
-	  if ( essence_element_BER_length == 0 )
-	    result = RESULT_KLV_CODING;
-	}
+      if ( ETLength > 0x00ffffff ) // Need BER integer longer than MXF_BER_LENGTH bytes
+      {
+        essence_element_BER_length = Kumu::get_BER_length_for_value(ETLength);
 
-      Overhead.WriteRaw((byte_t*)EssenceUL, SMPTE_UL_LENGTH);
-      Overhead.WriteBER(FrameBuf.Size(), essence_element_BER_length);
+        // the packet is longer by the difference in expected vs. actual BER length
+        ETLength += essence_element_BER_length - MXF_BER_LENGTH;
+
+        if ( essence_element_BER_length == 0 )
+          result = RESULT_KLV_CODING;
+      }
 
       if ( ASDCP_SUCCESS(result) )
-	result = File.Writev(Overhead.Data(), Overhead.Length());
- 
-      if ( ASDCP_SUCCESS(result) )
-	result = File.Writev((byte_t*)FrameBuf.RoData(), FrameBuf.Size());
+      {
+        if ( ! ( Overhead.WriteBER(ETLength, essence_element_BER_length)                      // write encrypted triplet length
+                 && Overhead.WriteBER(UUIDlen, MXF_BER_LENGTH)                // write ContextID length
+                 && Overhead.WriteRaw(Info.ContextID, UUIDlen)              // write ContextID
+                 && Overhead.WriteBER(sizeof(ui64_t), MXF_BER_LENGTH)         // write PlaintextOffset length
+                 && Overhead.WriteUi64BE(FrameBuf.PlaintextOffset())          // write PlaintextOffset
+                 && Overhead.WriteBER(SMPTE_UL_LENGTH, MXF_BER_LENGTH)        // write essence UL length
+                 && Overhead.WriteRaw((byte_t*)EssenceUL, SMPTE_UL_LENGTH)    // write the essence UL
+                 && Overhead.WriteBER(sizeof(ui64_t), MXF_BER_LENGTH)         // write SourceLength length
+                 && Overhead.WriteUi64BE(FrameBuf.Size())                     // write SourceLength
+                 && Overhead.WriteBER(CtFrameBuf.Size(), essence_element_BER_length) ) )    // write ESV length
+        {
+          result = RESULT_KLV_CODING;
+        }
+      }
 
       if ( ASDCP_SUCCESS(result) )
-	StreamOffset += Overhead.Length() + FrameBuf.Size();
+        result = File.Writev(Overhead.Data(), Overhead.Length());
     }
+
+    if ( ASDCP_SUCCESS(result) )
+    {
+      StreamOffset += Overhead.Length();
+      // write encrypted source value
+      result = File.Writev((byte_t*)CtFrameBuf.RoData(), CtFrameBuf.Size());
+    }
+
+    if ( ASDCP_SUCCESS(result) )
+    {
+      StreamOffset += CtFrameBuf.Size();
+
+      // write the HMAC
+      if ( Info.UsesHMAC )
+      {
+        HMACOverhead.WriteRaw(IntPack.Data, klv_intpack_size);
+      }
+      else
+      { // we still need the var-pack length values if the intpack is empty
+        for ( ui32_t i = 0; i < 3 ; i++ )
+          HMACOverhead.WriteBER(0, MXF_BER_LENGTH);
+      }
+
+      // write HMAC
+      result = File.Writev(HMACOverhead.Data(), HMACOverhead.Length());
+      StreamOffset += HMACOverhead.Length();
+    }
+  }
+  else
+  {
+    ui32_t essence_element_BER_length = MinEssenceElementBerLength;
+
+    if ( FrameBuf.Size() > 0x00ffffff ) // Need BER integer longer than MXF_BER_LENGTH bytes
+    {
+      essence_element_BER_length = Kumu::get_BER_length_for_value(FrameBuf.Size());
+
+      if ( essence_element_BER_length == 0 )
+        result = RESULT_KLV_CODING;
+    }
+
+    Overhead.WriteRaw((byte_t*)EssenceUL, SMPTE_UL_LENGTH);
+    Overhead.WriteBER(FrameBuf.Size(), essence_element_BER_length);
+
+    if ( ASDCP_SUCCESS(result) )
+      result = File.Writev(Overhead.Data(), Overhead.Length());
+
+    if ( ASDCP_SUCCESS(result) )
+      result = File.Writev((byte_t*)FrameBuf.RoData(), FrameBuf.Size());
+
+    if ( ASDCP_SUCCESS(result) )
+      StreamOffset += Overhead.Length() + FrameBuf.Size();
+  }
 
   if ( ASDCP_SUCCESS(result) )
     result = File.Writev();

@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    KM_log.h
-    \version $Id$
-    \brief   message logging API
-  */
+/*! \file    KM_log.h
+  \version $Id$
+  \brief   message logging API
+*/
 
 
 #ifndef _KM_LOG_H_
@@ -112,7 +112,7 @@ namespace Kumu
   const i32_t LOG_OPTION_ALL       = 0xfff00000;
 
   // A log message with environmental metadata
- class LogEntry : public IArchive
+  class LogEntry : public IArchive
   {
   public:
     ui32_t      PID;
@@ -140,73 +140,73 @@ namespace Kumu
 
   //
   std::basic_ostream<char, std::char_traits<char> >&
-    operator<<(std::basic_ostream<char, std::char_traits<char> >& strm, LogEntry const& Entry);
+  operator<<(std::basic_ostream<char, std::char_traits<char> >& strm, LogEntry const& Entry);
 
 
   typedef ArchivableList<LogEntry> LogEntryList;
-  
+
   //
   class ILogSink
+  {
+  protected:
+    i32_t m_filter;
+    i32_t m_options;
+    Mutex m_lock;
+    std::set<ILogSink*> m_listeners;
+
+    // you must obtain m_lock BEFORE calling this from your own WriteEntry
+    void WriteEntryToListeners(const LogEntry& entry)
     {
-    protected:
-      i32_t m_filter;
-      i32_t m_options;
-      Mutex m_lock;
-      std::set<ILogSink*> m_listeners;
+      std::set<ILogSink*>::iterator i;
+      for ( i = m_listeners.begin(); i != m_listeners.end(); ++i )
+        (*i)->WriteEntry(entry);
+    }
 
-      // you must obtain m_lock BEFORE calling this from your own WriteEntry
-      void WriteEntryToListeners(const LogEntry& entry)
-      {
-	std::set<ILogSink*>::iterator i;
-	for ( i = m_listeners.begin(); i != m_listeners.end(); ++i )
-	  (*i)->WriteEntry(entry);
-      }
+    KM_NO_COPY_CONSTRUCT(ILogSink);
 
-      KM_NO_COPY_CONSTRUCT(ILogSink);
-
-    public:
+  public:
     ILogSink() : m_filter(LOG_ALLOW_ALL), m_options(LOG_OPTION_NONE) {}
-      virtual ~ILogSink() {}
+    virtual ~ILogSink() {}
 
-      void  SetFilterFlag(i32_t f) { m_filter |= f; }
-      void  UnsetFilterFlag(i32_t f) { m_filter &= ~f; }
-      bool  TestFilterFlag(i32_t f) const  { return ((m_filter & f) == f); }
+    void  SetFilterFlag(i32_t f) { m_filter |= f; }
+    void  UnsetFilterFlag(i32_t f) { m_filter &= ~f; }
+    bool  TestFilterFlag(i32_t f) const  { return ((m_filter & f) == f); }
 
-      void  SetOptionFlag(i32_t o) { m_options |= o; }
-      void  UnsetOptionFlag(i32_t o) { m_options &= ~o; }
-      bool  TestOptionFlag(i32_t o) const  { return ((m_options & o) == o); }
+    void  SetOptionFlag(i32_t o) { m_options |= o; }
+    void  UnsetOptionFlag(i32_t o) { m_options &= ~o; }
+    bool  TestOptionFlag(i32_t o) const  { return ((m_options & o) == o); }
 
-      void AddListener(ILogSink& s) {
-	if ( &s != this )
-	  {
-	    AutoMutex l(m_lock);
-	    m_listeners.insert(&s);
-	  }
+    void AddListener(ILogSink& s) {
+      if ( &s != this )
+      {
+        AutoMutex l(m_lock);
+        m_listeners.insert(&s);
       }
+    }
 
-      void DelListener(ILogSink& s) {
-	AutoMutex l(m_lock);
-	m_listeners.erase(&s);
-      }
+    void DelListener(ILogSink& s) {
+      AutoMutex l(m_lock);
+      m_listeners.erase(&s);
+    }
 
-      // library messages
-      void Error(const char* fmt, ...)    { LOG_MSG_IMPL(LOG_ERROR); }
-      void Warn(const char* fmt, ...)     { LOG_MSG_IMPL(LOG_WARN);  }
-      void Info(const char* fmt, ...)     { LOG_MSG_IMPL(LOG_INFO);  }
-      void Debug(const char* fmt, ...)    { LOG_MSG_IMPL(LOG_DEBUG); }
+    // library messages
+    void Error(const char* fmt, ...)    { LOG_MSG_IMPL(LOG_ERROR); }
+    void Warn(const char* fmt, ...)     { LOG_MSG_IMPL(LOG_WARN);  }
+    void Info(const char* fmt, ...)     { LOG_MSG_IMPL(LOG_INFO);  }
+    void Debug(const char* fmt, ...)    { LOG_MSG_IMPL(LOG_DEBUG); }
 
-      // application messages
-      void Critical(const char* fmt, ...) { LOG_MSG_IMPL(LOG_CRIT); }
-      void Alert(const char* fmt, ...)    { LOG_MSG_IMPL(LOG_ALERT); }
-      void Notice(const char* fmt, ...)   { LOG_MSG_IMPL(LOG_NOTICE); }
+    // application messages
+    void Critical(const char* fmt, ...) { LOG_MSG_IMPL(LOG_CRIT); }
+    void Alert(const char* fmt, ...)    { LOG_MSG_IMPL(LOG_ALERT); }
+    void Notice(const char* fmt, ...)   { LOG_MSG_IMPL(LOG_NOTICE); }
 
-      // message with type
-      void Logf(LogType_t type, const char* fmt, ...) { LOG_MSG_IMPL(type); }
+    // message with type
+    void Logf(LogType_t type, const char* fmt, ...) { LOG_MSG_IMPL(type); }
 
-      // actual log sink input
-      virtual void vLogf(LogType_t, const char*, va_list*);
-      virtual void WriteEntry(const LogEntry&) = 0;
-    };
+    // actual log sink input
+    virtual void vLogf(LogType_t, const char*, va_list*);
+    virtual void WriteEntry(const LogEntry&) = 0;
+  };
 
 
   // Sets the internal default sink to the given receiver. If the given value
@@ -219,25 +219,25 @@ namespace Kumu
 
   // attach a log sink as a listener until deleted
   class LogSinkListenContext
+  {
+    ILogSink* m_log_source;
+    ILogSink* m_sink;
+    KM_NO_COPY_CONSTRUCT(LogSinkListenContext);
+    LogSinkListenContext();
+
+  public:
+    LogSinkListenContext(ILogSink& source, ILogSink& sink)
     {
-      ILogSink* m_log_source;
-      ILogSink* m_sink;
-      KM_NO_COPY_CONSTRUCT(LogSinkListenContext);
-      LogSinkListenContext();
+      m_log_source = &source;
+      m_sink = &sink;
+      m_log_source->AddListener(*m_sink);
+    }
 
-    public:
-      LogSinkListenContext(ILogSink& source, ILogSink& sink)
-	{
-	  m_log_source = &source;
-	  m_sink = &sink;
-	  m_log_source->AddListener(*m_sink);
-	}
-
-      ~LogSinkListenContext()
-	{
-	  m_log_source->DelListener(*m_sink);
-	}
-    };
+    ~LogSinkListenContext()
+    {
+      m_log_source->DelListener(*m_sink);
+    }
+  };
 
 
   //------------------------------------------------------------------------------------------
@@ -260,17 +260,17 @@ namespace Kumu
 
   // write messages to a POSIX stdio stream
   class StdioLogSink : public ILogSink
-    {
-      FILE* m_stream;
-      KM_NO_COPY_CONSTRUCT(StdioLogSink);
+  {
+    FILE* m_stream;
+    KM_NO_COPY_CONSTRUCT(StdioLogSink);
 
-    public:
+  public:
     StdioLogSink() : m_stream(stderr) {}
     StdioLogSink(FILE* stream) : m_stream(stream) {}
-      virtual ~StdioLogSink() {}
+    virtual ~StdioLogSink() {}
 
     void WriteEntry(const LogEntry&);
-    };
+  };
 
 #ifdef KM_WIN32
   // write messages to the Win32 debug stream
@@ -289,29 +289,29 @@ namespace Kumu
 #ifndef KM_WIN32
   // write messages to a POSIX file descriptor
   class StreamLogSink : public ILogSink
-    {
-      int   m_fd;
-      KM_NO_COPY_CONSTRUCT(StreamLogSink);
-      StreamLogSink();
+  {
+    int   m_fd;
+    KM_NO_COPY_CONSTRUCT(StreamLogSink);
+    StreamLogSink();
 
-    public:
-      StreamLogSink(int fd) : m_fd(fd) {}
-      virtual ~StreamLogSink() {}
+  public:
+    StreamLogSink(int fd) : m_fd(fd) {}
+    virtual ~StreamLogSink() {}
 
-      void WriteEntry(const LogEntry&);
-    };
+    void WriteEntry(const LogEntry&);
+  };
 
   // write messages to the syslog facility
   class SyslogLogSink : public ILogSink
-    {
-      KM_NO_COPY_CONSTRUCT(SyslogLogSink);
-      SyslogLogSink();
-  
-    public:
-      SyslogLogSink(const std::string& source_name, int facility);
-      virtual ~SyslogLogSink();
-      void WriteEntry(const LogEntry&);
-    };
+  {
+    KM_NO_COPY_CONSTRUCT(SyslogLogSink);
+    SyslogLogSink();
+
+  public:
+    SyslogLogSink(const std::string& source_name, int facility);
+    virtual ~SyslogLogSink();
+    void WriteEntry(const LogEntry&);
+  };
 
   // convert a string into the appropriate syslog facility id
   int SyslogNameToFacility(const std::string& facility_name);

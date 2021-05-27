@@ -48,7 +48,7 @@ using namespace ASDCP;
 
 const ui32_t FRAME_BUFFER_SIZE = 4 * Kumu::Megabyte;
 const ASDCP::Dictionary *g_dict = 0;
- 
+
 const char*
 RationalToString(const ASDCP::Rational& r, char* buf, const ui32_t& len)
 {
@@ -69,14 +69,14 @@ class MyInfo : public WriterInfo
 public:
   MyInfo()
   {
-      static byte_t default_ProductUUID_Data[UUIDlen] =
-      { 0x7d, 0x83, 0x6e, 0x16, 0x37, 0xc7, 0x4c, 0x22,
-	0xb2, 0xe0, 0x46, 0xa7, 0x17, 0xe8, 0x4f, 0x42 };
-      
-      memcpy(ProductUUID, default_ProductUUID_Data, UUIDlen);
-      CompanyName = "WidgetCo";
-      ProductName = "as-02-wrap";
-      ProductVersion = ASDCP::Version();
+    static byte_t default_ProductUUID_Data[UUIDlen] =
+        { 0x7d, 0x83, 0x6e, 0x16, 0x37, 0xc7, 0x4c, 0x22,
+          0xb2, 0xe0, 0x46, 0xa7, 0x17, 0xe8, 0x4f, 0x42 };
+
+    memcpy(ProductUUID, default_ProductUUID_Data, UUIDlen);
+    CompanyName = "WidgetCo";
+    ProductName = "as-02-wrap";
+    ProductVersion = ASDCP::Version();
   }
 } s_MyInfo;
 
@@ -117,7 +117,7 @@ Copyright (c) 2011-2018, Robert Scheler, Heiko Sparenberg Fraunhofer IIS, John H
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME);
+          PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME);
 }
 
 //
@@ -128,7 +128,7 @@ usage(FILE* stream = stdout)
 USAGE: %s [-h|-help] [-V]\n\
 \n\
        %s [options] <input-file>+ <output-file>\n\n",
-	  PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, PROGRAM_NAME);
 
   fprintf(stream, "\
 Options:\n\
@@ -225,10 +225,10 @@ set_primary_from_token(const std::string& token, ui16_t& primary)
   float raw_value = strtod(token.c_str(),0);
 
   if ( raw_value == 0.0 || raw_value > 1.0 )
-    {
-      fprintf(stderr, "Invalid coordinate value \"%s\".\n", token.c_str());
-      return false;
-    }
+  {
+    fprintf(stderr, "Invalid coordinate value \"%s\".\n", token.c_str());
+    return false;
+  }
 
   primary = floor(0.5 + ( raw_value * chromaticity_scale ));
   return true;
@@ -242,10 +242,10 @@ set_luminance_from_token(const std::string& token, ui32_t& luminance)
   float raw_value = strtod(token.c_str(),0);
 
   if ( raw_value == 0.0 || raw_value > 400000.0 )
-    {
-      fprintf(stderr, "Invalid luminance value \"%s\".\n", token.c_str());
-      return false;
-    }
+  {
+    fprintf(stderr, "Invalid luminance value \"%s\".\n", token.c_str());
+    return false;
+  }
 
   luminance = floor(0.5 + ( raw_value * luminance_scale ));
   return true;
@@ -299,7 +299,7 @@ public:
   bool aspect_ratio_flag;
   ui8_t field_dominance;
   ui32_t mxf_header_size;
-  ui32_t cdci_BlackRefLevel; 
+  ui32_t cdci_BlackRefLevel;
   ui32_t cdci_WhiteRefLevel;
   ui32_t cdci_ColorRange;
 
@@ -329,17 +329,17 @@ public:
   std::string target_frame_directory;
   std::list <ui64_t> target_frame_index_list;
   UL target_frame_transfer_characteristics, target_frame_color_primaries, target_frame_viewing_environment;
-  ui32_t target_frame_min_ref, target_frame_max_ref;  
+  ui32_t target_frame_min_ref, target_frame_max_ref;
   //
   bool set_video_line_map(const std::string& arg)
   {
     const char* sep_str = strrchr(arg.c_str(), ',');
 
     if ( sep_str == 0 )
-      {
-	fprintf(stderr, "Expecting <first>,<second>\n");
-	return false;
-      }
+    {
+      fprintf(stderr, "Expecting <first>,<second>\n");
+      return false;
+    }
 
     line_map.First = Kumu::xabs(strtol(arg.c_str(), 0, 10));
     line_map.Second = Kumu::xabs(strtol(sep_str+1, 0, 10));
@@ -352,27 +352,27 @@ public:
     std::list<std::string> ref_tokens = Kumu::km_token_split(arg, ",");
 
     switch ( ref_tokens.size() )
-      {
+    {
       case 3:
-	cdci_ColorRange = Kumu::xabs(strtol(ref_tokens.back().c_str(), 0, 10));
-	ref_tokens.pop_back();
+        cdci_ColorRange = Kumu::xabs(strtol(ref_tokens.back().c_str(), 0, 10));
+        ref_tokens.pop_back();
       case 2:
-	cdci_BlackRefLevel = Kumu::xabs(strtol(ref_tokens.back().c_str(), 0, 10));
-	ref_tokens.pop_back();
+        cdci_BlackRefLevel = Kumu::xabs(strtol(ref_tokens.back().c_str(), 0, 10));
+        ref_tokens.pop_back();
       case 1:
-	cdci_WhiteRefLevel = Kumu::xabs(strtol(ref_tokens.back().c_str(), 0, 10));
-	break;
+        cdci_WhiteRefLevel = Kumu::xabs(strtol(ref_tokens.back().c_str(), 0, 10));
+        break;
 
       default:
-	fprintf(stderr, "Expecting <white-ref>[,<black-ref>[,<color-range>]]\n");
-	return false;
-      }
+        fprintf(stderr, "Expecting <white-ref>[,<black-ref>[,<color-range>]]\n");
+        return false;
+    }
 
     if ( cdci_WhiteRefLevel > 65535 || cdci_BlackRefLevel > 65535 || cdci_ColorRange > 65535 )
-      {
-	fprintf(stderr, "Unexpected CDCI video referece levels.\n");
-	return false;
-      }
+    {
+      fprintf(stderr, "Unexpected CDCI video referece levels.\n");
+      return false;
+    }
 
     return true;
   }
@@ -382,10 +382,10 @@ public:
   {
     std::list<std::string> coordinate_tokens = Kumu::km_token_split(arg, ",");
     if ( coordinate_tokens.size() != 8 )
-      {
-	fprintf(stderr, "Expecting four coordinate pairs.\n");
-	return false;
-      }
+    {
+      fprintf(stderr, "Expecting four coordinate pairs.\n");
+      return false;
+    }
 
     std::list<std::string>::const_iterator i = coordinate_tokens.begin();
     if ( ! set_primary_from_token(*(i++), md_primaries.First.X) ) return false;
@@ -405,10 +405,10 @@ public:
   {
     std::list<std::string> luminance_tokens = Kumu::km_token_split(arg, ",");
     if ( luminance_tokens.size() != 2 )
-      {
-	fprintf(stderr, "Expecting a luminance pair.\n");
-	return false;
-      }
+    {
+      fprintf(stderr, "Expecting a luminance pair.\n");
+      return false;
+    }
 
     if ( ! set_luminance_from_token(luminance_tokens.front(), md_min_luminance) ) return false;
     if ( ! set_luminance_from_token(luminance_tokens.back(), md_max_luminance) ) return false;
@@ -422,49 +422,49 @@ public:
     assert(arg);
 
     switch ( *arg )
-      {
-	// Application 2 (ST 2067-20)
+    {
+      // Application 2 (ST 2067-20)
       case '1':
-	coding_equations = g_dict->ul(MDD_CodingEquations_601);
-	transfer_characteristic = g_dict->ul(MDD_TransferCharacteristic_ITU709);
-	color_primaries = g_dict->ul(MDD_ColorPrimaries_ITU470_PAL);
-	use_cdci_descriptor = true;
-	break;
+        coding_equations = g_dict->ul(MDD_CodingEquations_601);
+        transfer_characteristic = g_dict->ul(MDD_TransferCharacteristic_ITU709);
+        color_primaries = g_dict->ul(MDD_ColorPrimaries_ITU470_PAL);
+        use_cdci_descriptor = true;
+        break;
 
       case '2':
-	coding_equations = g_dict->ul(MDD_CodingEquations_601);
-	transfer_characteristic = g_dict->ul(MDD_TransferCharacteristic_ITU709);
-	color_primaries = g_dict->ul(MDD_ColorPrimaries_SMPTE170M);
-	use_cdci_descriptor = true;
-	break;
+        coding_equations = g_dict->ul(MDD_CodingEquations_601);
+        transfer_characteristic = g_dict->ul(MDD_TransferCharacteristic_ITU709);
+        color_primaries = g_dict->ul(MDD_ColorPrimaries_SMPTE170M);
+        use_cdci_descriptor = true;
+        break;
 
       case '3':
-	coding_equations = g_dict->ul(MDD_CodingEquations_709);
-	transfer_characteristic = g_dict->ul(MDD_TransferCharacteristic_ITU709);
-	color_primaries = g_dict->ul(MDD_ColorPrimaries_ITU709);
-	use_cdci_descriptor = true;
-	break;
+        coding_equations = g_dict->ul(MDD_CodingEquations_709);
+        transfer_characteristic = g_dict->ul(MDD_TransferCharacteristic_ITU709);
+        color_primaries = g_dict->ul(MDD_ColorPrimaries_ITU709);
+        use_cdci_descriptor = true;
+        break;
 
-	// Application 2e (ST 2067-21)
+        // Application 2e (ST 2067-21)
       case '4':
-	coding_equations = g_dict->ul(MDD_CodingEquations_709);
-	transfer_characteristic = g_dict->ul(MDD_TransferCharacteristic_IEC6196624_xvYCC);
-	color_primaries = g_dict->ul(MDD_ColorPrimaries_ITU709);
-	use_cdci_descriptor = true;
-	break;
+        coding_equations = g_dict->ul(MDD_CodingEquations_709);
+        transfer_characteristic = g_dict->ul(MDD_TransferCharacteristic_IEC6196624_xvYCC);
+        color_primaries = g_dict->ul(MDD_ColorPrimaries_ITU709);
+        use_cdci_descriptor = true;
+        break;
 
       case '5':
-	coding_equations = g_dict->ul(MDD_CodingEquations_709);
-	transfer_characteristic = g_dict->ul(MDD_TransferCharacteristic_ITU2020);
-	color_primaries = g_dict->ul(MDD_ColorPrimaries_ITU2020);
-	use_cdci_descriptor = true;
-	break;
+        coding_equations = g_dict->ul(MDD_CodingEquations_709);
+        transfer_characteristic = g_dict->ul(MDD_TransferCharacteristic_ITU2020);
+        color_primaries = g_dict->ul(MDD_ColorPrimaries_ITU2020);
+        use_cdci_descriptor = true;
+        break;
 
       default:
-	fprintf(stderr, "Unrecognized color system number, expecting one of 1-5.\n");
-	return false;
-      }
-    
+        fprintf(stderr, "Unrecognized color system number, expecting one of 1-5.\n");
+        return false;
+    }
+
     return true;
   }
 
@@ -472,10 +472,10 @@ public:
   {
     std::list<std::string> range_tokens = Kumu::km_token_split(arg, ",");
     if ( range_tokens.size() != 2 )
-      {
-	fprintf(stderr, "Expecting a code value pair.\n");
-	return false;
-      }
+    {
+      fprintf(stderr, "Expecting a code value pair.\n");
+      return false;
+    }
 
     target_frame_min_ref = strtol(range_tokens.front().c_str(), 0 , 10);
     target_frame_max_ref = strtol(range_tokens.back().c_str(), 0 , 10);
@@ -487,15 +487,15 @@ public:
   {
     std::list<std::string> index_tokens = Kumu::km_token_split(arg, ",");
     if ( index_tokens.size() == 0 )
-      {
-	fprintf(stderr, "Expecting at least one Target Frame Index.\n");
-	return false;
-      }
+    {
+      fprintf(stderr, "Expecting at least one Target Frame Index.\n");
+      return false;
+    }
 
 
     std::list<std::string>::const_iterator i;
     for (i = index_tokens.begin(); i != index_tokens.end(); i++) {
-    	r_target_frame_index_list.push_back(strtoll(i->c_str(), 0, 10));
+      r_target_frame_index_list.push_back(strtoll(i->c_str(), 0, 10));
     }
 
     return true;
@@ -503,20 +503,20 @@ public:
 
 
   CommandOptions(int argc, const char** argv) :
-    error_flag(true), key_flag(false), key_id_flag(false), asset_id_flag(false),
-    encrypt_header_flag(true), write_hmac(true), verbose_flag(false), fb_dump_size(0),
-    no_write_flag(false), version_flag(false), help_flag(false),
-    duration(0xffffffff), j2c_pedantic(true), use_cdci_descriptor(false),
-    edit_rate(24,1), fb_size(FRAME_BUFFER_SIZE),
-    show_ul_values_flag(false), index_strategy(AS_02::IS_FOLLOW), partition_space(60),
-    mca_config(g_dict), rgba_MaxRef(1023), rgba_MinRef(0),
-    horizontal_subsampling(2), vertical_subsampling(2), component_depth(10),
-    frame_layout(0), aspect_ratio(ASDCP::Rational(4,3)), aspect_ratio_flag(false), field_dominance(0),
-    mxf_header_size(16384), cdci_WhiteRefLevel(940), cdci_BlackRefLevel(64), cdci_ColorRange(897),
-    md_min_luminance(0), md_max_luminance(0), line_map(0,0), line_map_flag(false),
-	aces_authoring_information_flag(false), aces_picture_subdescriptor_flag(false), target_frame_subdescriptor_flag(false),
-	target_frame_index_flag(false), target_frame_transfer_characteristics_flag(false), target_frame_color_primaries_flag(false),
-	target_frame_min_max_ref_flag(false), target_frame_viewing_environment_flag(false)
+      error_flag(true), key_flag(false), key_id_flag(false), asset_id_flag(false),
+      encrypt_header_flag(true), write_hmac(true), verbose_flag(false), fb_dump_size(0),
+      no_write_flag(false), version_flag(false), help_flag(false),
+      duration(0xffffffff), j2c_pedantic(true), use_cdci_descriptor(false),
+      edit_rate(24,1), fb_size(FRAME_BUFFER_SIZE),
+      show_ul_values_flag(false), index_strategy(AS_02::IS_FOLLOW), partition_space(60),
+      mca_config(g_dict), rgba_MaxRef(1023), rgba_MinRef(0),
+      horizontal_subsampling(2), vertical_subsampling(2), component_depth(10),
+      frame_layout(0), aspect_ratio(ASDCP::Rational(4,3)), aspect_ratio_flag(false), field_dominance(0),
+      mxf_header_size(16384), cdci_WhiteRefLevel(940), cdci_BlackRefLevel(64), cdci_ColorRange(897),
+      md_min_luminance(0), md_max_luminance(0), line_map(0,0), line_map_flag(false),
+      aces_authoring_information_flag(false), aces_picture_subdescriptor_flag(false), target_frame_subdescriptor_flag(false),
+      target_frame_index_flag(false), target_frame_transfer_characteristics_flag(false), target_frame_color_primaries_flag(false),
+      target_frame_min_max_ref_flag(false), target_frame_viewing_environment_flag(false)
   {
     memset(key_value, 0, KeyLen);
     memset(key_id_value, 0, UUIDlen);
@@ -527,437 +527,437 @@ public:
     std::string mca_config_str;
 
     for ( int i = 1; i < argc; i++ )
+    {
+
+      if ( (strcmp( argv[i], "-help") == 0) )
       {
-
-	if ( (strcmp( argv[i], "-help") == 0) )
-	  {
-	    help_flag = true;
-	    continue;
-	  }
-         
-	if ( (strcmp( argv[i], "-suba") == 0) )
-	  {
-	    aces_picture_subdescriptor_flag = true;
-	    if ((++i < argc) && (argv[i][0] != '-')) {
-	    	aces_authoring_information = argv[i];
-	    	aces_authoring_information_flag = true;
-	    } else i--;
-	    continue;
-	  }
-
-	if ( (strcmp( argv[i], "-subt") == 0) )
-	  {
-	    target_frame_subdescriptor_flag = true;
-	    TEST_EXTRA_ARG_STRING(i, "subt");
-	    target_frame_directory = argv[i];
-	    continue;
-	  }
-
-	if ( (strcmp( argv[i], "-tfi") == 0) )
-	  {
-		TEST_EXTRA_ARG_STRING(i, "tfi");
-	    if (set_target_frame_index_list(argv[i], target_frame_index_list)) {
-			target_frame_index_flag = true;
-	    }
-	    continue;
-	  }
-
-	if ( (strcmp( argv[i], "-tft") == 0) )
-	  {
-		TEST_EXTRA_ARG_STRING(i, "tft");
-		//
-		const ASDCP::MDDEntry* entry = g_dict->FindSymbol(std::string(argv[i]));
-		if (entry) {
-			target_frame_transfer_characteristics_flag = true;
-			target_frame_transfer_characteristics = entry->ul;
-			fprintf(stderr, "target_frame_transfer_characteristic %s\n", entry->name);
-		}
-	    continue;
-	  }
-
-	if ( (strcmp( argv[i], "-tfc") == 0) )
-	  {
-		TEST_EXTRA_ARG_STRING(i, "tfc");
-		//
-		const ASDCP::MDDEntry* entry = g_dict->FindSymbol(std::string(argv[i]));
-		if (entry) {
-			target_frame_color_primaries_flag = true;
-			target_frame_color_primaries = entry->ul;
-			fprintf(stderr, "target_frame_color_primaries %s\n", entry->name);
-		}
-	    continue;
-	  }
-
-	if ( (strcmp( argv[i], "-tfr") == 0) )
-	  {
-		TEST_EXTRA_ARG(i, 'o');
-		if ( ! set_target_frame_min_max_code_value(argv[i]) )
-		  {
-		    return;
-		  }
-		target_frame_min_max_ref_flag = true;
-	    continue;
-	  }
-
-	if ( (strcmp( argv[i], "-tfv") == 0) )
-	  {
-		TEST_EXTRA_ARG_STRING(i, "tfv");
-		//
-		const ASDCP::MDDEntry* entry = g_dict->FindSymbol(std::string(argv[i]));
-		if (entry) {
-			target_frame_viewing_environment_flag = true;
-			target_frame_viewing_environment = entry->ul;
-			fprintf(stderr, "target_frame_viewing_environment %s\n", entry->name);
-		}
-	    continue;
-	  }
-
-
-	if ( argv[i][0] == '-'
-	     && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) )
-	     && argv[i][2] == 0 )
-	  {
-	    switch ( argv[i][1] )
-	      {
-	      case 'A':
-		TEST_EXTRA_ARG(i, 'A');
-		if ( ! DecodeRational(argv[i], aspect_ratio) )
-		  {
-		    fprintf(stderr, "Error decoding aspect ratio value: %s\n", argv[i]);
-		    return;
-		  }
-		else
-		{
-			aspect_ratio_flag = true;
-		}
-		break;
-
-	      case 'a':
-		asset_id_flag = true;
-		TEST_EXTRA_ARG(i, 'a');
-		{
-		  ui32_t length;
-		  Kumu::hex2bin(argv[i], asset_id_value, UUIDlen, &length);
-
-		  if ( length != UUIDlen )
-		    {
-		      fprintf(stderr, "Unexpected asset ID length: %u, expecting %u characters.\n", length, UUIDlen);
-		      return;
-		    }
-		}
-		break;
-
-	      case 'b':
-		TEST_EXTRA_ARG(i, 'b');
-		fb_size = Kumu::xabs(strtol(argv[i], 0, 10));
-
-		if ( verbose_flag )
-		  fprintf(stderr, "Frame Buffer size: %u bytes.\n", fb_size);
-
-		break;
-
-	      case 'c':
-		TEST_EXTRA_ARG(i, 'c');
-		if ( ! set_color_system_from_arg(argv[i]) )
-		  {
-		    return;
-		  }
-		break;
-
-	      case 'C':
-		TEST_EXTRA_ARG(i, 'C');
-		if ( ! channel_assignment.DecodeHex(argv[i]) )
-		  {
-		    fprintf(stderr, "Error decoding ChannelAssignment UL value: %s\n", argv[i]);
-		    return;
-		  }
-		break;
-
-	      case 'D':
-		TEST_EXTRA_ARG(i, 'D');
-		component_depth = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'd':
-		TEST_EXTRA_ARG(i, 'd');
-		duration = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'E': encrypt_header_flag = false; break;
-	      case 'e': encrypt_header_flag = true; break;
-
-	      case 'F':
-		TEST_EXTRA_ARG(i, 'F');
-		field_dominance = Kumu::xabs(strtol(argv[i], 0, 10));
-		if ( field_dominance > 1 )
-		  {
-		    fprintf(stderr, "Field dominance value must be \"0\" or \"1\"\n");
-		    return;
-		  }
-		break;
-
-	      case 'g':
-		TEST_EXTRA_ARG(i, 'g');
-		language = argv[i];
-		break;
-
-	      case 'G':
-		TEST_EXTRA_ARG(i, 'G');
-		global_isxd_metadata.push_back(argv[i]);
-		break;
-
-	      case 'h': help_flag = true; break;
-
-	      case 'i':
-		frame_layout = 1;
-		use_cdci_descriptor = true;
-		break;
-
-	      case 'j':
-		key_id_flag = true;
-		TEST_EXTRA_ARG(i, 'j');
-		{
-		  ui32_t length;
-		  Kumu::hex2bin(argv[i], key_id_value, UUIDlen, &length);
-
-		  if ( length != UUIDlen )
-		    {
-		      fprintf(stderr, "Unexpected key ID length: %u, expecting %u characters.\n", length, UUIDlen);
-		      return;
-		    }
-		}
-		break;
-
-	      case 'k': key_flag = true;
-		TEST_EXTRA_ARG(i, 'k');
-		{
-		  ui32_t length;
-		  Kumu::hex2bin(argv[i], key_value, KeyLen, &length);
-
-		  if ( length != KeyLen )
-		    {
-		      fprintf(stderr, "Unexpected key length: %u, expecting %u characters.\n", length, KeyLen);
-		      return;
-		    }
-		}
-		break;
-
-	      case 'l':
-		TEST_EXTRA_ARG(i, 'y');
-		if ( ! set_video_line_map(argv[i]) )
-		  {
-		    return;
-		  } else {
-                    line_map_flag = true;
-		  }
-		break;
-
-	      case 'M': write_hmac = false; break;
-
-	      case 'm':
-		TEST_EXTRA_ARG(i, 'm');
-		mca_config_str = argv[i];
-		break;
-
-	      case 'n':
-		TEST_EXTRA_ARG(i, 'n');
-		if ( ! transfer_characteristic.DecodeHex(argv[i]) )
-		  {
-		    fprintf(stderr, "Error decoding TransferCharacteristic UL value: %s\n", argv[i]);
-		    return;
-		  }
-		break;
-
-	      case 'O':
-		TEST_EXTRA_ARG(i, 'O');
-		if ( ! set_display_primaries(argv[i]) )
-		  {
-		    return;
-		  }
-		break;
-
-	      case 'o':
-		TEST_EXTRA_ARG(i, 'o');
-		if ( ! set_display_luminance(argv[i]) )
-		  {
-		    return;
-		  }
-		break;
-
-	      case 'P':
-		TEST_EXTRA_ARG(i, 'P');
-		profile_name = argv[i];
-		break;
-
-	      case 'p':
-		TEST_EXTRA_ARG(i, 'p');
-		if ( ! picture_coding.DecodeHex(argv[i]) )
-		  {
-		    fprintf(stderr, "Error decoding PictureEssenceCoding UL value: %s\n", argv[i]);
-		    return;
-		  }
-		break;
-
-	      case 'q':
-		TEST_EXTRA_ARG(i, 'q');
-		if ( ! coding_equations.DecodeHex(argv[i]) )
-		  {
-		    fprintf(stderr, "Error decoding CodingEquations UL value: %s\n", argv[i]);
-		    return;
-		  }
-		break;
-
-	      case 'r':
-		TEST_EXTRA_ARG(i, 'r');
-		if ( ! DecodeRational(argv[i], edit_rate) )
-		  {
-		    fprintf(stderr, "Error decoding edit rate value: %s\n", argv[i]);
-		    return;
-		  }
-		
-		break;
-
-	      case 'R':
-		use_cdci_descriptor = false;
-		break;
-
-	      case 's':
-		TEST_EXTRA_ARG(i, 's');
-		partition_space = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 't':
-		TEST_EXTRA_ARG(i, 't');
-		rgba_MinRef = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'T':
-		TEST_EXTRA_ARG(i, 'T');
-		rgba_MaxRef = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'u': show_ul_values_flag = true; break;
-
-	      case 'U':
-		TEST_EXTRA_ARG(i, 'U');
-		isxd_document_namespace = argv[i];
-		break;
-
-	      case 'V': version_flag = true; break;
-	      case 'v': verbose_flag = true; break;
-	      case 'W': no_write_flag = true; break;
-
-	      case 'x':
-		TEST_EXTRA_ARG(i, 'x');
-		horizontal_subsampling = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'X':
-		TEST_EXTRA_ARG(i, 'X');
-		vertical_subsampling = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'Y':
-		use_cdci_descriptor = true;
-		// default 10 bit video range YUV, ref levels already set
-		break;
-
-	      case 'y':
-		// Use values provided as argument, sharp tool, be careful
-		use_cdci_descriptor = true;
-		TEST_EXTRA_ARG(i, 'y');
-		if ( ! set_video_ref(argv[i]) )
-		  {
-		    return;
-		  }
-		break;
-
-	      case 'Z': j2c_pedantic = false; break;
-	      case 'z': j2c_pedantic = true; break;
-
-	      default:
-		fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-		return;
-	      }
-	  }
-	else if ( argv[i][0] == '-' && argv[i][1] == '-' && isalpha(argv[i][2]) )
-	  {
-	    if ( strcmp(argv[i]+2, "mca-audio-content-kind") == 0 )
-	      {
-		if ( ++i >= argc || argv[(i)][0] == '-' )
-		  {
-		    fprintf(stderr, "Argument not found for option -mca-audio-content-kind.\n");
-		    return;
-		  }
-		
-		mca_audio_content_kind = argv[i];
-	      }
-	    else if ( strcmp(argv[i]+2, "mca-audio-element-kind") == 0 )
-	      {
-		if ( ++i >= argc || argv[(i)][0] == '-' )
-		  {
-		    fprintf(stderr, "Argument not found for option -mca-audio-element-kind.\n");
-		    return;
-		  }
-
-		mca_audio_element_kind = argv[i];
-	      }
-	    else
-	      {
-		fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
-		return;
-	      }
-	  }
-	else
-	  {
-	    if ( argv[i][0] != '-' )
-	      {
-		filenames.push_back(argv[i]);
-	      }
-	    else
-	      {
-		fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
-		return;
-	      }
-	  }
+        help_flag = true;
+        continue;
       }
+
+      if ( (strcmp( argv[i], "-suba") == 0) )
+      {
+        aces_picture_subdescriptor_flag = true;
+        if ((++i < argc) && (argv[i][0] != '-')) {
+          aces_authoring_information = argv[i];
+          aces_authoring_information_flag = true;
+        } else i--;
+        continue;
+      }
+
+      if ( (strcmp( argv[i], "-subt") == 0) )
+      {
+        target_frame_subdescriptor_flag = true;
+        TEST_EXTRA_ARG_STRING(i, "subt");
+        target_frame_directory = argv[i];
+        continue;
+      }
+
+      if ( (strcmp( argv[i], "-tfi") == 0) )
+      {
+        TEST_EXTRA_ARG_STRING(i, "tfi");
+        if (set_target_frame_index_list(argv[i], target_frame_index_list)) {
+          target_frame_index_flag = true;
+        }
+        continue;
+      }
+
+      if ( (strcmp( argv[i], "-tft") == 0) )
+      {
+        TEST_EXTRA_ARG_STRING(i, "tft");
+        //
+        const ASDCP::MDDEntry* entry = g_dict->FindSymbol(std::string(argv[i]));
+        if (entry) {
+          target_frame_transfer_characteristics_flag = true;
+          target_frame_transfer_characteristics = entry->ul;
+          fprintf(stderr, "target_frame_transfer_characteristic %s\n", entry->name);
+        }
+        continue;
+      }
+
+      if ( (strcmp( argv[i], "-tfc") == 0) )
+      {
+        TEST_EXTRA_ARG_STRING(i, "tfc");
+        //
+        const ASDCP::MDDEntry* entry = g_dict->FindSymbol(std::string(argv[i]));
+        if (entry) {
+          target_frame_color_primaries_flag = true;
+          target_frame_color_primaries = entry->ul;
+          fprintf(stderr, "target_frame_color_primaries %s\n", entry->name);
+        }
+        continue;
+      }
+
+      if ( (strcmp( argv[i], "-tfr") == 0) )
+      {
+        TEST_EXTRA_ARG(i, 'o');
+        if ( ! set_target_frame_min_max_code_value(argv[i]) )
+        {
+          return;
+        }
+        target_frame_min_max_ref_flag = true;
+        continue;
+      }
+
+      if ( (strcmp( argv[i], "-tfv") == 0) )
+      {
+        TEST_EXTRA_ARG_STRING(i, "tfv");
+        //
+        const ASDCP::MDDEntry* entry = g_dict->FindSymbol(std::string(argv[i]));
+        if (entry) {
+          target_frame_viewing_environment_flag = true;
+          target_frame_viewing_environment = entry->ul;
+          fprintf(stderr, "target_frame_viewing_environment %s\n", entry->name);
+        }
+        continue;
+      }
+
+
+      if ( argv[i][0] == '-'
+           && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) )
+           && argv[i][2] == 0 )
+      {
+        switch ( argv[i][1] )
+        {
+          case 'A':
+            TEST_EXTRA_ARG(i, 'A');
+            if ( ! DecodeRational(argv[i], aspect_ratio) )
+            {
+              fprintf(stderr, "Error decoding aspect ratio value: %s\n", argv[i]);
+              return;
+            }
+            else
+            {
+              aspect_ratio_flag = true;
+            }
+            break;
+
+          case 'a':
+            asset_id_flag = true;
+            TEST_EXTRA_ARG(i, 'a');
+            {
+              ui32_t length;
+              Kumu::hex2bin(argv[i], asset_id_value, UUIDlen, &length);
+
+              if ( length != UUIDlen )
+              {
+                fprintf(stderr, "Unexpected asset ID length: %u, expecting %u characters.\n", length, UUIDlen);
+                return;
+              }
+            }
+            break;
+
+          case 'b':
+            TEST_EXTRA_ARG(i, 'b');
+            fb_size = Kumu::xabs(strtol(argv[i], 0, 10));
+
+            if ( verbose_flag )
+              fprintf(stderr, "Frame Buffer size: %u bytes.\n", fb_size);
+
+            break;
+
+          case 'c':
+            TEST_EXTRA_ARG(i, 'c');
+            if ( ! set_color_system_from_arg(argv[i]) )
+            {
+              return;
+            }
+            break;
+
+          case 'C':
+            TEST_EXTRA_ARG(i, 'C');
+            if ( ! channel_assignment.DecodeHex(argv[i]) )
+            {
+              fprintf(stderr, "Error decoding ChannelAssignment UL value: %s\n", argv[i]);
+              return;
+            }
+            break;
+
+          case 'D':
+            TEST_EXTRA_ARG(i, 'D');
+            component_depth = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'd':
+            TEST_EXTRA_ARG(i, 'd');
+            duration = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'E': encrypt_header_flag = false; break;
+          case 'e': encrypt_header_flag = true; break;
+
+          case 'F':
+            TEST_EXTRA_ARG(i, 'F');
+            field_dominance = Kumu::xabs(strtol(argv[i], 0, 10));
+            if ( field_dominance > 1 )
+            {
+              fprintf(stderr, "Field dominance value must be \"0\" or \"1\"\n");
+              return;
+            }
+            break;
+
+          case 'g':
+            TEST_EXTRA_ARG(i, 'g');
+            language = argv[i];
+            break;
+
+          case 'G':
+            TEST_EXTRA_ARG(i, 'G');
+            global_isxd_metadata.push_back(argv[i]);
+            break;
+
+          case 'h': help_flag = true; break;
+
+          case 'i':
+            frame_layout = 1;
+            use_cdci_descriptor = true;
+            break;
+
+          case 'j':
+            key_id_flag = true;
+            TEST_EXTRA_ARG(i, 'j');
+            {
+              ui32_t length;
+              Kumu::hex2bin(argv[i], key_id_value, UUIDlen, &length);
+
+              if ( length != UUIDlen )
+              {
+                fprintf(stderr, "Unexpected key ID length: %u, expecting %u characters.\n", length, UUIDlen);
+                return;
+              }
+            }
+            break;
+
+          case 'k': key_flag = true;
+            TEST_EXTRA_ARG(i, 'k');
+            {
+              ui32_t length;
+              Kumu::hex2bin(argv[i], key_value, KeyLen, &length);
+
+              if ( length != KeyLen )
+              {
+                fprintf(stderr, "Unexpected key length: %u, expecting %u characters.\n", length, KeyLen);
+                return;
+              }
+            }
+            break;
+
+          case 'l':
+            TEST_EXTRA_ARG(i, 'y');
+            if ( ! set_video_line_map(argv[i]) )
+            {
+              return;
+            } else {
+              line_map_flag = true;
+            }
+            break;
+
+          case 'M': write_hmac = false; break;
+
+          case 'm':
+            TEST_EXTRA_ARG(i, 'm');
+            mca_config_str = argv[i];
+            break;
+
+          case 'n':
+            TEST_EXTRA_ARG(i, 'n');
+            if ( ! transfer_characteristic.DecodeHex(argv[i]) )
+            {
+              fprintf(stderr, "Error decoding TransferCharacteristic UL value: %s\n", argv[i]);
+              return;
+            }
+            break;
+
+          case 'O':
+            TEST_EXTRA_ARG(i, 'O');
+            if ( ! set_display_primaries(argv[i]) )
+            {
+              return;
+            }
+            break;
+
+          case 'o':
+            TEST_EXTRA_ARG(i, 'o');
+            if ( ! set_display_luminance(argv[i]) )
+            {
+              return;
+            }
+            break;
+
+          case 'P':
+            TEST_EXTRA_ARG(i, 'P');
+            profile_name = argv[i];
+            break;
+
+          case 'p':
+            TEST_EXTRA_ARG(i, 'p');
+            if ( ! picture_coding.DecodeHex(argv[i]) )
+            {
+              fprintf(stderr, "Error decoding PictureEssenceCoding UL value: %s\n", argv[i]);
+              return;
+            }
+            break;
+
+          case 'q':
+            TEST_EXTRA_ARG(i, 'q');
+            if ( ! coding_equations.DecodeHex(argv[i]) )
+            {
+              fprintf(stderr, "Error decoding CodingEquations UL value: %s\n", argv[i]);
+              return;
+            }
+            break;
+
+          case 'r':
+            TEST_EXTRA_ARG(i, 'r');
+            if ( ! DecodeRational(argv[i], edit_rate) )
+            {
+              fprintf(stderr, "Error decoding edit rate value: %s\n", argv[i]);
+              return;
+            }
+
+            break;
+
+          case 'R':
+            use_cdci_descriptor = false;
+            break;
+
+          case 's':
+            TEST_EXTRA_ARG(i, 's');
+            partition_space = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 't':
+            TEST_EXTRA_ARG(i, 't');
+            rgba_MinRef = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'T':
+            TEST_EXTRA_ARG(i, 'T');
+            rgba_MaxRef = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'u': show_ul_values_flag = true; break;
+
+          case 'U':
+            TEST_EXTRA_ARG(i, 'U');
+            isxd_document_namespace = argv[i];
+            break;
+
+          case 'V': version_flag = true; break;
+          case 'v': verbose_flag = true; break;
+          case 'W': no_write_flag = true; break;
+
+          case 'x':
+            TEST_EXTRA_ARG(i, 'x');
+            horizontal_subsampling = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'X':
+            TEST_EXTRA_ARG(i, 'X');
+            vertical_subsampling = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'Y':
+            use_cdci_descriptor = true;
+            // default 10 bit video range YUV, ref levels already set
+            break;
+
+          case 'y':
+            // Use values provided as argument, sharp tool, be careful
+            use_cdci_descriptor = true;
+            TEST_EXTRA_ARG(i, 'y');
+            if ( ! set_video_ref(argv[i]) )
+            {
+              return;
+            }
+            break;
+
+          case 'Z': j2c_pedantic = false; break;
+          case 'z': j2c_pedantic = true; break;
+
+          default:
+            fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+            return;
+        }
+      }
+      else if ( argv[i][0] == '-' && argv[i][1] == '-' && isalpha(argv[i][2]) )
+      {
+        if ( strcmp(argv[i]+2, "mca-audio-content-kind") == 0 )
+        {
+          if ( ++i >= argc || argv[(i)][0] == '-' )
+          {
+            fprintf(stderr, "Argument not found for option -mca-audio-content-kind.\n");
+            return;
+          }
+
+          mca_audio_content_kind = argv[i];
+        }
+        else if ( strcmp(argv[i]+2, "mca-audio-element-kind") == 0 )
+        {
+          if ( ++i >= argc || argv[(i)][0] == '-' )
+          {
+            fprintf(stderr, "Argument not found for option -mca-audio-element-kind.\n");
+            return;
+          }
+
+          mca_audio_element_kind = argv[i];
+        }
+        else
+        {
+          fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
+          return;
+        }
+      }
+      else
+      {
+        if ( argv[i][0] != '-' )
+        {
+          filenames.push_back(argv[i]);
+        }
+        else
+        {
+          fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
+          return;
+        }
+      }
+    }
 
     if ( ! mca_config_str.empty() )
+    {
+      if ( language.empty() )
       {
-	if ( language.empty() )
-	  {
-	    if ( ! mca_config.DecodeString(mca_config_str) )
-	      {
-		return;
-	      }
-	  }
-	else
-	  {
-	    if ( ! mca_config.DecodeString(mca_config_str, language) )
-	      {
-		return;
-	      }
-	  }
+        if ( ! mca_config.DecodeString(mca_config_str) )
+        {
+          return;
+        }
       }
+      else
+      {
+        if ( ! mca_config.DecodeString(mca_config_str, language) )
+        {
+          return;
+        }
+      }
+    }
 
     if ( help_flag || version_flag || show_ul_values_flag )
-      {
-	return;
-      }
+    {
+      return;
+    }
 
     if ( filenames.size() < 2 )
-      {
-	fputs("Option requires at least two filename arguments: <input-file> <output-file>\n", stderr);
-	return;
-      }
+    {
+      fputs("Option requires at least two filename arguments: <input-file> <output-file>\n", stderr);
+      return;
+    }
 
     out_file = filenames.back();
     filenames.pop_back();
 
     if ( ! picture_coding.HasValue() )
-      {
-	picture_coding = UL(g_dict->ul(MDD_JP2KEssenceCompression_BroadcastProfile_1));
-      }
+    {
+      picture_coding = UL(g_dict->ul(MDD_JP2KEssenceCompression_BroadcastProfile_1));
+    }
 
     error_flag = false;
   }
@@ -969,9 +969,9 @@ public:
 
 namespace ASDCP {
   Result_t JP2K_PDesc_to_MD(const ASDCP::JP2K::PictureDescriptor& PDesc,
-			    const ASDCP::Dictionary& dict,
-			    ASDCP::MXF::GenericPictureEssenceDescriptor& GenericPictureEssenceDescriptor,
-			    ASDCP::MXF::JPEG2000PictureSubDescriptor& EssenceSubDescriptor);
+                            const ASDCP::Dictionary& dict,
+                            ASDCP::MXF::GenericPictureEssenceDescriptor& GenericPictureEssenceDescriptor,
+                            ASDCP::MXF::JPEG2000PictureSubDescriptor& EssenceSubDescriptor);
 
   Result_t PCM_ADesc_to_MD(ASDCP::PCM::AudioDescriptor& ADesc, ASDCP::MXF::WaveAudioDescriptor* ADescObj);
 }
@@ -997,177 +997,177 @@ write_JP2K_file(CommandOptions& Options)
 
   // set up MXF writer
   if ( ASDCP_SUCCESS(result) )
+  {
+    ASDCP::JP2K::PictureDescriptor PDesc;
+    Parser.FillPictureDescriptor(PDesc);
+    PDesc.EditRate = Options.edit_rate;
+
+    if ( Options.verbose_flag )
     {
-      ASDCP::JP2K::PictureDescriptor PDesc;
-      Parser.FillPictureDescriptor(PDesc);
-      PDesc.EditRate = Options.edit_rate;
-
-      if ( Options.verbose_flag )
-	{
-	  fprintf(stderr, "JPEG 2000 pictures\n");
-	  fputs("PictureDescriptor:\n", stderr);
-          fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
-	  JP2K::PictureDescriptorDump(PDesc);
-	}
-
-      if ( Options.use_cdci_descriptor )
-	{
-	  ASDCP::MXF::CDCIEssenceDescriptor* tmp_dscr = new ASDCP::MXF::CDCIEssenceDescriptor(g_dict);
-	  essence_sub_descriptors.push_back(new ASDCP::MXF::JPEG2000PictureSubDescriptor(g_dict));
-	  
-	  result = ASDCP::JP2K_PDesc_to_MD(PDesc, *g_dict,
-					   *static_cast<ASDCP::MXF::GenericPictureEssenceDescriptor*>(tmp_dscr),
-					   *static_cast<ASDCP::MXF::JPEG2000PictureSubDescriptor*>(essence_sub_descriptors.back()));
-
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      tmp_dscr->CodingEquations = Options.coding_equations;
-	      tmp_dscr->TransferCharacteristic = Options.transfer_characteristic;
-	      tmp_dscr->ColorPrimaries = Options.color_primaries;
-	      tmp_dscr->PictureEssenceCoding = Options.picture_coding;
-	      tmp_dscr->HorizontalSubsampling = Options.horizontal_subsampling;
-	      tmp_dscr->VerticalSubsampling = Options.vertical_subsampling;
-	      tmp_dscr->ComponentDepth = Options.component_depth;
-	      tmp_dscr->FrameLayout = Options.frame_layout;
-	      tmp_dscr->AspectRatio = Options.aspect_ratio;
-	      tmp_dscr->FieldDominance = Options.field_dominance;
-	      tmp_dscr->WhiteReflevel = Options.cdci_WhiteRefLevel;
-	      tmp_dscr->BlackRefLevel = Options.cdci_BlackRefLevel;
-	      tmp_dscr->ColorRange = Options.cdci_ColorRange;
-	      if (Options.line_map_flag)  tmp_dscr->VideoLineMap = Options.line_map;
-
-	      if ( Options.md_min_luminance || Options.md_max_luminance )
-		{
-		  tmp_dscr->MasteringDisplayMinimumLuminance = Options.md_min_luminance;
-		  tmp_dscr->MasteringDisplayMaximumLuminance = Options.md_max_luminance;
-		}
-
-	      if ( Options.md_primaries.HasValue() )
-		{
-		  tmp_dscr->MasteringDisplayPrimaries = Options.md_primaries;
-		  tmp_dscr->MasteringDisplayWhitePointChromaticity = Options.md_white_point;
-		}
-
-	      essence_descriptor = static_cast<ASDCP::MXF::FileDescriptor*>(tmp_dscr);
-	    }
-	}
-      else
-	{ // use RGB
-	  ASDCP::MXF::RGBAEssenceDescriptor* tmp_dscr = new ASDCP::MXF::RGBAEssenceDescriptor(g_dict);
-	  essence_sub_descriptors.push_back(new ASDCP::MXF::JPEG2000PictureSubDescriptor(g_dict));
-	  
-	  result = ASDCP::JP2K_PDesc_to_MD(PDesc, *g_dict,
-					   *static_cast<ASDCP::MXF::GenericPictureEssenceDescriptor*>(tmp_dscr),
-					   *static_cast<ASDCP::MXF::JPEG2000PictureSubDescriptor*>(essence_sub_descriptors.back()));
-
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      tmp_dscr->CodingEquations = Options.coding_equations;
-	      tmp_dscr->TransferCharacteristic = Options.transfer_characteristic;
-	      tmp_dscr->ColorPrimaries = Options.color_primaries;
-	      tmp_dscr->ScanningDirection = 0;
-	      tmp_dscr->PictureEssenceCoding = Options.picture_coding;
-	      tmp_dscr->ComponentMaxRef = Options.rgba_MaxRef;
-	      tmp_dscr->ComponentMinRef = Options.rgba_MinRef;
-	      if (Options.line_map_flag)  tmp_dscr->VideoLineMap = Options.line_map;
-
-	      if ( Options.md_min_luminance || Options.md_max_luminance )
-		{
-		  tmp_dscr->MasteringDisplayMinimumLuminance = Options.md_min_luminance;
-		  tmp_dscr->MasteringDisplayMaximumLuminance = Options.md_max_luminance;
-		}
-
-	      if ( Options.md_primaries.HasValue() )
-		{
-		  tmp_dscr->MasteringDisplayPrimaries = Options.md_primaries;
-		  tmp_dscr->MasteringDisplayWhitePointChromaticity = Options.md_white_point;
-		}
-
-	      essence_descriptor = static_cast<ASDCP::MXF::FileDescriptor*>(tmp_dscr);
-	    }
-	}
+      fprintf(stderr, "JPEG 2000 pictures\n");
+      fputs("PictureDescriptor:\n", stderr);
+      fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
+      JP2K::PictureDescriptorDump(PDesc);
     }
 
-  if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+    if ( Options.use_cdci_descriptor )
     {
-      WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
-      Info.LabelSetType = LS_MXF_SMPTE;
+      ASDCP::MXF::CDCIEssenceDescriptor* tmp_dscr = new ASDCP::MXF::CDCIEssenceDescriptor(g_dict);
+      essence_sub_descriptors.push_back(new ASDCP::MXF::JPEG2000PictureSubDescriptor(g_dict));
 
-      if ( Options.asset_id_flag )
-	memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
-      else
-	Kumu::GenRandomUUID(Info.AssetUUID);
-
-      // configure encryption
-      if( Options.key_flag )
-	{
-	  Kumu::GenRandomUUID(Info.ContextID);
-	  Info.EncryptedEssence = true;
-
-	  if ( Options.key_id_flag )
-	    {
-	      memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
-	    }
-	  else
-	    {
-	      create_random_uuid(Info.CryptographicKeyID);
-	    }
-
-	  Context = new AESEncContext;
-	  result = Context->InitKey(Options.key_value);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-
-	  if ( ASDCP_SUCCESS(result) && Options.write_hmac )
-	    {
-	      Info.UsesHMAC = true;
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	}
+      result = ASDCP::JP2K_PDesc_to_MD(PDesc, *g_dict,
+                                       *static_cast<ASDCP::MXF::GenericPictureEssenceDescriptor*>(tmp_dscr),
+                                       *static_cast<ASDCP::MXF::JPEG2000PictureSubDescriptor*>(essence_sub_descriptors.back()));
 
       if ( ASDCP_SUCCESS(result) )
-	{
-	  result = Writer.OpenWrite(Options.out_file, Info, essence_descriptor, essence_sub_descriptors,
-				    Options.edit_rate, Options.mxf_header_size, Options.index_strategy, Options.partition_space);
-	}
+      {
+        tmp_dscr->CodingEquations = Options.coding_equations;
+        tmp_dscr->TransferCharacteristic = Options.transfer_characteristic;
+        tmp_dscr->ColorPrimaries = Options.color_primaries;
+        tmp_dscr->PictureEssenceCoding = Options.picture_coding;
+        tmp_dscr->HorizontalSubsampling = Options.horizontal_subsampling;
+        tmp_dscr->VerticalSubsampling = Options.vertical_subsampling;
+        tmp_dscr->ComponentDepth = Options.component_depth;
+        tmp_dscr->FrameLayout = Options.frame_layout;
+        tmp_dscr->AspectRatio = Options.aspect_ratio;
+        tmp_dscr->FieldDominance = Options.field_dominance;
+        tmp_dscr->WhiteReflevel = Options.cdci_WhiteRefLevel;
+        tmp_dscr->BlackRefLevel = Options.cdci_BlackRefLevel;
+        tmp_dscr->ColorRange = Options.cdci_ColorRange;
+        if (Options.line_map_flag)  tmp_dscr->VideoLineMap = Options.line_map;
+
+        if ( Options.md_min_luminance || Options.md_max_luminance )
+        {
+          tmp_dscr->MasteringDisplayMinimumLuminance = Options.md_min_luminance;
+          tmp_dscr->MasteringDisplayMaximumLuminance = Options.md_max_luminance;
+        }
+
+        if ( Options.md_primaries.HasValue() )
+        {
+          tmp_dscr->MasteringDisplayPrimaries = Options.md_primaries;
+          tmp_dscr->MasteringDisplayWhitePointChromaticity = Options.md_white_point;
+        }
+
+        essence_descriptor = static_cast<ASDCP::MXF::FileDescriptor*>(tmp_dscr);
+      }
     }
+    else
+    { // use RGB
+      ASDCP::MXF::RGBAEssenceDescriptor* tmp_dscr = new ASDCP::MXF::RGBAEssenceDescriptor(g_dict);
+      essence_sub_descriptors.push_back(new ASDCP::MXF::JPEG2000PictureSubDescriptor(g_dict));
+
+      result = ASDCP::JP2K_PDesc_to_MD(PDesc, *g_dict,
+                                       *static_cast<ASDCP::MXF::GenericPictureEssenceDescriptor*>(tmp_dscr),
+                                       *static_cast<ASDCP::MXF::JPEG2000PictureSubDescriptor*>(essence_sub_descriptors.back()));
+
+      if ( ASDCP_SUCCESS(result) )
+      {
+        tmp_dscr->CodingEquations = Options.coding_equations;
+        tmp_dscr->TransferCharacteristic = Options.transfer_characteristic;
+        tmp_dscr->ColorPrimaries = Options.color_primaries;
+        tmp_dscr->ScanningDirection = 0;
+        tmp_dscr->PictureEssenceCoding = Options.picture_coding;
+        tmp_dscr->ComponentMaxRef = Options.rgba_MaxRef;
+        tmp_dscr->ComponentMinRef = Options.rgba_MinRef;
+        if (Options.line_map_flag)  tmp_dscr->VideoLineMap = Options.line_map;
+
+        if ( Options.md_min_luminance || Options.md_max_luminance )
+        {
+          tmp_dscr->MasteringDisplayMinimumLuminance = Options.md_min_luminance;
+          tmp_dscr->MasteringDisplayMaximumLuminance = Options.md_max_luminance;
+        }
+
+        if ( Options.md_primaries.HasValue() )
+        {
+          tmp_dscr->MasteringDisplayPrimaries = Options.md_primaries;
+          tmp_dscr->MasteringDisplayWhitePointChromaticity = Options.md_white_point;
+        }
+
+        essence_descriptor = static_cast<ASDCP::MXF::FileDescriptor*>(tmp_dscr);
+      }
+    }
+  }
+
+  if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+  {
+    WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
+    Info.LabelSetType = LS_MXF_SMPTE;
+
+    if ( Options.asset_id_flag )
+      memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+    else
+      Kumu::GenRandomUUID(Info.AssetUUID);
+
+    // configure encryption
+    if( Options.key_flag )
+    {
+      Kumu::GenRandomUUID(Info.ContextID);
+      Info.EncryptedEssence = true;
+
+      if ( Options.key_id_flag )
+      {
+        memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
+      }
+      else
+      {
+        create_random_uuid(Info.CryptographicKeyID);
+      }
+
+      Context = new AESEncContext;
+      result = Context->InitKey(Options.key_value);
+
+      if ( ASDCP_SUCCESS(result) )
+        result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+
+      if ( ASDCP_SUCCESS(result) && Options.write_hmac )
+      {
+        Info.UsesHMAC = true;
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
+    }
+
+    if ( ASDCP_SUCCESS(result) )
+    {
+      result = Writer.OpenWrite(Options.out_file, Info, essence_descriptor, essence_sub_descriptors,
+                                Options.edit_rate, Options.mxf_header_size, Options.index_strategy, Options.partition_space);
+    }
+  }
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    ui32_t duration = 0;
+    result = Parser.Reset();
+
+    while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
     {
-      ui32_t duration = 0;
-      result = Parser.Reset();
+      result = Parser.ReadFrame(FrameBuffer);
 
-      while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
-	{
-	  result = Parser.ReadFrame(FrameBuffer);
-	  
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      if ( Options.verbose_flag )
-		FrameBuffer.Dump(stderr, Options.fb_dump_size);
-	      
-	      if ( Options.encrypt_header_flag )
-		FrameBuffer.PlaintextOffset(0);
-	    }
+      if ( ASDCP_SUCCESS(result) )
+      {
+        if ( Options.verbose_flag )
+          FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-	  if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
-	    {
-	      result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
+        if ( Options.encrypt_header_flag )
+          FrameBuffer.PlaintextOffset(0);
+      }
 
-	      // The Writer class will forward the last block of ciphertext
-	      // to the encryption context for use as the IV for the next
-	      // frame. If you want to use non-sequitur IV values, un-comment
-	      // the following  line of code.
-	      // if ( ASDCP_SUCCESS(result) && Options.key_flag )
-	      //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-	    }
-	}
+      if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+      {
+        result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
 
-      if ( result == RESULT_ENDOFFILE )
-	result = RESULT_OK;
+        // The Writer class will forward the last block of ciphertext
+        // to the encryption context for use as the IV for the next
+        // frame. If you want to use non-sequitur IV values, un-comment
+        // the following  line of code.
+        // if ( ASDCP_SUCCESS(result) && Options.key_flag )
+        //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+      }
     }
+
+    if ( result == RESULT_ENDOFFILE )
+      result = RESULT_OK;
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
     result = Writer.Finalize();
@@ -1212,9 +1212,9 @@ write_ACES_file(CommandOptions& Options)
     {
       while ( KM_SUCCESS(dir_reader.GetNext(next_item, ft)) )
       {
-          if ( next_item[0] == '.' ) continue; // no hidden files
-          std::string tmp_path = Kumu::PathJoin(Options.target_frame_directory, next_item);
-          target_frame_file_list.push_back(tmp_path);
+        if ( next_item[0] == '.' ) continue; // no hidden files
+        std::string tmp_path = Kumu::PathJoin(Options.target_frame_directory, next_item);
+        target_frame_file_list.push_back(tmp_path);
       }
     }
   }
@@ -1346,7 +1346,7 @@ write_ACES_file(CommandOptions& Options)
     if (ASDCP_SUCCESS(result))
     {
       result = Writer.OpenWrite(Options.out_file, Info, essence_descriptor, essence_sub_descriptors,
-        Options.edit_rate, AS_02::ACES::ResourceList_t(), Options.mxf_header_size, Options.index_strategy, Options.partition_space);
+                                Options.edit_rate, AS_02::ACES::ResourceList_t(), Options.mxf_header_size, Options.index_strategy, Options.partition_space);
     }
   }
 
@@ -1384,32 +1384,32 @@ write_ACES_file(CommandOptions& Options)
     if (result == RESULT_ENDOFFILE)
       result = RESULT_OK;
   }
-    AS_02::ACES::ResourceList_t::const_iterator ri;
-    for ( ri = resource_list_t.begin() ; ri != resource_list_t.end() && ASDCP_SUCCESS(result); ri++ )
+  AS_02::ACES::ResourceList_t::const_iterator ri;
+  for ( ri = resource_list_t.begin() ; ri != resource_list_t.end() && ASDCP_SUCCESS(result); ri++ )
+  {
+    result = Parser.ReadAncillaryResource((*ri).filePath, FrameBuffer);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Parser.ReadAncillaryResource((*ri).filePath, FrameBuffer);
+      if ( Options.verbose_flag )
+        FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-      if ( ASDCP_SUCCESS(result) )
+      if ( ! Options.no_write_flag )
       {
-        if ( Options.verbose_flag )
-          FrameBuffer.Dump(stderr, Options.fb_dump_size);
+        result = Writer.WriteAncillaryResource(FrameBuffer, Context, HMAC);
 
-        if ( ! Options.no_write_flag )
-        {
-          result = Writer.WriteAncillaryResource(FrameBuffer, Context, HMAC);
-
-          // The Writer class will forward the last block of ciphertext
-          // to the encryption context for use as the IV for the next
-          // frame. If you want to use non-sequitur IV values, un-comment
-          // the following  line of code.
-          // if ( ASDCP_SUCCESS(result) && Options.key_flag )
-          //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-        }
+        // The Writer class will forward the last block of ciphertext
+        // to the encryption context for use as the IV for the next
+        // frame. If you want to use non-sequitur IV values, un-comment
+        // the following  line of code.
+        // if ( ASDCP_SUCCESS(result) && Options.key_flag )
+        //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
       }
-
-      if ( result == RESULT_ENDOFFILE )
-        result = RESULT_OK;
     }
+
+    if ( result == RESULT_ENDOFFILE )
+      result = RESULT_OK;
+  }
 
 
 
@@ -1444,140 +1444,140 @@ write_PCM_file(CommandOptions& Options)
 
   // set up MXF writer
   if ( ASDCP_SUCCESS(result) )
+  {
+    ASDCP::PCM::AudioDescriptor ADesc;
+    Parser.FillAudioDescriptor(ADesc);
+
+    ADesc.EditRate = Options.edit_rate;
+    FrameBuffer.Capacity(PCM::CalcFrameBufferSize(ADesc));
+
+    if ( Options.verbose_flag )
     {
-      ASDCP::PCM::AudioDescriptor ADesc;
-      Parser.FillAudioDescriptor(ADesc);
-
-      ADesc.EditRate = Options.edit_rate;
-      FrameBuffer.Capacity(PCM::CalcFrameBufferSize(ADesc));
-
-      if ( Options.verbose_flag )
-	{
-	  char buf[64];
-	  fprintf(stderr, "%.1fkHz PCM Audio, %s fps (%u spf)\n",
-		  ADesc.AudioSamplingRate.Quotient() / 1000.0,
-		  RationalToString(Options.edit_rate, buf, 64),
-		  PCM::CalcSamplesPerFrame(ADesc));
-	  fputs("AudioDescriptor:\n", stderr);
-	  PCM::AudioDescriptorDump(ADesc);
-	}
-
-      essence_descriptor = new ASDCP::MXF::WaveAudioDescriptor(g_dict);
-
-      result = ASDCP::PCM_ADesc_to_MD(ADesc, essence_descriptor);
-
-      if ( Options.mca_config.empty() )
-	{
-	  essence_descriptor->ChannelAssignment = Options.channel_assignment;
-	}
-      else
-	{
-	  if ( Options.mca_config.ChannelCount() != essence_descriptor->ChannelCount )
-	    {
-	      fprintf(stderr, "MCA label count (%d) differs from essence stream channel count (%d).\n",
-		      Options.mca_config.ChannelCount(), essence_descriptor->ChannelCount);
-	      return RESULT_FAIL;
-	    }
-
-	  // This marks all soundfield groups using the same MCA property values
-	  MXF::InterchangeObject_list_t::iterator i;
-	  for ( i = Options.mca_config.begin(); i != Options.mca_config.end(); ++i )
-	    {
-	      MXF::SoundfieldGroupLabelSubDescriptor * desc = dynamic_cast<MXF::SoundfieldGroupLabelSubDescriptor*>(*i);
-	      if ( desc != 0 )
-		{
-		  if ( ! Options.mca_audio_content_kind.empty() )
-		    {
-		      desc->MCAAudioContentKind = Options.mca_audio_content_kind;
-		    }
-		  if ( ! Options.mca_audio_element_kind.empty() )
-		    {
-		      desc->MCAAudioElementKind = Options.mca_audio_element_kind;
-		    }
-		}
-	    }
-
-	  essence_descriptor->ChannelAssignment = g_dict->ul(MDD_IMFAudioChannelCfg_MCA);
-	}
+      char buf[64];
+      fprintf(stderr, "%.1fkHz PCM Audio, %s fps (%u spf)\n",
+              ADesc.AudioSamplingRate.Quotient() / 1000.0,
+              RationalToString(Options.edit_rate, buf, 64),
+              PCM::CalcSamplesPerFrame(ADesc));
+      fputs("AudioDescriptor:\n", stderr);
+      PCM::AudioDescriptorDump(ADesc);
     }
+
+    essence_descriptor = new ASDCP::MXF::WaveAudioDescriptor(g_dict);
+
+    result = ASDCP::PCM_ADesc_to_MD(ADesc, essence_descriptor);
+
+    if ( Options.mca_config.empty() )
+    {
+      essence_descriptor->ChannelAssignment = Options.channel_assignment;
+    }
+    else
+    {
+      if ( Options.mca_config.ChannelCount() != essence_descriptor->ChannelCount )
+      {
+        fprintf(stderr, "MCA label count (%d) differs from essence stream channel count (%d).\n",
+                Options.mca_config.ChannelCount(), essence_descriptor->ChannelCount);
+        return RESULT_FAIL;
+      }
+
+      // This marks all soundfield groups using the same MCA property values
+      MXF::InterchangeObject_list_t::iterator i;
+      for ( i = Options.mca_config.begin(); i != Options.mca_config.end(); ++i )
+      {
+        MXF::SoundfieldGroupLabelSubDescriptor * desc = dynamic_cast<MXF::SoundfieldGroupLabelSubDescriptor*>(*i);
+        if ( desc != 0 )
+        {
+          if ( ! Options.mca_audio_content_kind.empty() )
+          {
+            desc->MCAAudioContentKind = Options.mca_audio_content_kind;
+          }
+          if ( ! Options.mca_audio_element_kind.empty() )
+          {
+            desc->MCAAudioElementKind = Options.mca_audio_element_kind;
+          }
+        }
+      }
+
+      essence_descriptor->ChannelAssignment = g_dict->ul(MDD_IMFAudioChannelCfg_MCA);
+    }
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+  {
+    WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
+    Info.LabelSetType = LS_MXF_SMPTE;
+
+    if ( Options.asset_id_flag )
+      memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+    else
+      Kumu::GenRandomUUID(Info.AssetUUID);
+
+    // configure encryption
+    if( Options.key_flag )
     {
-      WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
-      Info.LabelSetType = LS_MXF_SMPTE;
+      Kumu::GenRandomUUID(Info.ContextID);
+      Info.EncryptedEssence = true;
 
-      if ( Options.asset_id_flag )
-	memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+      if ( Options.key_id_flag )
+      {
+        memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
+      }
       else
-	Kumu::GenRandomUUID(Info.AssetUUID);
+      {
+        create_random_uuid(Info.CryptographicKeyID);
+      }
 
-      // configure encryption
-      if( Options.key_flag )
-	{
-	  Kumu::GenRandomUUID(Info.ContextID);
-	  Info.EncryptedEssence = true;
-
-	  if ( Options.key_id_flag )
-	    {
-	      memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
-	    }
-	  else
-	    {
-	      create_random_uuid(Info.CryptographicKeyID);
-	    }
-
-	  Context = new AESEncContext;
-	  result = Context->InitKey(Options.key_value);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-
-	  if ( ASDCP_SUCCESS(result) && Options.write_hmac )
-	    {
-	      Info.UsesHMAC = true;
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	}
+      Context = new AESEncContext;
+      result = Context->InitKey(Options.key_value);
 
       if ( ASDCP_SUCCESS(result) )
-	{
-	  result = Writer.OpenWrite(Options.out_file.c_str(), Info, essence_descriptor,
-				    Options.mca_config, Options.edit_rate);
-	}
+        result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+
+      if ( ASDCP_SUCCESS(result) && Options.write_hmac )
+      {
+        Info.UsesHMAC = true;
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
     }
+
+    if ( ASDCP_SUCCESS(result) )
+    {
+      result = Writer.OpenWrite(Options.out_file.c_str(), Info, essence_descriptor,
+                                Options.mca_config, Options.edit_rate);
+    }
+  }
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    result = Parser.Reset();
+    ui32_t duration = 0;
+
+    while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
     {
-      result = Parser.Reset();
-      ui32_t duration = 0;
+      result = Parser.ReadFrame(FrameBuffer);
 
-      while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
-	{
-	  result = Parser.ReadFrame(FrameBuffer);
+      if ( ASDCP_SUCCESS(result) )
+      {
+        if ( Options.verbose_flag )
+          FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      if ( Options.verbose_flag )
-		FrameBuffer.Dump(stderr, Options.fb_dump_size);
+        if ( ! Options.no_write_flag )
+        {
+          result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
 
-	      if ( ! Options.no_write_flag )
-		{
-		  result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
-
-		  // The Writer class will forward the last block of ciphertext
-		  // to the encryption context for use as the IV for the next
-		  // frame. If you want to use non-sequitur IV values, un-comment
-		  // the following  line of code.
-		  // if ( ASDCP_SUCCESS(result) && Options.key_flag )
-		  //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-		}
-	    }
-	}
-
-      if ( result == RESULT_ENDOFFILE )
-	result = RESULT_OK;
+          // The Writer class will forward the last block of ciphertext
+          // to the encryption context for use as the IV for the next
+          // frame. If you want to use non-sequitur IV values, un-comment
+          // the following  line of code.
+          // if ( ASDCP_SUCCESS(result) && Options.key_flag )
+          //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+        }
+      }
     }
+
+    if ( result == RESULT_ENDOFFILE )
+      result = RESULT_OK;
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
     result = Writer.Finalize();
@@ -1612,66 +1612,66 @@ write_timed_text_file(CommandOptions& Options)
 
   // set up MXF writer
   if ( ASDCP_SUCCESS(result) )
+  {
+    Parser.FillTimedTextDescriptor(TDesc);
+    TDesc.EditRate = Options.edit_rate;
+    TDesc.ContainerDuration = Options.duration;
+    FrameBuffer.Capacity(Options.fb_size);
+
+    if ( ! Options.profile_name.empty() )
     {
-      Parser.FillTimedTextDescriptor(TDesc);
-      TDesc.EditRate = Options.edit_rate;
-      TDesc.ContainerDuration = Options.duration;
-      FrameBuffer.Capacity(Options.fb_size);
-
-      if ( ! Options.profile_name.empty() )
-	{
-	  TDesc.NamespaceName = Options.profile_name;
-	}
-
-      if ( Options.verbose_flag )
-	{
-	  fputs("IMF Timed-Text Descriptor:\n", stderr);
-	  TimedText::DescriptorDump(TDesc);
-	}
+      TDesc.NamespaceName = Options.profile_name;
     }
+
+    if ( Options.verbose_flag )
+    {
+      fputs("IMF Timed-Text Descriptor:\n", stderr);
+      TimedText::DescriptorDump(TDesc);
+    }
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+  {
+    WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
+    Info.LabelSetType = LS_MXF_SMPTE;
+
+    if ( Options.asset_id_flag )
+      memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+    else
+      Kumu::GenRandomUUID(Info.AssetUUID);
+
+    // configure encryption
+    if( Options.key_flag )
     {
-      WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
-      Info.LabelSetType = LS_MXF_SMPTE;
+      Kumu::GenRandomUUID(Info.ContextID);
+      Info.EncryptedEssence = true;
 
-      if ( Options.asset_id_flag )
-	memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+      if ( Options.key_id_flag )
+      {
+        memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
+      }
       else
-	Kumu::GenRandomUUID(Info.AssetUUID);
+      {
+        create_random_uuid(Info.CryptographicKeyID);
+      }
 
-      // configure encryption
-      if( Options.key_flag )
-	{
-	  Kumu::GenRandomUUID(Info.ContextID);
-	  Info.EncryptedEssence = true;
-
-	  if ( Options.key_id_flag )
-	    {
-	      memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
-	    }
-	  else
-	    {
-	      create_random_uuid(Info.CryptographicKeyID);
-	    }
-
-	  Context = new AESEncContext;
-	  result = Context->InitKey(Options.key_value);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-
-	  if ( ASDCP_SUCCESS(result) && Options.write_hmac )
-	    {
-	      Info.UsesHMAC = true;
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	}
+      Context = new AESEncContext;
+      result = Context->InitKey(Options.key_value);
 
       if ( ASDCP_SUCCESS(result) )
-	result = Writer.OpenWrite(Options.out_file.c_str(), Info, TDesc);
+        result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+
+      if ( ASDCP_SUCCESS(result) && Options.write_hmac )
+      {
+        Info.UsesHMAC = true;
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
     }
+
+    if ( ASDCP_SUCCESS(result) )
+      result = Writer.OpenWrite(Options.out_file.c_str(), Info, TDesc);
+  }
 
   if ( ASDCP_FAILURE(result) )
     return result;
@@ -1685,30 +1685,30 @@ write_timed_text_file(CommandOptions& Options)
     result = Writer.WriteTimedTextResource(XMLDoc, Context, HMAC);
 
   for ( ri = TDesc.ResourceList.begin() ; ri != TDesc.ResourceList.end() && ASDCP_SUCCESS(result); ri++ )
+  {
+    result = Parser.ReadAncillaryResource((*ri).ResourceID, FrameBuffer);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Parser.ReadAncillaryResource((*ri).ResourceID, FrameBuffer);
+      if ( Options.verbose_flag )
+        FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  if ( Options.verbose_flag )
-	    FrameBuffer.Dump(stderr, Options.fb_dump_size);
+      if ( ! Options.no_write_flag )
+      {
+        result = Writer.WriteAncillaryResource(FrameBuffer, Context, HMAC);
 
-	  if ( ! Options.no_write_flag )
-	    {
-	      result = Writer.WriteAncillaryResource(FrameBuffer, Context, HMAC);
-
-	      // The Writer class will forward the last block of ciphertext
-	      // to the encryption context for use as the IV for the next
-	      // frame. If you want to use non-sequitur IV values, un-comment
-	      // the following  line of code.
-	      // if ( ASDCP_SUCCESS(result) && Options.key_flag )
-	      //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-	    }
-	}
-
-      if ( result == RESULT_ENDOFFILE )
-	result = RESULT_OK;
+        // The Writer class will forward the last block of ciphertext
+        // to the encryption context for use as the IV for the next
+        // frame. If you want to use non-sequitur IV values, un-comment
+        // the following  line of code.
+        // if ( ASDCP_SUCCESS(result) && Options.key_flag )
+        //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+      }
     }
+
+    if ( result == RESULT_ENDOFFILE )
+      result = RESULT_OK;
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
     result = Writer.Finalize();
@@ -1724,15 +1724,15 @@ get_current_dms_text_descriptor(AS_02::ISXD::MXFWriter& writer, ASDCP::MXF::Gene
   writer.OP1aHeader().GetMDObjectsByType(DefaultSMPTEDict().ul(MDD_GenericStreamTextBasedSet), object_list);
 
   if ( object_list.empty() )
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
   text_object = dynamic_cast<MXF::GenericStreamTextBasedSet*>(object_list.back());
   assert(text_object != 0);
   return true;
 }
-		      
+
 
 // Write one or more plaintext Aux Data bytestreams to a plaintext AS-02 file
 // Write one or more plaintext Aux Data bytestreams to a ciphertext AS-02 file
@@ -1753,14 +1753,14 @@ write_isxd_file(CommandOptions& Options)
 
   // set up MXF writer
   if ( ASDCP_SUCCESS(result) )
-    {
+  {
 
-      if ( Options.verbose_flag )
-	{
-	  fprintf(stderr, "ISXD Data\n");
-	  fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
-	}
+    if ( Options.verbose_flag )
+    {
+      fprintf(stderr, "ISXD Data\n");
+      fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
     }
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
   {
@@ -1772,164 +1772,164 @@ write_isxd_file(CommandOptions& Options)
 
     Info.LabelSetType = LS_MXF_SMPTE;
 
-      // configure encryption
+    // configure encryption
     if( Options.key_flag )
-	{
-	  Kumu::GenRandomUUID(Info.ContextID);
-	  Info.EncryptedEssence = true;
+    {
+      Kumu::GenRandomUUID(Info.ContextID);
+      Info.EncryptedEssence = true;
 
-	  if ( Options.key_id_flag )
-	    {
-	      memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
-	    }
-	  else
-	    {
-	      create_random_uuid(Info.CryptographicKeyID);
-	    }
+      if ( Options.key_id_flag )
+      {
+        memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
+      }
+      else
+      {
+        create_random_uuid(Info.CryptographicKeyID);
+      }
 
-	  Context = new AESEncContext;
-	  result = Context->InitKey(Options.key_value);
+      Context = new AESEncContext;
+      result = Context->InitKey(Options.key_value);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+      if ( ASDCP_SUCCESS(result) )
+        result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
 
-	  if ( ASDCP_SUCCESS(result) && Options.write_hmac )
+      if ( ASDCP_SUCCESS(result) && Options.write_hmac )
       {
         Info.UsesHMAC = true;
         HMAC = new HMACContext;
         result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
       }
-	}
+    }
 
     if ( ASDCP_SUCCESS(result) )
+    {
+      if ( Options.isxd_document_namespace == "auto" )
       {
-	if ( Options.isxd_document_namespace == "auto" )
-	  {
-	    // get ns of first item
-	    std::string ns_prefix, type_name, namespace_name;
-	    result = Parser.ReadFrame(FrameBuffer);
+        // get ns of first item
+        std::string ns_prefix, type_name, namespace_name;
+        result = Parser.ReadFrame(FrameBuffer);
 
-	    if ( ASDCP_SUCCESS(result) )
-	      {
-		Kumu::AttributeList doc_attr_list;
-		result = GetXMLDocType(FrameBuffer.RoData(), FrameBuffer.Size(), ns_prefix, type_name,
-				       namespace_name, doc_attr_list) ? RESULT_OK : RESULT_FAIL;
-	      }
+        if ( ASDCP_SUCCESS(result) )
+        {
+          Kumu::AttributeList doc_attr_list;
+          result = GetXMLDocType(FrameBuffer.RoData(), FrameBuffer.Size(), ns_prefix, type_name,
+                                 namespace_name, doc_attr_list) ? RESULT_OK : RESULT_FAIL;
+        }
 
-	    if ( ASDCP_SUCCESS(result) && ! namespace_name.empty() )
-	      {
-		Options.isxd_document_namespace = namespace_name;
-	      }
-	    else
-	      {
-		fprintf(stderr, "Unable to parse an XML namespace name from the input document.\n");
-		return RESULT_FAIL;
-	      }
-	  }
-
-	result = Writer.OpenWrite(Options.out_file, Info, Options.isxd_document_namespace, Options.edit_rate);
+        if ( ASDCP_SUCCESS(result) && ! namespace_name.empty() )
+        {
+          Options.isxd_document_namespace = namespace_name;
+        }
+        else
+        {
+          fprintf(stderr, "Unable to parse an XML namespace name from the input document.\n");
+          return RESULT_FAIL;
+        }
       }
+
+      result = Writer.OpenWrite(Options.out_file, Info, Options.isxd_document_namespace, Options.edit_rate);
+    }
   }
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    ui32_t duration = 0;
+    result = Parser.Reset();
+
+    while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
     {
-      ui32_t duration = 0;
-      result = Parser.Reset();
+      result = Parser.ReadFrame(FrameBuffer);
 
-      while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
-	{
-	  result = Parser.ReadFrame(FrameBuffer);
+      if ( ASDCP_SUCCESS(result) )
+      {
+        if ( Options.verbose_flag )
+          FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      if ( Options.verbose_flag )
-		FrameBuffer.Dump(stderr, Options.fb_dump_size);
+        if ( Options.encrypt_header_flag )
+          FrameBuffer.PlaintextOffset(0);
+      }
 
-	      if ( Options.encrypt_header_flag )
-		FrameBuffer.PlaintextOffset(0);
-	    }
+      if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+      {
+        result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
 
-	  if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
-	    {
-	      result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
-
-	      // The Writer class will forward the last block of ciphertext
-	      // to the encryption context for use as the IV for the next
-	      // frame. If you want to use non-sequitur IV values, un-comment
-	      // the following  line of code.
-	      // if ( ASDCP_SUCCESS(result) && Options.key_flag )
-	      //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-	    }
-	}
-
-      if ( result == RESULT_ENDOFFILE )
-	{
-	  result = RESULT_OK;
-	}
+        // The Writer class will forward the last block of ciphertext
+        // to the encryption context for use as the IV for the next
+        // frame. If you want to use non-sequitur IV values, un-comment
+        // the following  line of code.
+        // if ( ASDCP_SUCCESS(result) && Options.key_flag )
+        //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+      }
     }
-  
-  if ( KM_SUCCESS(result) && ! Options.no_write_flag )
+
+    if ( result == RESULT_ENDOFFILE )
     {
-      ASDCP::FrameBuffer global_metadata;
-      std::list<std::string>::iterator i;
-      
-      for ( i = Options.global_isxd_metadata.begin(); i != Options.global_isxd_metadata.end(); ++i )
-	{
-	  ui32_t file_size = Kumu::FileSize(*i);
-	  result = global_metadata.Capacity(file_size);
+      result = RESULT_OK;
+    }
+  }
 
-	  if ( KM_SUCCESS(result) )
-	    {
-	      ui32_t read_count = 0;
-	      Kumu::FileReader Reader;
-	      std::string namespace_name;
+  if ( KM_SUCCESS(result) && ! Options.no_write_flag )
+  {
+    ASDCP::FrameBuffer global_metadata;
+    std::list<std::string>::iterator i;
 
-	      result = Reader.OpenRead(*i);
-
-	      if ( KM_SUCCESS(result) )
-		{
-		  result = Reader.Read(global_metadata.Data(), file_size, &read_count);
-		}
-
-	      if ( KM_SUCCESS(result) )
-		{
-		  if ( file_size != read_count) 
-		    return RESULT_READFAIL;
-
-		  global_metadata.Size(read_count);
-
-		  std::string ns_prefix, type_name;
-		  Kumu::AttributeList doc_attr_list;
-		  result = GetXMLDocType(global_metadata.RoData(), global_metadata.Size(), ns_prefix, type_name,
-					 namespace_name, doc_attr_list) ? RESULT_OK : RESULT_FAIL;
-		}
-
-	      if ( KM_SUCCESS(result) )
-		{
-		  result = Writer.AddDmsGenericPartUtf8Text(global_metadata, Context, HMAC);
-		}
-
-	      if ( KM_SUCCESS(result) )
-		{
-		  ASDCP::MXF::GenericStreamTextBasedSet *text_object = 0;
-		  get_current_dms_text_descriptor(Writer, text_object);
-		  assert(text_object);
-		  text_object->TextMIMEMediaType = "text/xml";
-		  text_object->TextDataDescription = namespace_name;
-
-		  // this is not really useful when inserting multiple objects because
-		  // it cannot be set per object without some other CLI syntax for
-		  // associating language codes with 2057 blobs, e.g., <filename>:<lang>
-		  text_object->RFC5646TextLanguageCode = Options.language;
-		}
-	    }
-	}
+    for ( i = Options.global_isxd_metadata.begin(); i != Options.global_isxd_metadata.end(); ++i )
+    {
+      ui32_t file_size = Kumu::FileSize(*i);
+      result = global_metadata.Capacity(file_size);
 
       if ( KM_SUCCESS(result) )
-	{
-	  result = Writer.Finalize();
-	}
+      {
+        ui32_t read_count = 0;
+        Kumu::FileReader Reader;
+        std::string namespace_name;
+
+        result = Reader.OpenRead(*i);
+
+        if ( KM_SUCCESS(result) )
+        {
+          result = Reader.Read(global_metadata.Data(), file_size, &read_count);
+        }
+
+        if ( KM_SUCCESS(result) )
+        {
+          if ( file_size != read_count)
+            return RESULT_READFAIL;
+
+          global_metadata.Size(read_count);
+
+          std::string ns_prefix, type_name;
+          Kumu::AttributeList doc_attr_list;
+          result = GetXMLDocType(global_metadata.RoData(), global_metadata.Size(), ns_prefix, type_name,
+                                 namespace_name, doc_attr_list) ? RESULT_OK : RESULT_FAIL;
+        }
+
+        if ( KM_SUCCESS(result) )
+        {
+          result = Writer.AddDmsGenericPartUtf8Text(global_metadata, Context, HMAC);
+        }
+
+        if ( KM_SUCCESS(result) )
+        {
+          ASDCP::MXF::GenericStreamTextBasedSet *text_object = 0;
+          get_current_dms_text_descriptor(Writer, text_object);
+          assert(text_object);
+          text_object->TextMIMEMediaType = "text/xml";
+          text_object->TextDataDescription = namespace_name;
+
+          // this is not really useful when inserting multiple objects because
+          // it cannot be set per object without some other CLI syntax for
+          // associating language codes with 2057 blobs, e.g., <filename>:<lang>
+          text_object->RFC5646TextLanguageCode = Options.language;
+        }
+      }
     }
+
+    if ( KM_SUCCESS(result) )
+    {
+      result = Writer.Finalize();
+    }
+  }
 
   return result;
 }
@@ -1952,74 +1952,74 @@ main(int argc, const char** argv)
     usage();
 
   if ( Options.show_ul_values_flag )
-    {
-      g_dict->Dump(stdout);
-    }
+  {
+    g_dict->Dump(stdout);
+  }
 
   if ( Options.version_flag || Options.help_flag || Options.show_ul_values_flag )
     return 0;
 
   if ( Options.error_flag )
-    {
-      fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
-      return 3;
-    }
+  {
+    fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
+    return 3;
+  }
 
   EssenceType_t EssenceType;
   result = ASDCP::RawEssenceType(Options.filenames.front().c_str(), EssenceType);
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    switch ( EssenceType )
     {
-      switch ( EssenceType )
-	{
-	case ESS_JPEG_2000:
-	  result = write_JP2K_file(Options);
-	  break;
-	 // PB
-	case ::ESS_AS02_ACES:
-	  result = write_ACES_file(Options);
-	  break;
-	case ESS_PCM_24b_48k:
-	case ESS_PCM_24b_96k:
-	  result = write_PCM_file(Options);
-	  break;
+      case ESS_JPEG_2000:
+        result = write_JP2K_file(Options);
+        break;
+        // PB
+      case ::ESS_AS02_ACES:
+        result = write_ACES_file(Options);
+        break;
+      case ESS_PCM_24b_48k:
+      case ESS_PCM_24b_96k:
+        result = write_PCM_file(Options);
+        break;
 
-	case ESS_TIMED_TEXT:
-	  result = write_timed_text_file(Options);
-	  break;
+      case ESS_TIMED_TEXT:
+        result = write_timed_text_file(Options);
+        break;
 
-	case ESS_DCDATA_UNKNOWN:
-	  if ( ! Options.isxd_document_namespace.empty() )
-	    {
-	      result = write_isxd_file(Options);      
-	    }
-	  else
-	    {
-	      fprintf(stderr, "%s: Unknown synchronous data file type, not AS-02-compatible essence.\n",
-		      Options.filenames.front().c_str());
-	      return 5;
-	    }
-	  break;
+      case ESS_DCDATA_UNKNOWN:
+        if ( ! Options.isxd_document_namespace.empty() )
+        {
+          result = write_isxd_file(Options);
+        }
+        else
+        {
+          fprintf(stderr, "%s: Unknown synchronous data file type, not AS-02-compatible essence.\n",
+                  Options.filenames.front().c_str());
+          return 5;
+        }
+        break;
 
-	default:
-	  fprintf(stderr, "%s: Unknown file type, not AS-02-compatible essence.\n",
-		  Options.filenames.front().c_str());
-	  return 5;
-	}
+      default:
+        fprintf(stderr, "%s: Unknown file type, not AS-02-compatible essence.\n",
+                Options.filenames.front().c_str());
+        return 5;
     }
+  }
 
   if ( ASDCP_FAILURE(result) )
+  {
+    fputs("Program stopped on error.\n", stderr);
+
+    if ( result != RESULT_FAIL )
     {
-      fputs("Program stopped on error.\n", stderr);
-
-      if ( result != RESULT_FAIL )
-	{
-	  fputs(result, stderr);
-	  fputc('\n', stderr);
-	}
-
-      return 1;
+      fputs(result, stderr);
+      fputc('\n', stderr);
     }
+
+    return 1;
+  }
 
   return 0;
 }

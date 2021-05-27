@@ -34,42 +34,42 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace
 {
 
-const std::string AttrAcesImageContainerFlag("acesImageContainerFlag");
-const std::string AttrChannels("channels");
-const std::string AttrChromaticities("chromaticities");
-const std::string AttrCompression("compression");
-const std::string AttrDataWindow("dataWindow");
-const std::string AttrDisplayWindow("displayWindow");
-const std::string AttrLineOrder("lineOrder");
-const std::string AttrPixelAspectRatio("pixelAspectRatio");
-const std::string AttrScreenWindowCenter("screenWindowCenter");
-const std::string AttrScreenWindowWidth("screenWindowWidth");
+  const std::string AttrAcesImageContainerFlag("acesImageContainerFlag");
+  const std::string AttrChannels("channels");
+  const std::string AttrChromaticities("chromaticities");
+  const std::string AttrCompression("compression");
+  const std::string AttrDataWindow("dataWindow");
+  const std::string AttrDisplayWindow("displayWindow");
+  const std::string AttrLineOrder("lineOrder");
+  const std::string AttrPixelAspectRatio("pixelAspectRatio");
+  const std::string AttrScreenWindowCenter("screenWindowCenter");
+  const std::string AttrScreenWindowWidth("screenWindowWidth");
 
-const std::string TypeUnsignedChar("unsigned char");
-const std::string TypeUnsignedChar_("unsignedChar");
-const std::string TypeShort("short");
-const std::string TypeUnsignedShort("unsigned short");
-const std::string TypeUnsignedShort_("unsignedShort");
-const std::string TypeInt("int");
-const std::string TypeUnsignedInt("unsigned int");
-const std::string TypeUnsignedInt_("unsignedInt");
-const std::string TypeUnsignedLong("unsigned long");
-const std::string TypeUnsignedLong_("unsignedLong");
-const std::string TypeHalf("half");
-const std::string TypeFloat("float");
-const std::string TypeDouble("double");
-const std::string TypeBox2i("box2i");
-const std::string TypeChlist("chlist");
-const std::string TypeChromaticities("chromaticities");
-const std::string TypeCompression("compression");
-const std::string TypeLineOrder("lineOrder");
-const std::string TypeKeycode("keycode");
-const std::string TypeRational("rational");
-const std::string TypeString("string");
-const std::string TypeStringVector("stringVector");
-const std::string TypeTimecode("timecode");
-const std::string TypeV2f("v2f");
-const std::string TypeV3f("v3f");
+  const std::string TypeUnsignedChar("unsigned char");
+  const std::string TypeUnsignedChar_("unsignedChar");
+  const std::string TypeShort("short");
+  const std::string TypeUnsignedShort("unsigned short");
+  const std::string TypeUnsignedShort_("unsignedShort");
+  const std::string TypeInt("int");
+  const std::string TypeUnsignedInt("unsigned int");
+  const std::string TypeUnsignedInt_("unsignedInt");
+  const std::string TypeUnsignedLong("unsigned long");
+  const std::string TypeUnsignedLong_("unsignedLong");
+  const std::string TypeHalf("half");
+  const std::string TypeFloat("float");
+  const std::string TypeDouble("double");
+  const std::string TypeBox2i("box2i");
+  const std::string TypeChlist("chlist");
+  const std::string TypeChromaticities("chromaticities");
+  const std::string TypeCompression("compression");
+  const std::string TypeLineOrder("lineOrder");
+  const std::string TypeKeycode("keycode");
+  const std::string TypeRational("rational");
+  const std::string TypeString("string");
+  const std::string TypeStringVector("stringVector");
+  const std::string TypeTimecode("timecode");
+  const std::string TypeV2f("v2f");
+  const std::string TypeV3f("v3f");
 
 } // namespace
 
@@ -90,13 +90,13 @@ void AS_02::ACES::Attribute::Move(const byte_t *buf)
     }
     if(buf - mpData < 1)
     {
-       Kumu::DefaultLogSink().Error("Size of attribute name == 0 Bytes\n");
-       return;
+      Kumu::DefaultLogSink().Error("Size of attribute name == 0 Bytes\n");
+      return;
     }
     else if(buf - mpData > 255)
     {
-       Kumu::DefaultLogSink().Error("Size of attribute name > 255 Bytes\n");
-       return;
+      Kumu::DefaultLogSink().Error("Size of attribute name > 255 Bytes\n");
+      return;
     }
     mAttrName.assign((const char*)mpData, buf - mpData); // We don't want the Null termination.
     buf++; // Move to "attribute type name".
@@ -107,13 +107,13 @@ void AS_02::ACES::Attribute::Move(const byte_t *buf)
     }
     if(buf - ptmp < 1)
     {
-       Kumu::DefaultLogSink().Error("Size of attribute type == 0 Bytes\n");
-       return;
+      Kumu::DefaultLogSink().Error("Size of attribute type == 0 Bytes\n");
+      return;
     }
     else if(buf - ptmp > 255)
     {
-       Kumu::DefaultLogSink().Error("Size of attribute type > 255 Bytes\n");
-       return;
+      Kumu::DefaultLogSink().Error("Size of attribute type > 255 Bytes\n");
+      return;
     }
     std::string attribute_type_name;
     attribute_type_name.assign((const char*)ptmp, buf - ptmp); // We don't want the Null termination.
@@ -121,8 +121,8 @@ void AS_02::ACES::Attribute::Move(const byte_t *buf)
     i32_t size = KM_i32_LE(*(i32_t*)(buf));
     if(size < 0)
     {
-       Kumu::DefaultLogSink().Error("Attribute size is negative\n");
-       return;
+      Kumu::DefaultLogSink().Error("Attribute size is negative\n");
+      return;
     }
     mValueSize = size;
     mpValue = buf + 4;
@@ -429,13 +429,13 @@ void AS_02::ACES::ACESDataAccessor::AsChlist(const byte_t *buf, ui32_t size, chl
     while(*buf != 0x00 && buf - ptmp < 256) { buf++; }
     if(buf - ptmp < 1)
     {
-       Kumu::DefaultLogSink().Error("Size of name == 0 Bytes\n");
-       return;
+      Kumu::DefaultLogSink().Error("Size of name == 0 Bytes\n");
+      return;
     }
     else if(buf - ptmp > 255)
     {
-       Kumu::DefaultLogSink().Error("Size of name > 255 Bytes\n");
-       return;
+      Kumu::DefaultLogSink().Error("Size of name > 255 Bytes\n");
+      return;
     }
     channel ch;
     ch.name.assign((const char*)ptmp, buf - ptmp); // We don't want the Null termination.

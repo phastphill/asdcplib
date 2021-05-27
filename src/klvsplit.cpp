@@ -64,7 +64,7 @@ Copyright (c) 2005-2013 John Hurst\n\
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME, PROGRAM_NAME);
 }
 
 //
@@ -97,119 +97,119 @@ USAGE: %s [-l <limit>] [-p <prefix>] [-s <suffix>] [-u|-U] [-v] \n\
 
 //
 //
- class CommandOptions
- {
-   CommandOptions();
+class CommandOptions
+{
+  CommandOptions();
 
- public:
-   bool   error_flag;               // true if the given options are in error or not complete
-   bool   version_flag;             // true if the version display option was selected
-   bool   help_flag;                // true if the help display option was selected
-   bool   verbose_flag;             // true if the informative messages option was selected
-   bool   unwrap_mode;              // true if we are to strip the K and L before writing
-   bool   list_mode;
-   ASDCP::UL target_ul;             // a UL value identifying the packets to be extracted
-   ui64_t  extract_limit;           // limit extraction to the given number of packets
-   std::string prefix;              // output filename prefix
-   std::string suffix;              // output filename suffix
-   FileList_t inFileList;           // File to operate on
+public:
+  bool   error_flag;               // true if the given options are in error or not complete
+  bool   version_flag;             // true if the version display option was selected
+  bool   help_flag;                // true if the help display option was selected
+  bool   verbose_flag;             // true if the informative messages option was selected
+  bool   unwrap_mode;              // true if we are to strip the K and L before writing
+  bool   list_mode;
+  ASDCP::UL target_ul;             // a UL value identifying the packets to be extracted
+  ui64_t  extract_limit;           // limit extraction to the given number of packets
+  std::string prefix;              // output filename prefix
+  std::string suffix;              // output filename suffix
+  FileList_t inFileList;           // File to operate on
 
-   CommandOptions(int argc, const char** argv, const ASDCP::Dictionary& dict) :
-     error_flag(true), version_flag(false), help_flag(false),
-     verbose_flag(false), unwrap_mode(false), list_mode(false), extract_limit(ui64_C(-1))
-   {
-     for ( int i = 1; i < argc; ++i )
-       {
+  CommandOptions(int argc, const char** argv, const ASDCP::Dictionary& dict) :
+      error_flag(true), version_flag(false), help_flag(false),
+      verbose_flag(false), unwrap_mode(false), list_mode(false), extract_limit(ui64_C(-1))
+  {
+    for ( int i = 1; i < argc; ++i )
+    {
 
-	 if ( (strcmp( argv[i], "-help") == 0) )
-	   {
-	     help_flag = true;
-	     continue;
-	   }
-         
-	 if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
-	   {
-	     switch ( argv[i][1] )
-	       {
-	       case 'd': list_mode = true; break;
-	       case 'h': help_flag = true; break;
+      if ( (strcmp( argv[i], "-help") == 0) )
+      {
+        help_flag = true;
+        continue;
+      }
 
-	       case 'l':
-		 TEST_EXTRA_ARG(i, 'l');
-		 extract_limit = Kumu::xabs(strtoll(argv[i], 0, 10));
-		 break;
+      if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
+      {
+        switch ( argv[i][1] )
+        {
+          case 'd': list_mode = true; break;
+          case 'h': help_flag = true; break;
 
-	       case 'p':
-		 TEST_EXTRA_ARG(i, 'p');
-		 prefix = argv[i];
-		 break;
+          case 'l':
+            TEST_EXTRA_ARG(i, 'l');
+            extract_limit = Kumu::xabs(strtoll(argv[i], 0, 10));
+            break;
 
-	       case 's':
-		 TEST_EXTRA_ARG(i, 's');
-		 suffix = argv[i];
-		 break;
+          case 'p':
+            TEST_EXTRA_ARG(i, 'p');
+            prefix = argv[i];
+            break;
 
-	       case 'u': unwrap_mode = true; break;
-	       case 'U': unwrap_mode = false; break;
-	       case 'V': version_flag = true; break;
-	       case 'v': verbose_flag = true; break;
+          case 's':
+            TEST_EXTRA_ARG(i, 's');
+            suffix = argv[i];
+            break;
 
-	       default:
-		 fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-		 return;
-	       }
-	   }
-	 else if ( argv[i][0] != '-' )
-	   {
-	     if ( ! target_ul.HasValue() )
-	       {
-		 if ( ! target_ul.DecodeHex(argv[i]) )
-		   {
-		     const ASDCP::MDDEntry *e = dict.FindSymbol(argv[i]);
+          case 'u': unwrap_mode = true; break;
+          case 'U': unwrap_mode = false; break;
+          case 'V': version_flag = true; break;
+          case 'v': verbose_flag = true; break;
 
-		     if ( e != 0 )
-		       target_ul = e->ul;
-		   }
+          default:
+            fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+            return;
+        }
+      }
+      else if ( argv[i][0] != '-' )
+      {
+        if ( ! target_ul.HasValue() )
+        {
+          if ( ! target_ul.DecodeHex(argv[i]) )
+          {
+            const ASDCP::MDDEntry *e = dict.FindSymbol(argv[i]);
 
-		 if ( ! target_ul.HasValue() )
-		   {
-		     fprintf(stderr, "Value is not a UL or valid object name: %s\n", argv[i]);
-		     return;
-		   }
-	       }
-	     else
-	       {
-		 inFileList.push_back(argv[i]);
-	       }
-	   }
-	 else
-	   {
-	     fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-	     return;
-	   }
-       }
+            if ( e != 0 )
+              target_ul = e->ul;
+          }
 
-     if ( help_flag || version_flag )
-       return;
-     
-     if ( ! list_mode )
-       {
-	 if ( inFileList.empty() )
-	   {
-	     fputs("Input filename(s) required.\n", stderr);
-	     return;
-	   }
-     
-	 if ( ! target_ul.HasValue() )
-	   {
-	     fputs("Packet UL not set.  Use %s -u <ul> or keyword.\n", stderr);
-	     return;
-	   }
-       }
+          if ( ! target_ul.HasValue() )
+          {
+            fprintf(stderr, "Value is not a UL or valid object name: %s\n", argv[i]);
+            return;
+          }
+        }
+        else
+        {
+          inFileList.push_back(argv[i]);
+        }
+      }
+      else
+      {
+        fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+        return;
+      }
+    }
 
-     error_flag = false;
-   }
- };
+    if ( help_flag || version_flag )
+      return;
+
+    if ( ! list_mode )
+    {
+      if ( inFileList.empty() )
+      {
+        fputs("Input filename(s) required.\n", stderr);
+        return;
+      }
+
+      if ( ! target_ul.HasValue() )
+      {
+        fputs("Packet UL not set.  Use %s -u <ul> or keyword.\n", stderr);
+        return;
+      }
+    }
+
+    error_flag = false;
+  }
+};
 
 
 //---------------------------------------------------------------------------------------------------
@@ -231,108 +231,108 @@ main(int argc, const char** argv)
     return 0;
 
   if ( Options.error_flag )
-    {
-      fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
-      return 3;
-    }
+  {
+    fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
+    return 3;
+  }
 
   if ( Options.list_mode )
+  {
+    DefaultLogSink().UnsetFilterFlag(Kumu::LOG_ALLOW_WARN);
+    char buf[64];
+
+    MDD_t di = (MDD_t)0;
+    while ( di < MDD_Max )
     {
-      DefaultLogSink().UnsetFilterFlag(Kumu::LOG_ALLOW_WARN);
-      char buf[64];
+      const MDDEntry& e = dict->Type(di);
 
-      MDD_t di = (MDD_t)0;
-      while ( di < MDD_Max )
-	{
-	  const MDDEntry& e = dict->Type(di);
+      if ( e.name != 0  && ( e.ul[4] == 1 || e.ul[4] == 2 ) )
+      {
+        if ( Options.verbose_flag )
+        {
+          UL tmp_ul(e.ul);
+          printf("%s %s\n", tmp_ul.EncodeString(buf, 64), e.name);
+        }
+        else
+        {
+          printf("%s\n", e.name);
+        }
+      }
 
-	  if ( e.name != 0  && ( e.ul[4] == 1 || e.ul[4] == 2 ) )
-	    {
-	      if ( Options.verbose_flag )
-		{
-		  UL tmp_ul(e.ul);
-		  printf("%s %s\n", tmp_ul.EncodeString(buf, 64), e.name);
-		}
-	      else
-		{
-		  printf("%s\n", e.name);
-		}
-	    }
-
-	  di = (MDD_t)(di + 1);
-	}
-
-      return 0;
+      di = (MDD_t)(di + 1);
     }
+
+    return 0;
+  }
 
   Result_t result = RESULT_OK;
   FileList_t::iterator fi;
 
   for ( fi = Options.inFileList.begin(); KM_SUCCESS(result) && fi != Options.inFileList.end(); ++fi )
+  {
+    if ( Options.verbose_flag )
+      fprintf(stderr, "Opening file %s\n", (fi->c_str()));
+
+    std::string this_prefix =  Options.prefix.empty() ? Kumu::PathSetExtension(*fi, "") + "_" : Options.prefix;
+    Kumu::FileReader reader;
+    KLVFilePacket packet;
+    char filename_buf[1024];
+    ui64_t item_counter = 0;
+
+    result = reader.OpenRead(fi->c_str());
+
+    if ( KM_SUCCESS(result) )
+      result = packet.InitFromFile(reader);
+
+    while ( KM_SUCCESS(result) && item_counter < Options.extract_limit )
     {
-      if ( Options.verbose_flag )
-	fprintf(stderr, "Opening file %s\n", (fi->c_str()));
-      
-      std::string this_prefix =  Options.prefix.empty() ? Kumu::PathSetExtension(*fi, "") + "_" : Options.prefix;
-      Kumu::FileReader reader;
-      KLVFilePacket packet;
-      char filename_buf[1024];
-      ui64_t item_counter = 0;
+      if ( packet.GetUL() == Options.target_ul
+           || packet.GetUL().MatchIgnoreStream(Options.target_ul) )
+      {
+        snprintf(filename_buf, 1024, "%s%010qu%s", this_prefix.c_str(), item_counter, Options.suffix.c_str());
 
-      result = reader.OpenRead(fi->c_str());
-	  
+        if ( Options.verbose_flag )
+          fprintf(stderr, "%s (%llu bytes)\n", filename_buf, packet.ValueLength());
+
+        Kumu::FileWriter writer;
+        writer.OpenWrite(filename_buf);
+
+        if ( KM_SUCCESS(result) )
+        {
+          if ( Options.unwrap_mode )
+          {
+            result = writer.Write(packet.m_Buffer.RoData() + packet.KLLength(), packet.ValueLength());
+          }
+          else
+          {
+            result = writer.Write(packet.m_Buffer.RoData(), packet.m_Buffer.Size());
+          }
+
+          ++item_counter;
+        }
+      }
+
       if ( KM_SUCCESS(result) )
-	result = packet.InitFromFile(reader);
-	  
-      while ( KM_SUCCESS(result) && item_counter < Options.extract_limit )
-	{
-	  if ( packet.GetUL() == Options.target_ul
-	       || packet.GetUL().MatchIgnoreStream(Options.target_ul) )
-	    {
-	      snprintf(filename_buf, 1024, "%s%010qu%s", this_prefix.c_str(), item_counter, Options.suffix.c_str());
-
-	      if ( Options.verbose_flag )
-		fprintf(stderr, "%s (%llu bytes)\n", filename_buf, packet.ValueLength());
-
-	      Kumu::FileWriter writer;
-	      writer.OpenWrite(filename_buf);
-
-	      if ( KM_SUCCESS(result) )
-		{
-		  if ( Options.unwrap_mode )
-		    {
-		      result = writer.Write(packet.m_Buffer.RoData() + packet.KLLength(), packet.ValueLength());
-		    }
-		  else
-		    {
-		      result = writer.Write(packet.m_Buffer.RoData(), packet.m_Buffer.Size());
-		    }
-
-		  ++item_counter;
-		}
-	    }
-
-	  if ( KM_SUCCESS(result) )
-	    result = packet.InitFromFile(reader);
-	}
-	  
-      if ( result == RESULT_ENDOFFILE )
-	result = RESULT_OK;
+        result = packet.InitFromFile(reader);
     }
+
+    if ( result == RESULT_ENDOFFILE )
+      result = RESULT_OK;
+  }
 
   if ( KM_FAILURE(result) )
+  {
+    fputs("Program stopped on error.\n", stderr);
+
+    if ( result != RESULT_FAIL )
     {
-      fputs("Program stopped on error.\n", stderr);
-      
-      if ( result != RESULT_FAIL )
-	{
-	  fputs(result, stderr);
-	  fputc('\n', stderr);
-	}
-      
-      return 1;
+      fputs(result, stderr);
+      fputc('\n', stderr);
     }
-  
+
+    return 1;
+  }
+
   return 0;
 }
 

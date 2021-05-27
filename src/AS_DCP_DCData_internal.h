@@ -39,56 +39,56 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ASDCP
 {
 
-namespace MXF
-{
-  class InterchangeObject;
-}
-
-namespace DCData
-{
-  typedef std::list<MXF::InterchangeObject*> SubDescriptorList_t;
-
-  class h__Reader : public ASDCP::h__ASDCPReader
+  namespace MXF
   {
-    MXF::DCDataDescriptor* m_EssenceDescriptor;
-    ASDCP_NO_COPY_CONSTRUCT(h__Reader);
-    h__Reader();
+    class InterchangeObject;
+  }
 
-   public:
-    DCDataDescriptor m_DDesc;
-
-    h__Reader(const Dictionary& d) : ASDCP::h__ASDCPReader(d), m_EssenceDescriptor(0),
-                                     m_DDesc() {}
-    ~h__Reader() {}
-    Result_t    OpenRead(const std::string&);
-    Result_t    ReadFrame(ui32_t, FrameBuffer&, AESDecContext*, HMACContext*);
-    Result_t    MD_to_DCData_DDesc(DCData::DCDataDescriptor& DDesc);
-  };
-
-  class h__Writer : public ASDCP::h__ASDCPWriter
+  namespace DCData
   {
-    ASDCP_NO_COPY_CONSTRUCT(h__Writer);
-    h__Writer();
+    typedef std::list<MXF::InterchangeObject*> SubDescriptorList_t;
 
-   public:
-    DCDataDescriptor m_DDesc;
-    byte_t           m_EssenceUL[SMPTE_UL_LENGTH];
+    class h__Reader : public ASDCP::h__ASDCPReader
+    {
+      MXF::DCDataDescriptor* m_EssenceDescriptor;
+      ASDCP_NO_COPY_CONSTRUCT(h__Reader);
+      h__Reader();
 
-    h__Writer(const Dictionary& d) : ASDCP::h__ASDCPWriter(d) {
-      memset(m_EssenceUL, 0, SMPTE_UL_LENGTH);
-    }
+    public:
+      DCDataDescriptor m_DDesc;
 
-    ~h__Writer(){}
+      h__Reader(const Dictionary& d) : ASDCP::h__ASDCPReader(d), m_EssenceDescriptor(0),
+                                       m_DDesc() {}
+      ~h__Reader() {}
+      Result_t    OpenRead(const std::string&);
+      Result_t    ReadFrame(ui32_t, FrameBuffer&, AESDecContext*, HMACContext*);
+      Result_t    MD_to_DCData_DDesc(DCData::DCDataDescriptor& DDesc);
+    };
 
-    Result_t OpenWrite(const std::string&, ui32_t HeaderSize, const SubDescriptorList_t& subDescriptors);
-    Result_t SetSourceStream(const DCDataDescriptor&, const byte_t*, const std::string&, const std::string&);
-    Result_t WriteFrame(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
-    Result_t Finalize();
-    Result_t DCData_DDesc_to_MD(DCData::DCDataDescriptor& DDesc);
-};
+    class h__Writer : public ASDCP::h__ASDCPWriter
+    {
+      ASDCP_NO_COPY_CONSTRUCT(h__Writer);
+      h__Writer();
+
+    public:
+      DCDataDescriptor m_DDesc;
+      byte_t           m_EssenceUL[SMPTE_UL_LENGTH];
+
+      h__Writer(const Dictionary& d) : ASDCP::h__ASDCPWriter(d) {
+        memset(m_EssenceUL, 0, SMPTE_UL_LENGTH);
+      }
+
+      ~h__Writer(){}
+
+      Result_t OpenWrite(const std::string&, ui32_t HeaderSize, const SubDescriptorList_t& subDescriptors);
+      Result_t SetSourceStream(const DCDataDescriptor&, const byte_t*, const std::string&, const std::string&);
+      Result_t WriteFrame(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
+      Result_t Finalize();
+      Result_t DCData_DDesc_to_MD(DCData::DCDataDescriptor& DDesc);
+    };
 
 
-} // namespace DCData
+  } // namespace DCData
 } // namespace ASDCP
 
 #endif // _AS_DCP_DCDATA_INTERNAL_H_

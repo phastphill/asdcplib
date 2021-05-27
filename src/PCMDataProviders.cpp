@@ -81,7 +81,7 @@ ASDCP::WAVDataProvider::FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const
 Result_t
 ASDCP::WAVDataProvider::Reset()
 {
-    return m_Parser.Reset();
+  return m_Parser.Reset();
 }
 
 Result_t
@@ -109,9 +109,9 @@ ASDCP::AtmosSyncDataProvider::AtmosSyncDataProvider(const ui16_t bitsPerSample, 
                                                     const ASDCP::Rational& editRate, const byte_t* uuid)
     : m_Generator(bitsPerSample, sampleRate, editRate, uuid), m_FB(), m_ADesc(), m_SampleSize()
 {
-    m_Generator.FillAudioDescriptor(m_ADesc);
-    m_SampleSize = PCM::CalcSampleSize(m_ADesc);
-    m_FB.Capacity(PCM::CalcFrameBufferSize(m_ADesc));
+  m_Generator.FillAudioDescriptor(m_ADesc);
+  m_SampleSize = PCM::CalcSampleSize(m_ADesc);
+  m_FB.Capacity(PCM::CalcFrameBufferSize(m_ADesc));
 }
 
 ASDCP::AtmosSyncDataProvider::~AtmosSyncDataProvider()
@@ -153,7 +153,7 @@ ASDCP::AtmosSyncDataProvider::FillAudioDescriptor(PCM::AudioDescriptor& ADesc) c
 Result_t
 ASDCP::AtmosSyncDataProvider::Reset()
 {
-    return m_Generator.Reset();
+  return m_Generator.Reset();
 }
 
 //
@@ -161,13 +161,13 @@ ASDCP::SilenceDataProvider::SilenceDataProvider(const ui16_t numChannels, const 
                                                 const ui32_t sampleRate, const ASDCP::Rational& editRate)
     : m_ADesc(), m_SampleSize(0)
 {
-    m_SampleSize = ((bitsPerSample + 7) / 8);
-    m_ADesc.EditRate = editRate;
-    m_ADesc.AudioSamplingRate = Rational(sampleRate, 1);
-    m_ADesc.ChannelCount = numChannels;
-    m_ADesc.QuantizationBits = bitsPerSample;
-    m_ADesc.BlockAlign = numChannels * m_SampleSize;
-    m_ADesc.AvgBps = sampleRate * m_ADesc.BlockAlign;
+  m_SampleSize = ((bitsPerSample + 7) / 8);
+  m_ADesc.EditRate = editRate;
+  m_ADesc.AudioSamplingRate = Rational(sampleRate, 1);
+  m_ADesc.ChannelCount = numChannels;
+  m_ADesc.QuantizationBits = bitsPerSample;
+  m_ADesc.BlockAlign = numChannels * m_SampleSize;
+  m_ADesc.AvgBps = sampleRate * m_ADesc.BlockAlign;
 }
 
 ASDCP::SilenceDataProvider::~SilenceDataProvider()
@@ -191,8 +191,8 @@ ASDCP::SilenceDataProvider::PutSample(const ui32_t numChannels, byte_t* buf, ui3
 Result_t
 ASDCP::SilenceDataProvider::ReadFrame()
 {
-    // no op
-    return RESULT_OK;
+  // no op
+  return RESULT_OK;
 }
 
 Result_t
@@ -205,6 +205,6 @@ ASDCP::SilenceDataProvider::FillAudioDescriptor(PCM::AudioDescriptor& ADesc) con
 Result_t
 ASDCP::SilenceDataProvider::Reset()
 {
-    //no op
-    return RESULT_OK;
+  //no op
+  return RESULT_OK;
 }

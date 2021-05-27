@@ -42,7 +42,7 @@ ASDCP::Result_t
 ASDCP::JP2K::GetNextMarker(const byte_t** buf, JP2K::Marker& Marker)
 {
   assert((buf != 0) && (*buf != 0 ));
-  
+
   if (*(*buf)++ != 0xff )
     return ASDCP::RESULT_FAIL;
 
@@ -50,13 +50,13 @@ ASDCP::JP2K::GetNextMarker(const byte_t** buf, JP2K::Marker& Marker)
   Marker.m_IsSegment = Marker.m_Type != MRK_SOC && Marker.m_Type != MRK_SOD && Marker.m_Type != MRK_EOC;
 
   if ( Marker.m_IsSegment )
-    {
-      Marker.m_DataSize = *(*buf)++ << 8;
-      Marker.m_DataSize |= *(*buf)++;
-      Marker.m_DataSize -= 2;
-      Marker.m_Data = *buf;
-      *buf += Marker.m_DataSize;
-    }
+  {
+    Marker.m_DataSize = *(*buf)++ << 8;
+    Marker.m_DataSize |= *(*buf)++;
+    Marker.m_DataSize -= 2;
+    Marker.m_Data = *buf;
+    *buf += Marker.m_DataSize;
+  }
 
   /* TODO: why is this here?
   if ( Marker.m_DataSize != 0 && Marker.m_DataSize < 3 )
@@ -103,17 +103,17 @@ ASDCP::JP2K::Accessor::SIZ::Dump(FILE* stream) const
   fprintf(stream, "  Csize: %u\n",  Csize());
 
   if ( Csize() > 0 )
-    {
-      fprintf(stream, "Components\n");
+  {
+    fprintf(stream, "Components\n");
 
-      for ( ui32_t i = 0; i < Csize(); i++ )
-	{
-	  ImageComponent_t TmpComp;
-	  ReadComponent(i, TmpComp);
-	  fprintf(stream, "%u: ", i);
-	  fprintf(stream, "%u, %u, %u\n", TmpComp.Ssize, TmpComp.XRsize, TmpComp.YRsize);
-	}
+    for ( ui32_t i = 0; i < Csize(); i++ )
+    {
+      ImageComponent_t TmpComp;
+      ReadComponent(i, TmpComp);
+      fprintf(stream, "%u: ", i);
+      fprintf(stream, "%u, %u, %u\n", TmpComp.Ssize, TmpComp.XRsize, TmpComp.YRsize);
     }
+  }
 }
 
 //
@@ -128,19 +128,19 @@ ASDCP::JP2K::Accessor::COD::Dump(FILE* stream) const
   const char* transformations_str = prog_order_str;
 
   switch ( ProgOrder() )
-    {
+  {
     case 0: prog_order_str = "LRCP"; break;
     case 1: prog_order_str = "RLCP"; break;
     case 2: prog_order_str = "RPCL"; break;
     case 3: prog_order_str = "PCRL"; break;
     case 4: prog_order_str = "CPRL"; break;
-    }
+  }
 
   switch ( Transformation() )
-    {
+  {
     case 0: transformations_str = "9/7"; break;
     case 1: transformations_str = "5/3"; break;
-    }
+  }
 
   fprintf(stream, "      ProgOrder: %s\n", prog_order_str);
   fprintf(stream, "         Layers: %hu\n", Layers());
@@ -156,11 +156,11 @@ const char*
 ASDCP::JP2K::Accessor::GetQuantizationTypeString(const Accessor::QuantizationType_t t)
 {
   switch ( t )
-    {
+  {
     case QT_NONE: return "none";
     case QT_DERIVED: return "scalar derived";
     case QT_EXP: return "scalar expounded";
-    }
+  }
 
   return "**UNKNOWN**";
 }
@@ -187,16 +187,16 @@ ASDCP::JP2K::Accessor::COM::Dump(FILE* stream) const
     stream = stderr;
 
   if ( IsText() )
-    {
-      std::string tmp_str;
-      tmp_str.assign((char*)CommentData(), CommentSize());
-      fprintf(stream, "COM:%s\n", tmp_str.c_str());
-    }
+  {
+    std::string tmp_str;
+    tmp_str.assign((char*)CommentData(), CommentSize());
+    fprintf(stream, "COM:%s\n", tmp_str.c_str());
+  }
   else
-    {
-      fprintf(stream, "COM:\n");
-      Kumu::hexdump(CommentData(), CommentSize(), stream);
-    }
+  {
+    fprintf(stream, "COM:\n");
+    Kumu::hexdump(CommentData(), CommentSize(), stream);
+  }
 }
 
 //
@@ -210,13 +210,13 @@ ASDCP::JP2K::Accessor::PRF::Dump(FILE* stream) const
 
   if (N() == 0) {
 
-	  fprintf(stream, "     N/A");
+    fprintf(stream, "     N/A");
 
   } else {
 
-	  for (ui16_t i = 1; i <= N(); i++) {
-		  fprintf(stream, "pprf(%d): %d\n", i, pprf(i));
-	  }
+    for (ui16_t i = 1; i <= N(); i++) {
+      fprintf(stream, "pprf(%d): %d\n", i, pprf(i));
+    }
 
   }
 }
@@ -232,13 +232,13 @@ ASDCP::JP2K::Accessor::CPF::Dump(FILE* stream) const
 
   if (N() == 0) {
 
-	  fprintf(stream, "     N/A");
+    fprintf(stream, "     N/A");
 
   } else {
 
-	  for (ui16_t i = 1; i <= N(); i++) {
-		  fprintf(stream, "pcpf(%d): %d\n", i, pcpf(i));
-	  }
+    for (ui16_t i = 1; i <= N(); i++) {
+      fprintf(stream, "pcpf(%d): %d\n", i, pcpf(i));
+    }
 
   }
 }
@@ -257,18 +257,18 @@ ASDCP::JP2K::Accessor::CAP::Dump(FILE* stream) const
 
   if (pcap == 0) {
 
-	  fprintf(stream, "     None");
+    fprintf(stream, "     None");
 
   } else {
 
-	  for (i32_t b = 32, i = 1; b > 0; b--) {
+    for (i32_t b = 32, i = 1; b > 0; b--) {
 
-		  if ((pcap >> (32 - b)) & 0x1) {
+      if ((pcap >> (32 - b)) & 0x1) {
 
-			  fprintf(stream, "     ccap(%d): %d\n", b, this->ccap(i++));
+        fprintf(stream, "     ccap(%d): %d\n", b, this->ccap(i++));
 
-		  }
-	  }
+      }
+    }
   }
 }
 
@@ -283,7 +283,7 @@ ASDCP::JP2K::Marker::Dump(FILE* stream) const
   if ( stream == 0 )
     stream = stderr;
 
-  fprintf(stream, "Marker%s 0x%04x: %s", (m_IsSegment ? " segment" : ""), m_Type, GetMarkerString(m_Type));  
+  fprintf(stream, "Marker%s 0x%04x: %s", (m_IsSegment ? " segment" : ""), m_Type, GetMarkerString(m_Type));
 
   if ( m_IsSegment )
     fprintf(stream, ", 0x%0x bytes", m_DataSize);
@@ -296,7 +296,7 @@ const char*
 ASDCP::JP2K::GetMarkerString(Marker_t m)
 {
   switch ( m )
-    {
+  {
     case MRK_NIL: return "NIL"; break;
     case MRK_SOC: return "SOC: Start of codestream"; break;
     case MRK_SOT: return "SOT: Start of tile-part"; break;
@@ -321,7 +321,7 @@ ASDCP::JP2K::GetMarkerString(Marker_t m)
     case MRK_CPF: return "CPF: Corresponding profile"; break;
     case MRK_CAP: return "CAP: Capabilities"; break;
     case MRK_PRF: return "PRF: Profile"; break;
-    }
+  }
 
   return "Unknown marker code";
 }

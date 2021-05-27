@@ -42,7 +42,7 @@ using namespace ASDCP;
 
 
 //------------------------------------------------------------------------------------------
-  
+
 class FileList : public std::list<std::string>
 {
   std::string m_DirName;
@@ -67,24 +67,24 @@ public:
     Result_t result = Scanner.Open(path);
 
     if ( ASDCP_SUCCESS(result) )
+    {
+      m_DirName = path;
+
+      while ( ASDCP_SUCCESS(Scanner.GetNext(next_file)) )
       {
-	m_DirName = path;
+        if ( next_file[0] == '.' ) // no hidden files or internal links
+          continue;
 
-	while ( ASDCP_SUCCESS(Scanner.GetNext(next_file)) )
-	  {
-	    if ( next_file[0] == '.' ) // no hidden files or internal links
-	      continue;
+        std::string Str(m_DirName);
+        Str += "/";
+        Str += next_file;
 
-	    std::string Str(m_DirName);
-	    Str += "/";
-	    Str += next_file;
-
-	    if ( ! Kumu::PathIsDirectory(Str) )
-	      push_back(Str);
-	  }
-
-	sort();
+        if ( ! Kumu::PathIsDirectory(Str) )
+          push_back(Str);
       }
+
+      sort();
+    }
 
     return result;
   }
@@ -111,7 +111,7 @@ public:
   h__SequenceParser() : m_FramesRead(0), m_Pedantic(false)
   {
     memset(&m_PDesc, 0, sizeof(m_PDesc));
-    m_PDesc.EditRate = Rational(24,1); 
+    m_PDesc.EditRate = Rational(24,1);
   }
 
   ~h__SequenceParser()
@@ -155,7 +155,7 @@ ASDCP::JP2K::SequenceParser::h__SequenceParser::OpenRead()
 
   if ( ASDCP_SUCCESS(result) )
     result = Parser.OpenReadFrame((*m_CurrentFile).c_str(), TmpBuffer);
-      
+
   if ( ASDCP_SUCCESS(result) )
     result = Parser.FillPictureDescriptor(m_PDesc);
 
@@ -207,12 +207,12 @@ operator==(const ASDCP::JP2K::QuantizationDefault_t& lhs, const ASDCP::JP2K::Qua
 {
   if ( lhs.Sqcd != rhs.Sqcd ) return false;
   if ( lhs.SPqcdLength != rhs.SPqcdLength ) return false;
-  
+
   for ( ui32_t i = 0; i < JP2K::MaxDefaults; i++ )
-    {
-      if ( lhs.SPqcd[i] != rhs.SPqcd[i]  )
-	return false;
-    }
+  {
+    if ( lhs.SPqcd[i] != rhs.SPqcd[i]  )
+      return false;
+  }
 
   return true;
 }
@@ -228,10 +228,10 @@ operator==(const ASDCP::JP2K::CodingStyleDefault_t& lhs, const ASDCP::JP2K::Codi
   if ( lhs.SGcod.MultiCompTransform != rhs.SGcod.MultiCompTransform ) return false;
 
   for ( ui32_t i = 0; i < sizeof(ui16_t); i++ )
-    {
-      if ( lhs.SGcod.NumberOfLayers[i] != rhs.SGcod.NumberOfLayers[i]  )
-	return false;
-    }
+  {
+    if ( lhs.SGcod.NumberOfLayers[i] != rhs.SGcod.NumberOfLayers[i]  )
+      return false;
+  }
 
   // SPcod
   if ( lhs.SPcod.DecompositionLevels != rhs.SPcod.DecompositionLevels ) return false;
@@ -239,12 +239,12 @@ operator==(const ASDCP::JP2K::CodingStyleDefault_t& lhs, const ASDCP::JP2K::Codi
   if ( lhs.SPcod.CodeblockHeight != rhs.SPcod.CodeblockHeight ) return false;
   if ( lhs.SPcod.CodeblockStyle != rhs.SPcod.CodeblockStyle ) return false;
   if ( lhs.SPcod.Transformation != rhs.SPcod.Transformation ) return false;
-  
+
   for ( ui32_t i = 0; i < JP2K::MaxPrecincts; i++ )
-    {
-      if ( lhs.SPcod.PrecinctSize[i] != rhs.SPcod.PrecinctSize[i]  )
-	return false;
-    }
+  {
+    if ( lhs.SPcod.PrecinctSize[i] != rhs.SPcod.PrecinctSize[i]  )
+      return false;
+  }
 
   return true;
 }
@@ -253,51 +253,51 @@ operator==(const ASDCP::JP2K::CodingStyleDefault_t& lhs, const ASDCP::JP2K::Codi
 bool
 operator==(const ASDCP::JP2K::ExtendedCapabilities_t& lhs, const ASDCP::JP2K::ExtendedCapabilities_t& rhs)
 {
-	if (lhs.N != rhs.N) return false;
+  if (lhs.N != rhs.N) return false;
 
-	if (lhs.N != JP2K::NoExtendedCapabilitiesSignaled) {
+  if (lhs.N != JP2K::NoExtendedCapabilitiesSignaled) {
 
-		if (lhs.Pcap != rhs.Pcap) return false;
+    if (lhs.Pcap != rhs.Pcap) return false;
 
-		for (ui32_t i = 0; i < lhs.N; i++)
-		{
-			if (lhs.Ccap[i] != rhs.Ccap[i])
-				return false;
-		}
+    for (ui32_t i = 0; i < lhs.N; i++)
+    {
+      if (lhs.Ccap[i] != rhs.Ccap[i])
+        return false;
+    }
 
-	}
+  }
 
-	return true;
+  return true;
 }
 
 //
 bool
 operator==(const ASDCP::JP2K::CorrespondingProfile_t& lhs, const ASDCP::JP2K::CorrespondingProfile_t& rhs)
 {
-	if (lhs.N != rhs.N) return false;
+  if (lhs.N != rhs.N) return false;
 
-	for (ui32_t i = 0; i < lhs.N; i++)
-	{
-		if (lhs.Pcpf[i] != rhs.Pcpf[i])
-			return false;
-	}
+  for (ui32_t i = 0; i < lhs.N; i++)
+  {
+    if (lhs.Pcpf[i] != rhs.Pcpf[i])
+      return false;
+  }
 
-	return true;
+  return true;
 }
 
 //
 bool
 operator==(const ASDCP::JP2K::Profile_t& lhs, const ASDCP::JP2K::Profile_t& rhs)
 {
-	if (lhs.N != rhs.N) return false;
+  if (lhs.N != rhs.N) return false;
 
-	for (ui32_t i = 0; i < lhs.N; i++)
-	{
-		if (lhs.Pprf[i] != rhs.Pprf[i])
-			return false;
-	}
+  for (ui32_t i = 0; i < lhs.N; i++)
+  {
+    if (lhs.Pprf[i] != rhs.Pprf[i])
+      return false;
+  }
 
-	return true;
+  return true;
 }
 
 //
@@ -325,12 +325,12 @@ operator==(const ASDCP::JP2K::PictureDescriptor& lhs, const ASDCP::JP2K::Picture
   if (!(lhs.Profile == rhs.Profile)) return false;
   if (!(lhs.CorrespondingProfile == rhs.CorrespondingProfile)) return false;
   if (!(lhs.ExtendedCapabilities == rhs.ExtendedCapabilities)) return false;
-  
+
   for ( ui32_t i = 0; i < JP2K::MaxComponents; i++ )
-    {
-      if ( ! ( lhs.ImageComponents[i] == rhs.ImageComponents[i] ) )
-	return false;
-    }
+  {
+    if ( ! ( lhs.ImageComponents[i] == rhs.ImageComponents[i] ) )
+      return false;
+  }
 
   return true;
 }
@@ -346,22 +346,22 @@ ASDCP::JP2K::SequenceParser::h__SequenceParser::ReadFrame(FrameBuffer& FB)
   Result_t result = m_Parser.OpenReadFrame((*m_CurrentFile).c_str(), FB);
 
   if ( ASDCP_SUCCESS(result) && m_Pedantic )
-    {
-      PictureDescriptor PDesc;
-      result = m_Parser.FillPictureDescriptor(PDesc);
+  {
+    PictureDescriptor PDesc;
+    result = m_Parser.FillPictureDescriptor(PDesc);
 
-      if ( ASDCP_SUCCESS(result) && ! ( m_PDesc == PDesc ) )
-	{
-	  Kumu::DefaultLogSink().Error("JPEG-2000 codestream parameters do not match at frame %d\n", m_FramesRead + 1);
-	  result = RESULT_RAW_FORMAT;
-	}
+    if ( ASDCP_SUCCESS(result) && ! ( m_PDesc == PDesc ) )
+    {
+      Kumu::DefaultLogSink().Error("JPEG-2000 codestream parameters do not match at frame %d\n", m_FramesRead + 1);
+      result = RESULT_RAW_FORMAT;
     }
+  }
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      FB.FrameNumber(m_FramesRead++);
-      m_CurrentFile++;
-    }
+  {
+    FB.FrameNumber(m_FramesRead++);
+    m_CurrentFile++;
+  }
 
   return result;
 }

@@ -83,16 +83,16 @@ class WavFileWriter
   ui32_t                      m_ChannelCount;
   ASDCP_NO_COPY_CONSTRUCT(WavFileWriter);
 
- public:
+public:
   WavFileWriter() : m_ChannelCount(0) {}
   ~WavFileWriter()
+  {
+    while ( ! m_OutFile.empty() )
     {
-      while ( ! m_OutFile.empty() )
-	{
-	  delete m_OutFile.back();
-	  m_OutFile.pop_back();
-	}
+      delete m_OutFile.back();
+      m_OutFile.pop_back();
     }
+  }
 
   //
   enum SplitType_t {
@@ -103,106 +103,106 @@ class WavFileWriter
   };
 
   ASDCP::Result_t
-    OpenWrite(ASDCP::PCM::AudioDescriptor &ADesc, const char* file_root, SplitType_t split = ST_NONE)
+  OpenWrite(ASDCP::PCM::AudioDescriptor &ADesc, const char* file_root, SplitType_t split = ST_NONE)
+  {
+    ASDCP_TEST_NULL_STR(file_root);
+    char filename[Kumu::MaxFilePath];
+    ui32_t file_count = 0;
+    ASDCP::Result_t result = ASDCP::RESULT_OK;
+    m_ADesc = ADesc;
+
+    switch ( split )
     {
-      ASDCP_TEST_NULL_STR(file_root);
-      char filename[Kumu::MaxFilePath];
-      ui32_t file_count = 0;
-      ASDCP::Result_t result = ASDCP::RESULT_OK;
-      m_ADesc = ADesc;
+      case ST_NONE:
+        file_count = 1;
+        m_ChannelCount = m_ADesc.ChannelCount;
+        break;
 
-      switch ( split )
-	{
-	case ST_NONE:
-	  file_count = 1;
-	  m_ChannelCount = m_ADesc.ChannelCount;
-	  break;
+      case ST_MONO:
+        file_count = m_ADesc.ChannelCount;
+        m_ChannelCount = 1;
+        break;
 
-	case ST_MONO:
-	  file_count = m_ADesc.ChannelCount;
-	  m_ChannelCount = 1;
-	  break;
+      case ST_STEREO:
+        if ( m_ADesc.ChannelCount % 2 != 0 )
+        {
+          Kumu::DefaultLogSink().Error("Unable to create 2-channel splits with odd number of input channels.\n");
+          return ASDCP::RESULT_PARAM;
+        }
 
-	case ST_STEREO:
-	  if ( m_ADesc.ChannelCount % 2 != 0 )
-	    {
-	      Kumu::DefaultLogSink().Error("Unable to create 2-channel splits with odd number of input channels.\n");
-	      return ASDCP::RESULT_PARAM;
-	    }
-
-	  file_count = m_ADesc.ChannelCount / 2;
-	  m_ChannelCount = 2;
-	  break;
-	}
-      assert(file_count && m_ChannelCount);
-
-      ui32_t element_size = ASDCP::PCM::CalcFrameBufferSize(m_ADesc) / file_count;
-      if (split == ST_NONE)
-      {
-          snprintf(filename, Kumu::MaxFilePath, "%s", file_root);
-          m_OutFile.push_back(new WavFileElement(element_size));
-          result = m_OutFile.back()->OpenWrite(filename);
-          if ( ASDCP_SUCCESS(result) )
-          {
-              ASDCP::PCM::AudioDescriptor tmpDesc = m_ADesc;
-              tmpDesc.ChannelCount = m_ChannelCount;
-              ASDCP::RF64::SimpleRF64Header Wav(tmpDesc);
-              result = Wav.WriteToFile(*(m_OutFile.back()));
-          }
-      }
-      else
-      {
-          for ( ui32_t i = 0; i < file_count && ASDCP_SUCCESS(result); i++ )
-          {
-              snprintf(filename, Kumu::MaxFilePath, "%s_%02u.wav", file_root, (i + 1));
-              m_OutFile.push_back(new WavFileElement(element_size));
-              result = m_OutFile.back()->OpenWrite(filename);
-
-              if ( ASDCP_SUCCESS(result) )
-              {
-                  ASDCP::PCM::AudioDescriptor tmpDesc = m_ADesc;
-                  tmpDesc.ChannelCount = m_ChannelCount;
-                  ASDCP::RF64::SimpleRF64Header Wav(tmpDesc);
-                  result = Wav.WriteToFile(*(m_OutFile.back()));
-              }
-          }
-      }
-      return result;
+        file_count = m_ADesc.ChannelCount / 2;
+        m_ChannelCount = 2;
+        break;
     }
+    assert(file_count && m_ChannelCount);
+
+    ui32_t element_size = ASDCP::PCM::CalcFrameBufferSize(m_ADesc) / file_count;
+    if (split == ST_NONE)
+    {
+      snprintf(filename, Kumu::MaxFilePath, "%s", file_root);
+      m_OutFile.push_back(new WavFileElement(element_size));
+      result = m_OutFile.back()->OpenWrite(filename);
+      if ( ASDCP_SUCCESS(result) )
+      {
+        ASDCP::PCM::AudioDescriptor tmpDesc = m_ADesc;
+        tmpDesc.ChannelCount = m_ChannelCount;
+        ASDCP::RF64::SimpleRF64Header Wav(tmpDesc);
+        result = Wav.WriteToFile(*(m_OutFile.back()));
+      }
+    }
+    else
+    {
+      for ( ui32_t i = 0; i < file_count && ASDCP_SUCCESS(result); i++ )
+      {
+        snprintf(filename, Kumu::MaxFilePath, "%s_%02u.wav", file_root, (i + 1));
+        m_OutFile.push_back(new WavFileElement(element_size));
+        result = m_OutFile.back()->OpenWrite(filename);
+
+        if ( ASDCP_SUCCESS(result) )
+        {
+          ASDCP::PCM::AudioDescriptor tmpDesc = m_ADesc;
+          tmpDesc.ChannelCount = m_ChannelCount;
+          ASDCP::RF64::SimpleRF64Header Wav(tmpDesc);
+          result = Wav.WriteToFile(*(m_OutFile.back()));
+        }
+      }
+    }
+    return result;
+  }
 
   ASDCP::Result_t
-    WriteFrame(ASDCP::PCM::FrameBuffer& FB)
+  WriteFrame(ASDCP::PCM::FrameBuffer& FB)
+  {
+    if ( m_OutFile.empty() )
+      return ASDCP::RESULT_STATE;
+
+    if ( m_OutFile.size() == 1 ) // no de-interleave needed, just write out the frame
+      return m_OutFile.back()->Write(FB.RoData(), FB.Size(), 0);
+
+    std::list<WavFileElement*>::iterator fi;
+    ui32_t sample_size = m_ADesc.QuantizationBits / 8;
+    const byte_t* p = FB.RoData();
+    const byte_t* end_p = p + FB.Size();
+
+    while ( p < end_p )
     {
-      if ( m_OutFile.empty() )
-	return ASDCP::RESULT_STATE;
-
-      if ( m_OutFile.size() == 1 ) // no de-interleave needed, just write out the frame
-	return m_OutFile.back()->Write(FB.RoData(), FB.Size(), 0);
- 
-      std::list<WavFileElement*>::iterator fi;
-      ui32_t sample_size = m_ADesc.QuantizationBits / 8;
-      const byte_t* p = FB.RoData();
-      const byte_t* end_p = p + FB.Size();
-
-      while ( p < end_p )
-	{
-	  for ( fi = m_OutFile.begin(); fi != m_OutFile.end(); fi++ )
-	    {
-	      for ( ui32_t c = 0; c < m_ChannelCount; c++ )
-		{
-		  (*fi)->WriteSample(p, sample_size);
-		  p += sample_size;
-		}
-	    }
-	}
-
-      ASDCP::Result_t result = ASDCP::RESULT_OK;
-
-      for ( fi = m_OutFile.begin(); fi != m_OutFile.end() && ASDCP_SUCCESS(result); fi++ )
-	result = (*fi)->Flush();
-
-      return result;
+      for ( fi = m_OutFile.begin(); fi != m_OutFile.end(); fi++ )
+      {
+        for ( ui32_t c = 0; c < m_ChannelCount; c++ )
+        {
+          (*fi)->WriteSample(p, sample_size);
+          p += sample_size;
+        }
+      }
     }
+
+    ASDCP::Result_t result = ASDCP::RESULT_OK;
+
+    for ( fi = m_OutFile.begin(); fi != m_OutFile.end() && ASDCP_SUCCESS(result); fi++ )
+      result = (*fi)->Flush();
+
+    return result;
+  }
 };
 
 

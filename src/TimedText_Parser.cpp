@@ -52,10 +52,10 @@ Result_t
 ASDCP::TimedText::LocalFilenameResolver::OpenRead(const std::string& dirname)
 {
   if ( PathIsDirectory(dirname) )
-    {
-      m_Dirname = dirname;
-      return RESULT_OK;
-    }
+  {
+    m_Dirname = dirname;
+    return RESULT_OK;
+  }
 
   DefaultLogSink().Error("Path '%s' is not a directory, defaulting to '.'\n", dirname.c_str());
   m_Dirname = ".";
@@ -77,29 +77,29 @@ ASDCP::TimedText::LocalFilenameResolver::ResolveRID(const byte_t* uuid, TimedTex
 #endif
 
   if ( found_list.size() == 1 )
-    {
-      FileReader Reader;
-      DefaultLogSink().Debug("Retrieving resource %s from file %s\n", buf, found_list.front().c_str());
+  {
+    FileReader Reader;
+    DefaultLogSink().Debug("Retrieving resource %s from file %s\n", buf, found_list.front().c_str());
 
-      result = Reader.OpenRead(found_list.front().c_str());
+    result = Reader.OpenRead(found_list.front().c_str());
+
+    if ( KM_SUCCESS(result) )
+    {
+      ui32_t read_count, read_size = Reader.Size();
+      result = FrameBuf.Capacity(read_size);
 
       if ( KM_SUCCESS(result) )
-	{
-	  ui32_t read_count, read_size = Reader.Size();
-	  result = FrameBuf.Capacity(read_size);
-      
-	  if ( KM_SUCCESS(result) )
-	    result = Reader.Read(FrameBuf.Data(), read_size, &read_count);
+        result = Reader.Read(FrameBuf.Data(), read_size, &read_count);
 
-	  if ( KM_SUCCESS(result) )
-	    FrameBuf.Size(read_count);
-	}
+      if ( KM_SUCCESS(result) )
+        FrameBuf.Size(read_count);
     }
+  }
   else if ( ! found_list.empty() )
-    {
-      DefaultLogSink().Error("More than one file in %s matches %s.\n", m_Dirname.c_str(), buf);
-      result = RESULT_RAW_FORMAT;
-    }
+  {
+    DefaultLogSink().Error("More than one file in %s matches %s.\n", m_Dirname.c_str(), buf);
+    result = RESULT_RAW_FORMAT;
+  }
 
   return result;
 }
@@ -132,10 +132,10 @@ public:
   TimedText::IResourceResolver* GetDefaultResolver()
   {
     if ( m_DefaultResolver.empty() )
-      {
-	m_DefaultResolver = new LocalFilenameResolver();
-	m_DefaultResolver->OpenRead(PathDirname(m_Filename));
-      }
+    {
+      m_DefaultResolver = new LocalFilenameResolver();
+      m_DefaultResolver->OpenRead(PathDirname(m_Filename));
+    }
 
     return m_DefaultResolver;
   }
@@ -153,10 +153,10 @@ get_UUID_from_element(XMLElement* Element, UUID& ID)
   const char* p = Element->GetBody().c_str();
 
   if ( strncmp(p, "urn:uuid:", 9) == 0 )
-    {
-      p += 9;
-    }
-  
+  {
+    p += 9;
+  }
+
   return ID.DecodeHex(p);
 }
 
@@ -169,9 +169,9 @@ get_UUID_from_child_element(const char* name, XMLElement* Parent, UUID& outID)
   XMLElement* Child = Parent->GetChildWithName(name);
 
   if ( Child == 0 )
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
   return get_UUID_from_element(Child, outID);
 }
@@ -196,13 +196,13 @@ ASDCP::TimedText::DCSubtitleParser::h__SubtitleParser::OpenRead(const std::strin
   m_XMLDoc = xml_doc;
 
   if ( filename.empty() )
-    {
-      m_Filename = "<string>";
-    }
+  {
+    m_Filename = "<string>";
+  }
   else
-    {
-      m_Filename = filename;
-    }
+  {
+    m_Filename = filename;
+  }
 
   return OpenRead();
 }
@@ -220,36 +220,36 @@ ASDCP::TimedText::DCSubtitleParser::h__SubtitleParser::OpenRead()
   const XMLNamespace* ns = m_Root.Namespace();
 
   if ( ns == 0 )
-    {
-      DefaultLogSink(). Warn("Document has no namespace name, assuming \"%s\".\n", c_dcst_namespace_name);
-      m_TDesc.NamespaceName = c_dcst_namespace_name;
-    }
+  {
+    DefaultLogSink(). Warn("Document has no namespace name, assuming \"%s\".\n", c_dcst_namespace_name);
+    m_TDesc.NamespaceName = c_dcst_namespace_name;
+  }
   else
-    {
-      m_TDesc.NamespaceName = ns->Name();
-    }
+  {
+    m_TDesc.NamespaceName = ns->Name();
+  }
 
   UUID DocID;
   if ( ! get_UUID_from_child_element("Id", &m_Root, DocID) )
-    {
-      DefaultLogSink(). Error("Id element missing from input document.\n");
-      return RESULT_FORMAT;
-    }
+  {
+    DefaultLogSink(). Error("Id element missing from input document.\n");
+    return RESULT_FORMAT;
+  }
 
   memcpy(m_TDesc.AssetID, DocID.Value(), DocID.Size());
   XMLElement* EditRate = m_Root.GetChildWithName("EditRate");
 
   if ( EditRate == 0 )
-    {
-      DefaultLogSink().Error("EditRate element missing from input document.\n");
-      return RESULT_FORMAT;
-    }
+  {
+    DefaultLogSink().Error("EditRate element missing from input document.\n");
+    return RESULT_FORMAT;
+  }
 
   if ( ! DecodeRational(EditRate->GetBody().c_str(), m_TDesc.EditRate) )
-    {
-      DefaultLogSink().Error("Error decoding edit rate value: \"%s\"\n", EditRate->GetBody().c_str());
-      return RESULT_FORMAT;
-    }
+  {
+    DefaultLogSink().Error("Error decoding edit rate value: \"%s\"\n", EditRate->GetBody().c_str());
+    return RESULT_FORMAT;
+  }
 
   if ( m_TDesc.EditRate != EditRate_23_98
        && m_TDesc.EditRate != EditRate_24
@@ -264,31 +264,31 @@ ASDCP::TimedText::DCSubtitleParser::h__SubtitleParser::OpenRead()
        && m_TDesc.EditRate != EditRate_192
        && m_TDesc.EditRate != EditRate_200
        && m_TDesc.EditRate != EditRate_240 )
-    {
-      DefaultLogSink(). Error("Unexpected EditRate: %d/%d\n",
-			      m_TDesc.EditRate.Numerator, m_TDesc.EditRate.Denominator);
-      return RESULT_FORMAT;
-    }
+  {
+    DefaultLogSink(). Error("Unexpected EditRate: %d/%d\n",
+                            m_TDesc.EditRate.Numerator, m_TDesc.EditRate.Denominator);
+    return RESULT_FORMAT;
+  }
 
   // list of fonts
   ElementList FontList;
   m_Root.GetChildrenWithName("LoadFont", FontList);
 
   for ( Elem_i i = FontList.begin(); i != FontList.end(); i++ )
+  {
+    UUID AssetID;
+    if ( ! get_UUID_from_element(*i, AssetID) )
     {
-      UUID AssetID;
-      if ( ! get_UUID_from_element(*i, AssetID) )
-	{
-	  DefaultLogSink(). Error("LoadFont element does not contain a urn:uuid value as expected.\n");
-	  return RESULT_FORMAT;
-	}
-
-      TimedTextResourceDescriptor TmpResource;
-      memcpy(TmpResource.ResourceID, AssetID.Value(), UUIDlen);
-      TmpResource.Type = MT_OPENTYPE;
-      m_TDesc.ResourceList.push_back(TmpResource);
-      m_ResourceTypes.insert(ResourceTypeMap_t::value_type(UUID(TmpResource.ResourceID), MT_OPENTYPE));
+      DefaultLogSink(). Error("LoadFont element does not contain a urn:uuid value as expected.\n");
+      return RESULT_FORMAT;
     }
+
+    TimedTextResourceDescriptor TmpResource;
+    memcpy(TmpResource.ResourceID, AssetID.Value(), UUIDlen);
+    TmpResource.Type = MT_OPENTYPE;
+    m_TDesc.ResourceList.push_back(TmpResource);
+    m_ResourceTypes.insert(ResourceTypeMap_t::value_type(UUID(TmpResource.ResourceID), MT_OPENTYPE));
+  }
 
   // list of images
   ElementList ImageList;
@@ -296,24 +296,24 @@ ASDCP::TimedText::DCSubtitleParser::h__SubtitleParser::OpenRead()
   std::set<Kumu::UUID> visited_items;
 
   for ( Elem_i i = ImageList.begin(); i != ImageList.end(); i++ )
+  {
+    UUID AssetID;
+    if ( ! get_UUID_from_element(*i, AssetID) )
     {
-      UUID AssetID;
-      if ( ! get_UUID_from_element(*i, AssetID) )
-	{
-	  DefaultLogSink(). Error("Image element does not contain a urn:uuid value as expected.\n");
-	  return RESULT_FORMAT;
-	}
-
-      if ( visited_items.find(AssetID) == visited_items.end() )
-	{
-	  TimedTextResourceDescriptor TmpResource;
-	  memcpy(TmpResource.ResourceID, AssetID.Value(), UUIDlen);
-	  TmpResource.Type = MT_PNG;
-	  m_TDesc.ResourceList.push_back(TmpResource);
-	  m_ResourceTypes.insert(ResourceTypeMap_t::value_type(UUID(TmpResource.ResourceID), MT_PNG));
-	  visited_items.insert(AssetID);
-	}
+      DefaultLogSink(). Error("Image element does not contain a urn:uuid value as expected.\n");
+      return RESULT_FORMAT;
     }
+
+    if ( visited_items.find(AssetID) == visited_items.end() )
+    {
+      TimedTextResourceDescriptor TmpResource;
+      memcpy(TmpResource.ResourceID, AssetID.Value(), UUIDlen);
+      TmpResource.Type = MT_PNG;
+      m_TDesc.ResourceList.push_back(TmpResource);
+      m_ResourceTypes.insert(ResourceTypeMap_t::value_type(UUID(TmpResource.ResourceID), MT_PNG));
+      visited_items.insert(AssetID);
+    }
+  }
 
   // Calculate the timeline duration.
   // This is a little ugly because the last element in the file is not necessarily
@@ -323,14 +323,14 @@ ASDCP::TimedText::DCSubtitleParser::h__SubtitleParser::OpenRead()
   ElementList InstanceList;
   ElementList::const_iterator ei;
   ui32_t end_count = 0;
-  
+
   m_Root.GetChildrenWithName("Subtitle", InstanceList);
 
   if ( InstanceList.empty() )
-    {
-      DefaultLogSink(). Error("XML document contains no Subtitle elements.\n");
-      return RESULT_FORMAT;
-    }
+  {
+    DefaultLogSink(). Error("XML document contains no Subtitle elements.\n");
+    return RESULT_FORMAT;
+  }
 
   // assumes edit rate is constrained above
   ui32_t TCFrameRate = ( m_TDesc.EditRate == EditRate_23_98  ) ? 24 : m_TDesc.EditRate.Numerator;
@@ -343,17 +343,17 @@ ASDCP::TimedText::DCSubtitleParser::h__SubtitleParser::OpenRead()
     beginTC.DecodeString(StartTime->GetBody());
 
   for ( ei = InstanceList.begin(); ei != InstanceList.end(); ei++ )
-    {
-      S12MTimecode tmpTC((*ei)->GetAttrWithName("TimeOut"), TCFrameRate);
-      if ( end_count < tmpTC.GetFrames() )
-	end_count = tmpTC.GetFrames();
-    }
+  {
+    S12MTimecode tmpTC((*ei)->GetAttrWithName("TimeOut"), TCFrameRate);
+    if ( end_count < tmpTC.GetFrames() )
+      end_count = tmpTC.GetFrames();
+  }
 
   if ( end_count <= beginTC.GetFrames() )
-    {
-      DefaultLogSink(). Error("Timed Text file has zero-length timeline.\n");
-      return RESULT_FORMAT;
-    }
+  {
+    DefaultLogSink(). Error("Timed Text file has zero-length timeline.\n");
+    return RESULT_FORMAT;
+  }
 
   m_TDesc.ContainerDuration = end_count - beginTC.GetFrames();
 
@@ -364,7 +364,7 @@ ASDCP::TimedText::DCSubtitleParser::h__SubtitleParser::OpenRead()
 //
 Result_t
 ASDCP::TimedText::DCSubtitleParser::h__SubtitleParser::ReadAncillaryResource(const byte_t* uuid, FrameBuffer& FrameBuf,
-									     const IResourceResolver& Resolver) const
+                                                                             const IResourceResolver& Resolver) const
 {
   FrameBuf.AssetID(uuid);
   UUID TmpID(uuid);
@@ -373,10 +373,10 @@ ASDCP::TimedText::DCSubtitleParser::h__SubtitleParser::ReadAncillaryResource(con
   ResourceTypeMap_t::const_iterator rmi = m_ResourceTypes.find(TmpID);
 
   if ( rmi == m_ResourceTypes.end() )
-    {
-      DefaultLogSink().Error("Unknown ancillary resource id: %s\n", TmpID.EncodeHex(buf, 64));
-      return RESULT_RANGE;
-    }
+  {
+    DefaultLogSink().Error("Unknown ancillary resource id: %s\n", TmpID.EncodeHex(buf, 64));
+    return RESULT_RANGE;
+  }
 
   Result_t result = Resolver.ResolveRID(uuid, FrameBuf);
 
@@ -389,13 +389,13 @@ ASDCP::TimedText::DCSubtitleParser::h__SubtitleParser::ReadAncillaryResource(con
     resourceType = "application/octet-stream";
 
   if ( KM_SUCCESS(result) )
-    {
-      FrameBuf.MIMEType(resourceType);
-    }
+  {
+    FrameBuf.MIMEType(resourceType);
+  }
   else
-    {
-      DefaultLogSink().Error("Resource not found: %s (%s)\n", TmpID.EncodeHex(buf, 64), resourceType.c_str());
-    }
+  {
+    DefaultLogSink().Error("Resource not found: %s (%s)\n", TmpID.EncodeHex(buf, 64), resourceType.c_str());
+  }
 
   return result;
 }
@@ -464,7 +464,7 @@ ASDCP::TimedText::DCSubtitleParser::ReadTimedTextResource(std::string& s) const
 //
 ASDCP::Result_t
 ASDCP::TimedText::DCSubtitleParser::ReadAncillaryResource(const byte_t* uuid, FrameBuffer& FrameBuf,
-							  const IResourceResolver* Resolver) const
+                                                          const IResourceResolver* Resolver) const
 {
   if ( m_Parser.empty() )
     return RESULT_INIT;

@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    KM_platform.h
-    \version $Id$
-    \brief   platform portability
-  */
+/*! \file    KM_platform.h
+  \version $Id$
+  \brief   platform portability
+*/
 
 #ifndef _KM_PLATFORM_H_
 # define _KM_PLATFORM_H_
@@ -80,47 +80,47 @@ typedef unsigned int   ui32_t;
 namespace Kumu
 {
   inline ui16_t Swap2(ui16_t i)
-    {
-      return ( (i << 8) | (( i & 0xff00) >> 8) );
-    }
+  {
+    return ( (i << 8) | (( i & 0xff00) >> 8) );
+  }
 
   inline ui32_t Swap4(ui32_t i)
-    {
-      return
-	( (i & 0x000000ffUL) << 24 ) |
-	( (i & 0xff000000UL) >> 24 ) |
-	( (i & 0x0000ff00UL) << 8  ) |
-	( (i & 0x00ff0000UL) >> 8  );
-    }
+  {
+    return
+        ( (i & 0x000000ffUL) << 24 ) |
+        ( (i & 0xff000000UL) >> 24 ) |
+        ( (i & 0x0000ff00UL) << 8  ) |
+        ( (i & 0x00ff0000UL) >> 8  );
+  }
 
   inline ui64_t Swap8(ui64_t i)
-    {
-      return
-	( (i & ui64_C(0x00000000000000FF)) << 56 ) |
-	( (i & ui64_C(0xFF00000000000000)) >> 56 ) |
-	( (i & ui64_C(0x000000000000FF00)) << 40 ) |
-	( (i & ui64_C(0x00FF000000000000)) >> 40 ) |
-	( (i & ui64_C(0x0000000000FF0000)) << 24 ) |
-	( (i & ui64_C(0x0000FF0000000000)) >> 24 ) |
-	( (i & ui64_C(0x00000000FF000000)) << 8  ) |
-	( (i & ui64_C(0x000000FF00000000)) >> 8  );
-    }
+  {
+    return
+        ( (i & ui64_C(0x00000000000000FF)) << 56 ) |
+        ( (i & ui64_C(0xFF00000000000000)) >> 56 ) |
+        ( (i & ui64_C(0x000000000000FF00)) << 40 ) |
+        ( (i & ui64_C(0x00FF000000000000)) >> 40 ) |
+        ( (i & ui64_C(0x0000000000FF0000)) << 24 ) |
+        ( (i & ui64_C(0x0000FF0000000000)) >> 24 ) |
+        ( (i & ui64_C(0x00000000FF000000)) << 8  ) |
+        ( (i & ui64_C(0x000000FF00000000)) >> 8  );
+  }
 
   //
   template<class T>
-    inline T xmin(T lhs, T rhs) {
+  inline T xmin(T lhs, T rhs) {
     return (lhs < rhs) ? lhs : rhs;
   }
 
   //
   template<class T>
-    inline T xmax(T lhs, T rhs) {
+  inline T xmax(T lhs, T rhs) {
     return (lhs > rhs) ? lhs : rhs;
   }
 
   //
   template<class T>
-    inline T xclamp(T v, T l, T h) {
+  inline T xclamp(T v, T l, T h) {
     if ( v < l ) { return l; }
     if ( v > h ) { return h; }
     return v;
@@ -128,7 +128,7 @@ namespace Kumu
 
   //
   template<class T>
-    inline T xabs(T n) {
+  inline T xabs(T n) {
     if ( n < 0 ) { return -n; }
     return n;
   }
@@ -143,7 +143,7 @@ namespace Kumu
 
 
 # ifdef KM_BIG_ENDIAN
-#  define KM_i16_LE(i)        Kumu::Swap2(i)
+  #  define KM_i16_LE(i)        Kumu::Swap2(i)
 #  define KM_i32_LE(i)        Kumu::Swap4(i)
 #  define KM_i64_LE(i)        Kumu::Swap8(i)
 #  define KM_i16_BE(i)        (i)
@@ -161,27 +161,27 @@ namespace Kumu
   // A non-reference counting, auto-delete container for internal
   // member object pointers.
   template <class T>
-    class mem_ptr
-    {
-      mem_ptr(T&);
+  class mem_ptr
+  {
+    mem_ptr(T&);
 
-    protected:
-      T* m_p; // the thing we point to
+  protected:
+    T* m_p; // the thing we point to
 
-    public:
-      mem_ptr() : m_p(0) {}
-      mem_ptr(T* p) : m_p(p) {}
-      ~mem_ptr() { delete m_p; }
+  public:
+    mem_ptr() : m_p(0) {}
+    mem_ptr(T* p) : m_p(p) {}
+    ~mem_ptr() { delete m_p; }
 
-      inline T&   operator*()  const { return *m_p; }
-      inline T*   operator->() const { assert(m_p!=0); return m_p; }
-      inline      operator T*()const { return m_p; }
-      inline const mem_ptr<T>& operator=(T* p) { this->set(p); return *this; }
-      inline T*   set(T* p)          { delete m_p; m_p = p; return m_p; }
-      inline T*   get()        const { return m_p; }
-      inline void release()          { m_p = 0; }
-      inline bool empty()      const { return m_p == 0; }
-    };
+    inline T&   operator*()  const { return *m_p; }
+    inline T*   operator->() const { assert(m_p!=0); return m_p; }
+    inline      operator T*()const { return m_p; }
+    inline const mem_ptr<T>& operator=(T* p) { this->set(p); return *this; }
+    inline T*   set(T* p)          { delete m_p; m_p = p; return m_p; }
+    inline T*   get()        const { return m_p; }
+    inline void release()          { m_p = 0; }
+    inline bool empty()      const { return m_p == 0; }
+  };
 
 } // namespace Kumu
 

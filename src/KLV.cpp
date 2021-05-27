@@ -84,32 +84,32 @@ ASDCP::KLVPacket::InitFromBuffer(const byte_t* buf, ui32_t buf_len)
   m_KLLength = m_ValueLength = 0;
 
   if ( memcmp(buf, SMPTE_UL_START, 4) != 0 )
-    {
-      DefaultLogSink().Error("Unexpected UL preamble: %02x.%02x.%02x.%02x\n",
-			     buf[0], buf[1], buf[2], buf[3]);
-      return RESULT_FAIL;
-    }
+  {
+    DefaultLogSink().Error("Unexpected UL preamble: %02x.%02x.%02x.%02x\n",
+                           buf[0], buf[1], buf[2], buf[3]);
+    return RESULT_FAIL;
+  }
 
   ui32_t ber_len = Kumu::BER_length(buf + SMPTE_UL_LENGTH);
 
   if ( ber_len > ( buf_len - SMPTE_UL_LENGTH ) )
-    {
-      DefaultLogSink().Error("BER encoding length exceeds buffer size.\n");
-      return RESULT_FAIL;
-    }
+  {
+    DefaultLogSink().Error("BER encoding length exceeds buffer size.\n");
+    return RESULT_FAIL;
+  }
 
   if ( ber_len == 0 )
-    {
-      DefaultLogSink().Error("KLV format error, zero BER length not allowed.\n");
-      return RESULT_FAIL;
-    }
+  {
+    DefaultLogSink().Error("KLV format error, zero BER length not allowed.\n");
+    return RESULT_FAIL;
+  }
 
   ui64_t tmp_size;
   if ( ! Kumu::read_BER(buf + SMPTE_UL_LENGTH, &tmp_size) )
-    {
-      DefaultLogSink().Error("KLV format error, BER decode failure.\n");
-      return RESULT_FAIL;
-    }
+  {
+    DefaultLogSink().Error("KLV format error, BER decode failure.\n");
+    return RESULT_FAIL;
+  }
 
   m_ValueLength = tmp_size;
   m_KLLength = SMPTE_UL_LENGTH + Kumu::BER_length(buf + SMPTE_UL_LENGTH);
@@ -123,14 +123,14 @@ bool
 ASDCP::KLVPacket::HasUL(const byte_t* ul)
 {
   if ( m_KeyStart != 0 )
-    {
-      return UL(ul) == UL(m_KeyStart);
-    }
+  {
+    return UL(ul) == UL(m_KeyStart);
+  }
 
   if ( m_UL.HasValue() )
-    {
-      return UL(ul) == m_UL;
-    }
+  {
+    return UL(ul) == m_UL;
+  }
 
   return false;
 }
@@ -142,11 +142,11 @@ ASDCP::KLVPacket::WriteKLToBuffer(ASDCP::FrameBuffer& Buffer, const UL& label, u
   assert(label.HasValue());
 
   if ( Buffer.Size() + kl_length > Buffer.Capacity() )
-    {
-      DefaultLogSink().Error("Small write buffer\n");
-      return RESULT_FAIL;
-    }
-  
+  {
+    DefaultLogSink().Error("Small write buffer\n");
+    return RESULT_FAIL;
+  }
+
   memcpy(Buffer.Data() + Buffer.Size(), label.Value(), label.Size());
 
   if ( ! Kumu::write_BER(Buffer.Data() + Buffer.Size() + SMPTE_UL_LENGTH, length, MXF_BER_LENGTH) )
@@ -166,25 +166,25 @@ ASDCP::KLVPacket::Dump(FILE* stream, const Dictionary& Dict, bool show_value)
     stream = stderr;
 
   if ( m_KeyStart != 0 )
-    {
-      assert(m_ValueStart);
-      UL TmpUL(m_KeyStart);
-      fprintf(stream, "%s", TmpUL.EncodeString(buf, 64));
+  {
+    assert(m_ValueStart);
+    UL TmpUL(m_KeyStart);
+    fprintf(stream, "%s", TmpUL.EncodeString(buf, 64));
 
-      const MDDEntry* Entry = Dict.FindULAnyVersion(m_KeyStart);
-      fprintf(stream, "  len: %7llu (%s)\n", m_ValueLength, (Entry ? Entry->name : "Unknown"));
+    const MDDEntry* Entry = Dict.FindULAnyVersion(m_KeyStart);
+    fprintf(stream, "  len: %7llu (%s)\n", m_ValueLength, (Entry ? Entry->name : "Unknown"));
 
-      if ( show_value && m_ValueLength < 1000 )
-	Kumu::hexdump(m_ValueStart, Kumu::xmin(m_ValueLength, (ui64_t)128), stream);
-    }
+    if ( show_value && m_ValueLength < 1000 )
+      Kumu::hexdump(m_ValueStart, Kumu::xmin(m_ValueLength, (ui64_t)128), stream);
+  }
   else if ( m_UL.HasValue() )
-    {
-      fprintf(stream, "%s\n", m_UL.EncodeString(buf, 64));
-    }
+  {
+    fprintf(stream, "%s\n", m_UL.EncodeString(buf, 64));
+  }
   else
-    {
-      fprintf(stream, "*** Malformed KLV packet ***\n");
-    }
+  {
+    fprintf(stream, "*** Malformed KLV packet ***\n");
+  }
 }
 
 // 
@@ -216,30 +216,30 @@ ASDCP::KLVFilePacket::InitFromFile(const Kumu::FileReader& Reader)
     return result;
 
   if ( read_count < (SMPTE_UL_LENGTH + 1) )
-    {
-      DefaultLogSink().Error("Short read of Key and Length got %u\n", read_count);
-      return RESULT_READFAIL;
-    }
+  {
+    DefaultLogSink().Error("Short read of Key and Length got %u\n", read_count);
+    return RESULT_READFAIL;
+  }
 
   if ( memcmp(tmp_data, SMPTE_UL_START, 4) != 0 )
-    {
-      DefaultLogSink().Error("Unexpected UL preamble: %02x.%02x.%02x.%02x\n",
-			     tmp_data[0], tmp_data[1], tmp_data[2], tmp_data[3]);
-      return RESULT_FAIL;
-    }
+  {
+    DefaultLogSink().Error("Unexpected UL preamble: %02x.%02x.%02x.%02x\n",
+                           tmp_data[0], tmp_data[1], tmp_data[2], tmp_data[3]);
+    return RESULT_FAIL;
+  }
 
   if ( ! Kumu::read_BER(tmp_data + SMPTE_UL_LENGTH, &tmp_size) )
-    {
-      DefaultLogSink().Error("BER Length decoding error\n");
-      return RESULT_FAIL;
-    }
+  {
+    DefaultLogSink().Error("BER Length decoding error\n");
+    return RESULT_FAIL;
+  }
 
   if ( tmp_size > MAX_KLV_PACKET_LENGTH )
-    {
-      Kumu::ui64Printer tmp_size_str(tmp_size);
-      DefaultLogSink().Error("Packet length %s exceeds internal limit\n", tmp_size_str.c_str());
-      return RESULT_FAIL;
-    }
+  {
+    Kumu::ui64Printer tmp_size_str(tmp_size);
+    DefaultLogSink().Error("Packet length %s exceeds internal limit\n", tmp_size_str.c_str());
+    return RESULT_FAIL;
+  }
 
   ui32_t remainder = 0;
   ui32_t ber_len = Kumu::BER_length(tmp_data + SMPTE_UL_LENGTH);
@@ -259,42 +259,42 @@ ASDCP::KLVFilePacket::InitFromFile(const Kumu::FileReader& Reader)
 
   // is the whole packet in the tmp buf?
   if ( packet_length <= tmp_read_size )
-    {
-      assert(packet_length <= read_count);
-      memcpy(m_Buffer.Data(), tmp_data, packet_length);
+  {
+    assert(packet_length <= read_count);
+    memcpy(m_Buffer.Data(), tmp_data, packet_length);
 
-      if ( (remainder = read_count - packet_length) != 0 )
-	{
-	  DefaultLogSink().Warn("Repositioning pointer for short packet\n");
-	  Kumu::fpos_t pos = Reader.Tell();
-	  assert(pos > remainder);
-	  result = Reader.Seek(pos - remainder);
-	}
+    if ( (remainder = read_count - packet_length) != 0 )
+    {
+      DefaultLogSink().Warn("Repositioning pointer for short packet\n");
+      Kumu::fpos_t pos = Reader.Tell();
+      assert(pos > remainder);
+      result = Reader.Seek(pos - remainder);
     }
+  }
   else
+  {
+    if ( read_count < tmp_read_size )
     {
-      if ( read_count < tmp_read_size )
-	{
-	  DefaultLogSink().Error("Short read of packet body, expecting %u, got %u\n",
-				 m_Buffer.Size(), read_count);
-	  return RESULT_READFAIL;
-	}
-
-      memcpy(m_Buffer.Data(), tmp_data, tmp_read_size);
-      remainder = m_Buffer.Size() - tmp_read_size;
-
-      if ( remainder > 0 )
-	{
-	  result = Reader.Read(m_Buffer.Data() + tmp_read_size, remainder, &read_count);
-      
-	  if ( read_count != remainder )
-	    {
-	      DefaultLogSink().Error("Short read of packet body, expecting %u, got %u\n",
-				     remainder+tmp_read_size, read_count+tmp_read_size);
-	      result = RESULT_READFAIL;
-	    }
-	}
+      DefaultLogSink().Error("Short read of packet body, expecting %u, got %u\n",
+                             m_Buffer.Size(), read_count);
+      return RESULT_READFAIL;
     }
+
+    memcpy(m_Buffer.Data(), tmp_data, tmp_read_size);
+    remainder = m_Buffer.Size() - tmp_read_size;
+
+    if ( remainder > 0 )
+    {
+      result = Reader.Read(m_Buffer.Data() + tmp_read_size, remainder, &read_count);
+
+      if ( read_count != remainder )
+      {
+        DefaultLogSink().Error("Short read of packet body, expecting %u, got %u\n",
+                               remainder+tmp_read_size, read_count+tmp_read_size);
+        result = RESULT_READFAIL;
+      }
+    }
+  }
 
   return result;
 }

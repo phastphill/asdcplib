@@ -80,10 +80,10 @@ ASDCP::AESEncContext::InitKey(const byte_t* key)
   m_Context->m_KeyBuf.Set(key);
 
   if ( AES_set_encrypt_key(m_Context->m_KeyBuf.Value(), KEY_SIZE_BITS, m_Context) )
-    {
-      print_ssl_error();
-      return RESULT_CRYPT_INIT;
-    }
+  {
+    print_ssl_error();
+    return RESULT_CRYPT_INIT;
+  }
 
   return RESULT_OK;
 }
@@ -139,18 +139,18 @@ ASDCP::AESEncContext::EncryptBlock(const byte_t* pt_buf, byte_t* ct_buf, ui32_t 
   byte_t* out_p = ct_buf;
 
   while ( block_size )
-    {
-      // xor with the previous block
-      for ( ui32_t i = 0; i < CBC_BLOCK_SIZE; i++ )
-	tmp_buf[i] = in_p[i] ^ Ctx->m_IVec[i]; 
-          
-      AES_encrypt(tmp_buf, Ctx->m_IVec, Ctx);
-      memcpy(out_p, Ctx->m_IVec, CBC_BLOCK_SIZE);
+  {
+    // xor with the previous block
+    for ( ui32_t i = 0; i < CBC_BLOCK_SIZE; i++ )
+      tmp_buf[i] = in_p[i] ^ Ctx->m_IVec[i];
 
-      in_p += CBC_BLOCK_SIZE;
-      out_p += CBC_BLOCK_SIZE;
-      block_size -= CBC_BLOCK_SIZE;
-    }
+    AES_encrypt(tmp_buf, Ctx->m_IVec, Ctx);
+    memcpy(out_p, Ctx->m_IVec, CBC_BLOCK_SIZE);
+
+    in_p += CBC_BLOCK_SIZE;
+    out_p += CBC_BLOCK_SIZE;
+    block_size -= CBC_BLOCK_SIZE;
+  }
 
   return RESULT_OK;
 }
@@ -183,10 +183,10 @@ ASDCP::AESDecContext::InitKey(const byte_t* key)
   m_Context->m_KeyBuf.Set(key);
 
   if ( AES_set_decrypt_key(m_Context->m_KeyBuf.Value(), KEY_SIZE_BITS, m_Context) )
-    {
-      print_ssl_error();
-      return RESULT_CRYPT_INIT;
-    }
+  {
+    print_ssl_error();
+    return RESULT_CRYPT_INIT;
+  }
 
   return RESULT_OK;
 }
@@ -225,18 +225,18 @@ ASDCP::AESDecContext::DecryptBlock(const byte_t* ct_buf, byte_t* pt_buf, ui32_t 
   byte_t* out_p = pt_buf;
 
   while ( block_size )
-    {
-      AES_decrypt(in_p, out_p, Ctx);  
+  {
+    AES_decrypt(in_p, out_p, Ctx);
 
-      for ( ui32_t i = 0; i < CBC_BLOCK_SIZE; i++ )
-	out_p[i] ^= Ctx->m_IVec[i];
+    for ( ui32_t i = 0; i < CBC_BLOCK_SIZE; i++ )
+      out_p[i] ^= Ctx->m_IVec[i];
 
-      memcpy(Ctx->m_IVec, in_p, CBC_BLOCK_SIZE);
+    memcpy(Ctx->m_IVec, in_p, CBC_BLOCK_SIZE);
 
-      in_p += CBC_BLOCK_SIZE;
-      out_p += CBC_BLOCK_SIZE;
-      block_size -= CBC_BLOCK_SIZE;
-    }
+    in_p += CBC_BLOCK_SIZE;
+    out_p += CBC_BLOCK_SIZE;
+    block_size -= CBC_BLOCK_SIZE;
+  }
 
   return RESULT_OK;
 }
@@ -276,8 +276,8 @@ public:
   // MXF Interop MIC key generation
   void SetInteropKey(const byte_t* key)
   {
-    static byte_t key_nonce[KeyLen] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 
-					0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff };
+    static byte_t key_nonce[KeyLen] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+                                        0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff };
     byte_t sha_buf[SHA_DIGEST_LENGTH];
 
     // 7.10: MICKey = trunc( SHA1 ( key, key_nonce ) )
@@ -377,13 +377,13 @@ HMACContext::InitKey(const byte_t* key, LabelSet_t SetType)
   m_Context = new h__HMACContext;
 
   switch ( SetType )
-    {
+  {
     case LS_MXF_INTEROP: m_Context->SetInteropKey(key); break;
     case LS_MXF_SMPTE:   m_Context->SetKey(key); break;
     default:
       m_Context = 0;
       return RESULT_INIT;
-    }
+  }
 
   return RESULT_OK;
 }
@@ -418,7 +418,7 @@ HMACContext::Finalize()
 {
   if ( m_Context.empty() || m_Context->m_Final )
     return RESULT_INIT;
-  
+
   m_Context->Finalize();
   return RESULT_OK;
 }
@@ -446,7 +446,7 @@ HMACContext::TestHMACValue(const byte_t* buf) const
 
   if ( m_Context.empty() || ! m_Context->m_Final )
     return RESULT_INIT;
-  
+
   return ( memcmp(buf, m_Context->m_SHAValue, HMAC_SIZE) == 0 ) ? RESULT_OK : RESULT_HMACFAIL;
 }
 

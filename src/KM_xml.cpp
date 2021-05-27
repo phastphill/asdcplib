@@ -59,15 +59,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <xercesc/framework/XMLPScanToken.hpp>
 
 
-XERCES_CPP_NAMESPACE_USE 
+XERCES_CPP_NAMESPACE_USE
 
 extern "C"
 {
-  void kumu_init_xml_dom();
-  bool kumu_UTF_8_to_XercesString(const std::string& in_str, std::basic_string<XMLCh>& out_str);
-  bool kumu_UTF_8_to_XercesString_p(const char* in_str, std::basic_string<XMLCh>& out_str);
-  bool kumu_XercesString_to_UTF_8(const std::basic_string<XMLCh>& in_str, std::string& out_str);
-  bool kumu_XercesString_to_UTF_8_p(const XMLCh* in_str, std::string& out_str);
+void kumu_init_xml_dom();
+bool kumu_UTF_8_to_XercesString(const std::string& in_str, std::basic_string<XMLCh>& out_str);
+bool kumu_UTF_8_to_XercesString_p(const char* in_str, std::basic_string<XMLCh>& out_str);
+bool kumu_XercesString_to_UTF_8(const std::basic_string<XMLCh>& in_str, std::string& out_str);
+bool kumu_XercesString_to_UTF_8_p(const XMLCh* in_str, std::string& out_str);
 }
 
 #endif
@@ -81,11 +81,11 @@ public:
   ~ns_map()
   {
     while ( ! empty() )
-      {
-	ns_map::iterator ni = begin();
-	delete ni->second;
-	erase(ni);
-      }
+    {
+      ns_map::iterator ni = begin();
+      delete ni->second;
+      erase(ni);
+    }
   }
 };
 
@@ -205,50 +205,50 @@ void
 Kumu::XMLElement::RenderElement(std::string& outbuf, const ui32_t& depth, const bool& pretty) const
 {
   if ( pretty )
-    {
-      add_spacer(outbuf, depth);
-    }
+  {
+    add_spacer(outbuf, depth);
+  }
 
   outbuf += "<";
   outbuf += m_Name;
 
   // render attributes
   for ( Attr_i i = m_AttrList.begin(); i != m_AttrList.end(); ++i )
-    {
-      outbuf += " ";
-      outbuf += (*i).name;
-      outbuf += "=\"";
-      outbuf += (*i).value;
-      outbuf += "\"";
-    }
+  {
+    outbuf += " ";
+    outbuf += (*i).name;
+    outbuf += "=\"";
+    outbuf += (*i).value;
+    outbuf += "\"";
+  }
 
   outbuf += ">";
 
   // body contents and children
   if ( ! m_ChildList.empty() )
-    {
-      outbuf += "\n";
+  {
+    outbuf += "\n";
 
-      // render body
-      if ( m_Body.length() > 0 )
-	{
-	  outbuf += m_Body;
-	}
-
-      for ( Elem_i i = m_ChildList.begin(); i != m_ChildList.end(); ++i )
-	{
-	  (*i)->RenderElement(outbuf, depth + 1, pretty);
-	}
-
-      if ( pretty )
-	{
-	  add_spacer(outbuf, depth);
-	}
-    }
-  else if ( m_Body.length() > 0 )
+    // render body
+    if ( m_Body.length() > 0 )
     {
       outbuf += m_Body;
     }
+
+    for ( Elem_i i = m_ChildList.begin(); i != m_ChildList.end(); ++i )
+    {
+      (*i)->RenderElement(outbuf, depth + 1, pretty);
+    }
+
+    if ( pretty )
+    {
+      add_spacer(outbuf, depth);
+    }
+  }
+  else if ( m_Body.length() > 0 )
+  {
+    outbuf += m_Body;
+  }
 
   outbuf += "</";
   outbuf += m_Name;
@@ -278,10 +278,10 @@ const char*
 Kumu::XMLElement::GetAttrWithName(const char* name) const
 {
   for ( Attr_i i = m_AttrList.begin(); i != m_AttrList.end(); i++ )
-    {
-      if ( (*i).name == name )
-	return (*i).value.c_str();
-    }
+  {
+    if ( (*i).name == name )
+      return (*i).value.c_str();
+  }
 
   return 0;
 }
@@ -291,10 +291,10 @@ Kumu::XMLElement*
 Kumu::XMLElement::GetChildWithName(const char* name) const
 {
   for ( Elem_i i = m_ChildList.begin(); i != m_ChildList.end(); i++ )
-    {
-      if ( (*i)->HasName(name) )
-	return *i;
-    }
+  {
+    if ( (*i)->HasName(name) )
+      return *i;
+  }
 
   return 0;
 }
@@ -305,13 +305,13 @@ Kumu::XMLElement::GetChildrenWithName(const char* name, ElementList& outList) co
 {
   assert(name);
   for ( Elem_i i = m_ChildList.begin(); i != m_ChildList.end(); i++ )
-    {
-      if ( (*i)->HasName(name) )
-	outList.push_back(*i);
+  {
+    if ( (*i)->HasName(name) )
+      outList.push_back(*i);
 
-      if ( ! (*i)->m_ChildList.empty() )
-	(*i)->GetChildrenWithName(name, outList);
-    }
+    if ( ! (*i)->m_ChildList.empty() )
+      (*i)->GetChildrenWithName(name, outList);
+  }
 
   return outList;
 }
@@ -331,12 +331,12 @@ Kumu::XMLElement::DeleteAttrWithName(const char* name)
   AttributeList::iterator i = m_AttrList.begin();
 
   while ( i != m_AttrList.end() )
-    {
-      if ( i->name == std::string(name) )
-	m_AttrList.erase(i++);
-      else
-	++i;
-    }
+  {
+    if ( i->name == std::string(name) )
+      m_AttrList.erase(i++);
+    else
+      ++i;
+  }
 }
 
 //
@@ -344,10 +344,10 @@ void
 Kumu::XMLElement::DeleteChildren()
 {
   while ( ! m_ChildList.empty() )
-    {
-      delete m_ChildList.back();
-      m_ChildList.pop_back();
-    }
+  {
+    delete m_ChildList.back();
+    m_ChildList.pop_back();
+  }
 }
 
 //
@@ -355,17 +355,17 @@ void
 Kumu::XMLElement::DeleteChild(const XMLElement* element)
 {
   if ( element != 0 )
+  {
+    for ( ElementList::iterator i = m_ChildList.begin(); i != m_ChildList.end(); i++ )
     {
-      for ( ElementList::iterator i = m_ChildList.begin(); i != m_ChildList.end(); i++ )
-	{
-	  if ( *i == element )
-	    {
-	      delete *i;
-	      m_ChildList.erase(i);
-	      return;
-	    }
-	}
+      if ( *i == element )
+      {
+        delete *i;
+        m_ChildList.erase(i);
+        return;
+      }
     }
+  }
 }
 
 //
@@ -373,16 +373,16 @@ void
 Kumu::XMLElement::ForgetChild(const XMLElement* element)
 {
   if ( element != 0 )
+  {
+    for ( ElementList::iterator i = m_ChildList.begin(); i != m_ChildList.end(); i++ )
     {
-      for ( ElementList::iterator i = m_ChildList.begin(); i != m_ChildList.end(); i++ )
-	{
-	  if ( *i == element )
-	    {
-	      m_ChildList.erase(i);
-	      return;
-	    }
-	}
+      if ( *i == element )
+      {
+        m_ChildList.erase(i);
+        return;
+      }
     }
+  }
 }
 
 //
@@ -644,46 +644,46 @@ static unsigned char sg_coder_counts[sg_coder_buf_len / sizeof(XMLCh)]; // see X
 
 static const XMLCh sg_LS[] = { chLatin_L, chLatin_S, chNull };
 static const XMLCh sg_label_UTF_8[] = { chLatin_U, chLatin_T, chLatin_F,
-					chDash, chDigit_8, chNull}; 
+                                        chDash, chDigit_8, chNull};
 
 //
 void
 kumu_init_xml_dom()
 {
   if ( ! sg_xml_init )
+  {
+    AutoMutex AL(sg_xerces_init_lock);
+
+    if ( ! sg_xml_init )
     {
-      AutoMutex AL(sg_xerces_init_lock);
+      try
+      {
+        XMLPlatformUtils::Initialize();
+        sg_xml_init = true;
 
-      if ( ! sg_xml_init )
-	{
-	  try
-	    {
-	      XMLPlatformUtils::Initialize();
-	      sg_xml_init = true;
+        XMLTransService::Codes ret;
+        sg_coder = XMLPlatformUtils::fgTransService->makeNewTranscoderFor(sg_label_UTF_8, ret, sg_coder_buf_len);
 
-	      XMLTransService::Codes ret;
-	      sg_coder = XMLPlatformUtils::fgTransService->makeNewTranscoderFor(sg_label_UTF_8, ret, sg_coder_buf_len);
+        if ( ret != XMLTransService::Ok )
+        {
+          const char* message = "Undefined Error";
 
-	      if ( ret != XMLTransService::Ok )
-		{
-		  const char* message = "Undefined Error";
+          switch ( ret )
+          {
+            case XMLTransService::UnsupportedEncoding:  message = "Unsupported encoding";  break;
+            case XMLTransService::InternalFailure: 	message = "Internal failure";  break;
+            case XMLTransService::SupportFilesNotFound: message = "Support files not found";  break;
+          }
 
-		  switch ( ret )
-		    {
-		    case XMLTransService::UnsupportedEncoding:  message = "Unsupported encoding";  break;
-		    case XMLTransService::InternalFailure: 	message = "Internal failure";  break;
-		    case XMLTransService::SupportFilesNotFound: message = "Support files not found";  break;
-		    }
-
-		  DefaultLogSink().Error("Xerces transform initialization error: %s\n", message);
-		}
-	    }
-	  catch (const XMLException &e)
-	    {
-	      DefaultLogSink().Error("Xerces initialization error: %s\n", e.getMessage());
-	    }
-  	}
+          DefaultLogSink().Error("Xerces transform initialization error: %s\n", message);
+        }
+      }
+      catch (const XMLException &e)
+      {
+        DefaultLogSink().Error("Xerces initialization error: %s\n", e.getMessage());
+      }
     }
+  }
 }
 
 //
@@ -703,28 +703,28 @@ kumu_XercesString_to_UTF_8_p(const XMLCh* in_str, std::string& out_str)
   ui32_t read_total = 0;
 
   try
+  {
+    while ( str_len > 0 )
     {
-      while ( str_len > 0 )
-	{
 #if XERCES_VERSION_MAJOR < 3
- 	  ui32_t read_count = 0;
+      ui32_t read_count = 0;
 #else
-	  XMLSize_t read_count = 0;
+      XMLSize_t read_count = 0;
 #endif
-	  ui32_t write_count = sg_coder->transcodeTo(in_str + read_total, str_len,
-						     (XMLByte*)sg_coder_buf, sg_coder_buf_len,
-						     read_count, XMLTranscoder::UnRep_Throw);
+      ui32_t write_count = sg_coder->transcodeTo(in_str + read_total, str_len,
+                                                 (XMLByte*)sg_coder_buf, sg_coder_buf_len,
+                                                 read_count, XMLTranscoder::UnRep_Throw);
 
-	  out_str.append(sg_coder_buf, write_count);
-	  str_len -= read_count;
-	  read_total += read_count;
-	  assert(str_len >= 0);
-	}
+      out_str.append(sg_coder_buf, write_count);
+      str_len -= read_count;
+      read_total += read_count;
+      assert(str_len >= 0);
     }
+  }
   catch (...)
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
   return true;
 }
@@ -746,28 +746,28 @@ kumu_UTF_8_to_XercesString_p(const char* in_str, std::basic_string<XMLCh>& out_s
   ui32_t read_total = 0;
 
   try
+  {
+    while ( str_len > 0 )
     {
-      while ( str_len > 0 )
-	{
 #if XERCES_VERSION_MAJOR < 3
- 	  ui32_t read_count = 0;
+      ui32_t read_count = 0;
 #else
-	  XMLSize_t read_count = 0;
+      XMLSize_t read_count = 0;
 #endif
-	  ui32_t write_count = sg_coder->transcodeFrom((const XMLByte*)(in_str + read_total), str_len,
-						       (XMLCh*)sg_coder_buf, sg_coder_buf_len / sizeof(XMLCh),
-						       read_count, sg_coder_counts);
+      ui32_t write_count = sg_coder->transcodeFrom((const XMLByte*)(in_str + read_total), str_len,
+                                                   (XMLCh*)sg_coder_buf, sg_coder_buf_len / sizeof(XMLCh),
+                                                   read_count, sg_coder_counts);
 
-	  out_str.append((XMLCh*)sg_coder_buf, write_count * sizeof(XMLCh));
-	  str_len -= read_count;
-	  read_total += read_count;
-	  assert(str_len >= 0);
-	}
+      out_str.append((XMLCh*)sg_coder_buf, write_count * sizeof(XMLCh));
+      str_len -= read_count;
+      read_total += read_count;
+      assert(str_len >= 0);
     }
+  }
   catch (...)
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
   return true;
 }
@@ -810,37 +810,37 @@ public:
     assert(ns_name);
 
     if ( ns_prefix[0] == ':' )
-      {
-	ns_prefix++;
-      }
+    {
+      ns_prefix++;
+    }
     else
-      {
-	assert(ns_prefix[0] == 0);
-	ns_prefix = "";
-      }
+    {
+      assert(ns_prefix[0] == 0);
+      ns_prefix = "";
+    }
 
     ns_map::iterator ni = m_Namespaces->find(ns_prefix);
 
     if  ( ni != m_Namespaces->end() )
+    {
+      if ( ni->second->Name() != std::string(ns_name) )
       {
-	if ( ni->second->Name() != std::string(ns_name) )
-	  {
-	    DefaultLogSink().Error("Duplicate prefix: %s\n", ns_prefix);
-	    return;
-	  }
+        DefaultLogSink().Error("Duplicate prefix: %s\n", ns_prefix);
+        return;
       }
+    }
     else
-      {
-	XMLNamespace* Namespace = new XMLNamespace(ns_prefix, ns_name);
-	m_Namespaces->insert(ns_map::value_type(ns_prefix, Namespace));
-      }
+    {
+      XMLNamespace* Namespace = new XMLNamespace(ns_prefix, ns_name);
+      m_Namespaces->insert(ns_map::value_type(ns_prefix, Namespace));
+    }
 
     assert(!m_Namespaces->empty());
   }
 
   //
   void startElement(const XMLCh* const x_name,
-		    XERCES_CPP_NAMESPACE::AttributeList& attributes)
+                    XERCES_CPP_NAMESPACE::AttributeList& attributes)
   {
     assert(x_name);
     std::string tx_name;
@@ -857,14 +857,14 @@ public:
       name = local_name + 1;
 
     if ( m_Scope.empty() )
-      {
-	m_Scope.push(m_Root);
-      }
+    {
+      m_Scope.push(m_Root);
+    }
     else
-      {
-	Element = m_Scope.top();
-	m_Scope.push(Element->AddChild(name));
-      }
+    {
+      Element = m_Scope.top();
+      m_Scope.push(Element->AddChild(name));
+    }
 
     Element = m_Scope.top();
     Element->SetName(name);
@@ -873,33 +873,33 @@ public:
     ui32_t a_len = attributes.getLength();
 
     for ( ui32_t i = 0; i < a_len; i++)
-      {
-	std::string aname, value;
-	if ( ! kumu_XercesString_to_UTF_8(attributes.getName(i), aname) )
-	  m_HasEncodeErrors = true;
+    {
+      std::string aname, value;
+      if ( ! kumu_XercesString_to_UTF_8(attributes.getName(i), aname) )
+        m_HasEncodeErrors = true;
 
-	if ( ! kumu_XercesString_to_UTF_8(attributes.getValue(i), value) )
-	  m_HasEncodeErrors = true;
+      if ( ! kumu_XercesString_to_UTF_8(attributes.getValue(i), value) )
+        m_HasEncodeErrors = true;
 
-	const char* x_aname = aname.c_str();
-	const char* x_value = value.c_str();
+      const char* x_aname = aname.c_str();
+      const char* x_value = value.c_str();
 
-	if ( strncmp(x_aname, "xmlns", 5) == 0 )
-	  AddNamespace(x_aname+5, x_value);
+      if ( strncmp(x_aname, "xmlns", 5) == 0 )
+        AddNamespace(x_aname+5, x_value);
 
-	if ( ( local_name = strchr(x_aname, ':') ) == 0 )
-	  local_name = x_aname;
-	else
-	  local_name++;
+      if ( ( local_name = strchr(x_aname, ':') ) == 0 )
+        local_name = x_aname;
+      else
+        local_name++;
 
-	Element->SetAttr(local_name, x_value);
-      }
+      Element->SetAttr(local_name, x_value);
+    }
 
     // map the namespace
     std::string key;
     if ( ns_root != name )
       key.assign(ns_root, name - ns_root - 1);
-  
+
     ns_map::iterator ni = m_Namespaces->find(key);
     if ( ni != m_Namespaces->end() )
       Element->SetNamespace(ni->second);
@@ -916,13 +916,13 @@ public:
 #endif
   {
     if ( length > 0 )
-      {
-	std::string tmp;
-	if ( ! kumu_XercesString_to_UTF_8(chars, tmp) )
-	  m_HasEncodeErrors = true;
+    {
+      std::string tmp;
+      if ( ! kumu_XercesString_to_UTF_8(chars, tmp) )
+        m_HasEncodeErrors = true;
 
-	m_Scope.top()->AppendBody(tmp);
-      }
+      m_Scope.top()->AppendBody(tmp);
+    }
   }
 };
 
@@ -931,9 +931,9 @@ bool
 Kumu::XMLElement::ParseString(const char* document, ui32_t doc_len)
 {
   if ( doc_len == 0 )
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
   kumu_init_xml_dom();
 
@@ -948,33 +948,33 @@ Kumu::XMLElement::ParseString(const char* document, ui32_t doc_len)
   parser->setErrorHandler(docHandler);
 
   try
-    {
-      MemBufInputSource xmlSource(reinterpret_cast<const XMLByte*>(document),
-				  static_cast<const unsigned int>(doc_len),
-				  "pidc_rules_file");
+  {
+    MemBufInputSource xmlSource(reinterpret_cast<const XMLByte*>(document),
+                                static_cast<const unsigned int>(doc_len),
+                                "pidc_rules_file");
 
-      parser->parse(xmlSource);
-    }
+    parser->parse(xmlSource);
+  }
   catch (const XMLException& e)
-    {
-      char* message = XMLString::transcode(e.getMessage());
-      DefaultLogSink().Error("Parser error: %s\n", message);
-      XMLString::release(&message);
-      errorCount++;
-    }
+  {
+    char* message = XMLString::transcode(e.getMessage());
+    DefaultLogSink().Error("Parser error: %s\n", message);
+    XMLString::release(&message);
+    errorCount++;
+  }
   catch (const SAXParseException& e)
-    {
-      char* message = XMLString::transcode(e.getMessage());
-      DefaultLogSink().Error("Parser error: %s at line %d\n", message, e.getLineNumber());
-      XMLString::release(&message);
-      errorCount++;
-    }
+  {
+    char* message = XMLString::transcode(e.getMessage());
+    DefaultLogSink().Error("Parser error: %s at line %d\n", message, e.getLineNumber());
+    XMLString::release(&message);
+    errorCount++;
+  }
   catch (...)
-    {
-      DefaultLogSink().Error("Unexpected XML parser error\n");
-      errorCount++;
-    }
-  
+  {
+    DefaultLogSink().Error("Unexpected XML parser error\n");
+    errorCount++;
+  }
+
   if ( errorCount == 0 )
     m_NamespaceOwner = (void*)docHandler->TakeNamespaceMap();
 
@@ -989,12 +989,12 @@ bool
 Kumu::XMLElement::ParseFirstFromString(const char* document, ui32_t doc_len)
 {
   if ( doc_len == 0 )
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
   kumu_init_xml_dom();
-  
+
   int errorCount = 0;
   SAXParser* parser = new SAXParser();
 
@@ -1007,30 +1007,30 @@ Kumu::XMLElement::ParseFirstFromString(const char* document, ui32_t doc_len)
   XMLPScanToken token;
 
   try
+  {
+    MemBufInputSource xmlSource(reinterpret_cast<const XMLByte*>(document),
+                                static_cast<const unsigned int>(doc_len),
+                                "pidc_rules_file");
+
+    if ( ! parser->parseFirst(xmlSource, token) )
     {
-      MemBufInputSource xmlSource(reinterpret_cast<const XMLByte*>(document),
-				  static_cast<const unsigned int>(doc_len),
-				  "pidc_rules_file");
-
-      if ( ! parser->parseFirst(xmlSource, token) )
-	{
-	  ++errorCount;
-	}
-
-      if ( ! parser->parseNext(token) )
-	{
-	  ++errorCount;
-	}
+      ++errorCount;
     }
+
+    if ( ! parser->parseNext(token) )
+    {
+      ++errorCount;
+    }
+  }
   catch (...)
-    {
-      errorCount++;
-    }
-  
+  {
+    errorCount++;
+  }
+
   if ( errorCount == 0 )
-    {
-      m_NamespaceOwner = (void*)docHandler->TakeNamespaceMap();
-    }
+  {
+    m_NamespaceOwner = (void*)docHandler->TakeNamespaceMap();
+  }
 
   delete parser;
   delete docHandler;
@@ -1068,7 +1068,7 @@ Kumu::XMLElement::ParseFirstFromString(const char* document, ui32_t doc_len)
 //
 bool
 Kumu::GetXMLDocType(const ByteString& buf, std::string& ns_prefix, std::string& type_name, std::string& namespace_name,
-		    AttributeList& doc_attr_list)
+                    AttributeList& doc_attr_list)
 {
   return GetXMLDocType(buf.RoData(), buf.Length(), ns_prefix, type_name, namespace_name, doc_attr_list);
 }
@@ -1076,7 +1076,7 @@ Kumu::GetXMLDocType(const ByteString& buf, std::string& ns_prefix, std::string& 
 //
 bool
 Kumu::GetXMLDocType(const std::string& buf, std::string& ns_prefix, std::string& type_name, std::string& namespace_name,
-		    AttributeList& doc_attr_list)
+                    AttributeList& doc_attr_list)
 {
   return GetXMLDocType((const byte_t*)buf.c_str(), buf.size(), ns_prefix, type_name, namespace_name, doc_attr_list);
 }
@@ -1084,22 +1084,22 @@ Kumu::GetXMLDocType(const std::string& buf, std::string& ns_prefix, std::string&
 //
 bool
 Kumu::GetXMLDocType(const byte_t* buf, ui32_t buf_len, std::string& ns_prefix, std::string& type_name, std::string& namespace_name,
-		    AttributeList& doc_attr_list)
+                    AttributeList& doc_attr_list)
 {
   XMLElement tmp_element("tmp");
 
   if ( ! tmp_element.ParseFirstFromString((const char*)buf, buf_len) )
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
   const XMLNamespace* ns = tmp_element.Namespace();
 
   if ( ns != 0 )
-    {
-      ns_prefix = ns->Prefix();
-      namespace_name = ns->Name();
-    }
+  {
+    ns_prefix = ns->Prefix();
+    namespace_name = ns->Name();
+  }
 
   type_name = tmp_element.GetName();
   doc_attr_list = tmp_element.GetAttributes();

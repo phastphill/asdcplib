@@ -25,7 +25,7 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/ 
+*/
 /*! \file    h__02_Reader.cpp
   \version $Id$
   \brief   MXF file reader base class
@@ -46,26 +46,26 @@ void
 AS_02::default_md_object_init()
 {
   if ( ! sg_DefaultMDTypesInit )
-    {
-      Kumu::AutoMutex BlockLock(sg_DefaultMDInitLock);
+  {
+    Kumu::AutoMutex BlockLock(sg_DefaultMDInitLock);
 
-      if ( ! sg_DefaultMDTypesInit )
-	{
-	  sg_dict = &DefaultSMPTEDict();
-	  g_AS02IndexReader = new AS_02::MXF::AS02IndexReader(sg_dict);
-	  sg_DefaultMDTypesInit = true;
-	}
+    if ( ! sg_DefaultMDTypesInit )
+    {
+      sg_dict = &DefaultSMPTEDict();
+      g_AS02IndexReader = new AS_02::MXF::AS02IndexReader(sg_dict);
+      sg_DefaultMDTypesInit = true;
     }
+  }
 }
 
 
 //---------------------------------------------------------------------------------
 //
 
-    
+
 AS_02::MXF::AS02IndexReader::AS02IndexReader(const ASDCP::Dictionary*& d) :
-  m_Duration(0), m_BytesPerEditUnit(0),
-  ASDCP::MXF::Partition(d), m_Dict(d) {}
+    m_Duration(0), m_BytesPerEditUnit(0),
+    ASDCP::MXF::Partition(d), m_Dict(d) {}
 
 AS_02::MXF::AS02IndexReader::~AS02IndexReader() {}
 
@@ -83,132 +83,132 @@ AS_02::MXF::AS02IndexReader::InitFromFile(const Kumu::FileReader& reader, const 
 
   // create a list of body parts and index parts
   for ( i = rip.PairArray.begin(); KM_SUCCESS(result) && i != rip.PairArray.end(); ++i )
+  {
+    if ( i->BodySID == 0 )
+      continue;
+
+    if ( first_body_sid == 0 )
     {
-      if ( i->BodySID == 0 )
-	continue;
-
-      if ( first_body_sid == 0 )
-	{
-	  first_body_sid = i->BodySID;
-	}
-      else if ( i->BodySID != first_body_sid )
-	{
-	  //	  DefaultLogSink().Debug("The index assembler is ignoring BodySID %d.\n", i->BodySID);
-	  continue;
-	}
-
-      reader.Seek(i->ByteOffset);
-      ASDCP::MXF::Partition *this_partition = new ASDCP::MXF::Partition(m_Dict);
-      assert(this_partition);
-
-      result = this_partition->InitFromFile(reader);
-
-      if ( KM_FAILURE(result) )
-	{
-	  delete this_partition;
-	  return result;
-	}
-
-      if ( this_partition->BodySID != i->BodySID )
-	{
-	  DefaultLogSink().Error("Partition BodySID %d does not match RIP BodySID %d.\n",
-				 this_partition->BodySID, i->BodySID);
-	}
-
-      body_part_array.push_back(0);
-      body_part_array.back().set(this_partition);
+      first_body_sid = i->BodySID;
     }
+    else if ( i->BodySID != first_body_sid )
+    {
+      //	  DefaultLogSink().Debug("The index assembler is ignoring BodySID %d.\n", i->BodySID);
+      continue;
+    }
+
+    reader.Seek(i->ByteOffset);
+    ASDCP::MXF::Partition *this_partition = new ASDCP::MXF::Partition(m_Dict);
+    assert(this_partition);
+
+    result = this_partition->InitFromFile(reader);
+
+    if ( KM_FAILURE(result) )
+    {
+      delete this_partition;
+      return result;
+    }
+
+    if ( this_partition->BodySID != i->BodySID )
+    {
+      DefaultLogSink().Error("Partition BodySID %d does not match RIP BodySID %d.\n",
+                             this_partition->BodySID, i->BodySID);
+    }
+
+    body_part_array.push_back(0);
+    body_part_array.back().set(this_partition);
+  }
 
   if ( body_part_array.empty() )
-    {
-      DefaultLogSink().Error("File has no partitions with essence data.\n");
-      return RESULT_AS02_FORMAT;
-    }
+  {
+    DefaultLogSink().Error("File has no partitions with essence data.\n");
+    return RESULT_AS02_FORMAT;
+  }
 
   body_part_iter = body_part_array.begin();
 
   for ( i = rip.PairArray.begin(); KM_SUCCESS(result) && i != rip.PairArray.end(); ++i )
+  {
+    reader.Seek(i->ByteOffset);
+    ASDCP::MXF::Partition plain_part(m_Dict);
+    result = plain_part.InitFromFile(reader);
+
+    if ( KM_FAILURE(result) )
+      return result;
+
+    if ( plain_part.IndexByteCount > 0 )
     {
-      reader.Seek(i->ByteOffset);
-      ASDCP::MXF::Partition plain_part(m_Dict);
-      result = plain_part.InitFromFile(reader);
+      if ( body_part_iter == body_part_array.end() )
+      {
+        DefaultLogSink().Error("Index and Body partitions do not match.\n");
+        break;
+      }
 
-      if ( KM_FAILURE(result) )
-	return result;
+      if ( plain_part.ThisPartition == plain_part.FooterPartition )
+      {
+        DefaultLogSink().Warn("File footer partition contains index data.\n");
+      }
 
-      if ( plain_part.IndexByteCount > 0 )
-	{
-	  if ( body_part_iter == body_part_array.end() )
-	    {
-	      DefaultLogSink().Error("Index and Body partitions do not match.\n");
-	      break;
-	    }
+      // slurp up the remainder of the partition
+      ui32_t read_count = 0;
 
-	  if ( plain_part.ThisPartition == plain_part.FooterPartition )
-	    {
-	      DefaultLogSink().Warn("File footer partition contains index data.\n");
-	    }
+      assert (plain_part.IndexByteCount <= 0xFFFFFFFFL);
+      ui32_t bytes_this_partition = (ui32_t)plain_part.IndexByteCount;
 
-	  // slurp up the remainder of the partition
-	  ui32_t read_count = 0;
+      result = m_IndexSegmentData.Capacity(m_IndexSegmentData.Length() + bytes_this_partition);
 
-	  assert (plain_part.IndexByteCount <= 0xFFFFFFFFL);
-	  ui32_t bytes_this_partition = (ui32_t)plain_part.IndexByteCount;
+      if ( KM_SUCCESS(result) )
+        result = reader.Read(m_IndexSegmentData.Data() + m_IndexSegmentData.Length(),
+                             bytes_this_partition, &read_count);
 
-	  result = m_IndexSegmentData.Capacity(m_IndexSegmentData.Length() + bytes_this_partition);
+      if ( KM_SUCCESS(result) && read_count != bytes_this_partition )
+      {
+        DefaultLogSink().Error("Short read of index partition: got %u, expecting %u\n",
+                               read_count, bytes_this_partition);
+        return RESULT_AS02_FORMAT;
+      }
 
-	  if ( KM_SUCCESS(result) )
-	    result = reader.Read(m_IndexSegmentData.Data() + m_IndexSegmentData.Length(),
-				 bytes_this_partition, &read_count);
+      if ( KM_SUCCESS(result) )
+      {
+        ui64_t current_body_offset = 0;
+        ui64_t current_ec_offset = 0;
+        assert(body_part_iter != body_part_array.end());
 
-	  if ( KM_SUCCESS(result) && read_count != bytes_this_partition )
-	    {
-	      DefaultLogSink().Error("Short read of index partition: got %u, expecting %u\n",
-				     read_count, bytes_this_partition);
-	      return RESULT_AS02_FORMAT;
-	    }
+        assert(!body_part_iter->empty());
+        ASDCP::MXF::Partition *tmp_partition = body_part_iter->get();
 
-	  if ( KM_SUCCESS(result) )
-	    {
-	      ui64_t current_body_offset = 0;
-	      ui64_t current_ec_offset = 0;
-	      assert(body_part_iter != body_part_array.end());
+        if ( has_header_essence && tmp_partition->ThisPartition == 0 )
+        {
+          current_body_offset = 0;
+          current_ec_offset = tmp_partition->HeaderByteCount + tmp_partition->ArchiveSize();
+        }
+        else
+        {
+          current_body_offset = tmp_partition->BodyOffset;
+          current_ec_offset += tmp_partition->ThisPartition + tmp_partition->ArchiveSize();
+        }
 
-	      assert(!body_part_iter->empty());
-	      ASDCP::MXF::Partition *tmp_partition = body_part_iter->get();
-
-	      if ( has_header_essence && tmp_partition->ThisPartition == 0 )
-		{
-		  current_body_offset = 0;
-		  current_ec_offset = tmp_partition->HeaderByteCount + tmp_partition->ArchiveSize();
-		}
-	      else
-		{
-		  current_body_offset = tmp_partition->BodyOffset;
-		  current_ec_offset += tmp_partition->ThisPartition + tmp_partition->ArchiveSize();
-		}
-
-	      result = InitFromBuffer(m_IndexSegmentData.RoData() + m_IndexSegmentData.Length(), bytes_this_partition, current_body_offset, current_ec_offset);
-	      m_IndexSegmentData.Length(m_IndexSegmentData.Length() + bytes_this_partition);
-	      ++body_part_iter;
-	    }
-	}
+        result = InitFromBuffer(m_IndexSegmentData.RoData() + m_IndexSegmentData.Length(), bytes_this_partition, current_body_offset, current_ec_offset);
+        m_IndexSegmentData.Length(m_IndexSegmentData.Length() + bytes_this_partition);
+        ++body_part_iter;
+      }
     }
+  }
 
   if ( KM_SUCCESS(result) )
-    {
-      std::list<InterchangeObject*>::const_iterator ii;
-  
-      for ( ii = m_PacketList->m_List.begin(); ii != m_PacketList->m_List.end(); ++ii )
-	{
-	  IndexTableSegment *segment = dynamic_cast<IndexTableSegment*>(*ii);
+  {
+    std::list<InterchangeObject*>::const_iterator ii;
 
-	  if ( segment != 0 )
-	    {
-	      m_Duration += segment->IndexDuration;
-	    }
-	}
+    for ( ii = m_PacketList->m_List.begin(); ii != m_PacketList->m_List.end(); ++ii )
+    {
+      IndexTableSegment *segment = dynamic_cast<IndexTableSegment*>(*ii);
+
+      if ( segment != 0 )
+      {
+        m_Duration += segment->IndexDuration;
+      }
     }
+  }
 
 #if 0
   char identbuf[IdentBufferLen];
@@ -255,41 +255,41 @@ AS_02::MXF::AS02IndexReader::InitFromBuffer(const byte_t* p, ui32_t l, const ui6
   const byte_t* end_p = p + l;
 
   while ( KM_SUCCESS(result) && p < end_p )
+  {
+    // parse the packets and index them by uid, discard KLVFill items
+    InterchangeObject* object = CreateObject(m_Dict, p);
+    assert(object);
+
+    object->m_Lookup = m_Lookup;
+    result = object->InitFromBuffer(p, end_p - p);
+    p += object->PacketLength();
+
+    if ( KM_SUCCESS(result) )
     {
-      // parse the packets and index them by uid, discard KLVFill items
-      InterchangeObject* object = CreateObject(m_Dict, p);
-      assert(object);
+      IndexTableSegment *segment = dynamic_cast<IndexTableSegment*>(object);
 
-      object->m_Lookup = m_Lookup;
-      result = object->InitFromBuffer(p, end_p - p);
-      p += object->PacketLength();
-
-      if ( KM_SUCCESS(result) )
-	{
-	  IndexTableSegment *segment = dynamic_cast<IndexTableSegment*>(object);
-
-	  if ( segment != 0 )
-	    {
-	      segment->RtFileOffset = essence_container_offset;
-	      segment->RtEntryOffset = body_offset;
-	      m_PacketList->AddPacket(object); // takes ownership
-	    }
-	  else
-	    {
-	      delete object;
-	    }
-	}
+      if ( segment != 0 )
+      {
+        segment->RtFileOffset = essence_container_offset;
+        segment->RtEntryOffset = body_offset;
+        m_PacketList->AddPacket(object); // takes ownership
+      }
       else
-	{
-	  DefaultLogSink().Error("Error initializing index segment packet.\n");
-	  delete object;
-	}
+      {
+        delete object;
+      }
     }
+    else
+    {
+      DefaultLogSink().Error("Error initializing index segment packet.\n");
+      delete object;
+    }
+  }
 
   if ( KM_FAILURE(result) )
-    {
-      DefaultLogSink().Error("Failed to initialize AS02IndexReader.\n");
-    }
+  {
+    DefaultLogSink().Error("Failed to initialize AS02IndexReader.\n");
+  }
 
   return result;
 }
@@ -346,43 +346,43 @@ AS_02::MXF::AS02IndexReader::Lookup(ui32_t frame_num, ASDCP::MXF::IndexTableSegm
 {
   std::list<InterchangeObject*>::iterator i;
   for ( i = m_PacketList->m_List.begin(); i != m_PacketList->m_List.end(); ++i )
+  {
+    IndexTableSegment *segment = dynamic_cast<IndexTableSegment*>(*i);
+
+    if ( segment != 0 )
     {
-      IndexTableSegment *segment = dynamic_cast<IndexTableSegment*>(*i);
+      ui64_t start_pos = segment->IndexStartPosition;
 
-      if ( segment != 0 )
-	{
-	  ui64_t start_pos = segment->IndexStartPosition;
+      if ( segment->EditUnitByteCount > 0 ) // CBR
+      {
+        if ( m_PacketList->m_List.size() > 1 )
+          DefaultLogSink().Error("Unexpected multiple IndexTableSegment in CBR file\n");
 
-	  if ( segment->EditUnitByteCount > 0 ) // CBR
-	    {
-	      if ( m_PacketList->m_List.size() > 1 )
-		DefaultLogSink().Error("Unexpected multiple IndexTableSegment in CBR file\n");
+        if ( ! segment->IndexEntryArray.empty() )
+          DefaultLogSink().Error("Unexpected IndexEntryArray contents in CBR file\n");
 
-	      if ( ! segment->IndexEntryArray.empty() )
-		DefaultLogSink().Error("Unexpected IndexEntryArray contents in CBR file\n");
+        Entry.StreamOffset = ((ui64_t)frame_num * segment->EditUnitByteCount) + segment->RtFileOffset;
+        return RESULT_OK;
+      }
+      else if ( (ui64_t)frame_num >= start_pos
+                && (ui64_t)frame_num < (start_pos + segment->IndexDuration) ) // VBR in segments
+      {
+        ui64_t tmp = frame_num - start_pos;
+        assert(tmp <= 0xFFFFFFFFL);
 
-	      Entry.StreamOffset = ((ui64_t)frame_num * segment->EditUnitByteCount) + segment->RtFileOffset;
-	      return RESULT_OK;
-	    }
-	  else if ( (ui64_t)frame_num >= start_pos
-		    && (ui64_t)frame_num < (start_pos + segment->IndexDuration) ) // VBR in segments
-	    {
-	      ui64_t tmp = frame_num - start_pos;
-	      assert(tmp <= 0xFFFFFFFFL);
-
-	      if ( tmp < segment->IndexEntryArray.size() )
-		{
-		  Entry = segment->IndexEntryArray[(ui32_t) tmp];
-		  Entry.StreamOffset = Entry.StreamOffset - segment->RtEntryOffset + segment->RtFileOffset;
-		  return RESULT_OK;
-		}
-	      else
-		{
-		  DefaultLogSink().Error("Malformed index table segment, IndexDuration does not match entries.\n");
-		}
-	    }
-	}
+        if ( tmp < segment->IndexEntryArray.size() )
+        {
+          Entry = segment->IndexEntryArray[(ui32_t) tmp];
+          Entry.StreamOffset = Entry.StreamOffset - segment->RtEntryOffset + segment->RtFileOffset;
+          return RESULT_OK;
+        }
+        else
+        {
+          DefaultLogSink().Error("Malformed index table segment, IndexDuration does not match entries.\n");
+        }
+      }
     }
+  }
 
   DefaultLogSink().Error("AS_02::MXF::AS02IndexReader::Lookup FAILED: frame_num=%d\n", frame_num);
   return RESULT_FAIL;
@@ -408,75 +408,75 @@ AS_02::h__AS02Reader::OpenMXFRead(const std::string& filename)
     result = ASDCP::MXF::TrackFileReader<OP1aHeader, AS_02::MXF::AS02IndexReader>::InitInfo();
 
   if( KM_SUCCESS(result) )
+  {
+    //
+    UL OP1a_ul(m_Dict->ul(MDD_OP1a));
+    m_Info.LabelSetType = LS_MXF_SMPTE;
+
+    if ( m_HeaderPart.OperationalPattern != OP1a_ul )
     {
-      //
-      UL OP1a_ul(m_Dict->ul(MDD_OP1a));
-      m_Info.LabelSetType = LS_MXF_SMPTE;
+      char strbuf[IdentBufferLen];
+      const MDDEntry* Entry = m_Dict->FindULAnyVersion(m_HeaderPart.OperationalPattern.Value());
 
-      if ( m_HeaderPart.OperationalPattern != OP1a_ul )
-	{
-	  char strbuf[IdentBufferLen];
-	  const MDDEntry* Entry = m_Dict->FindULAnyVersion(m_HeaderPart.OperationalPattern.Value());
-
-	  if ( Entry == 0 )
-	    {
-	      DefaultLogSink().Warn("Operational pattern is not OP-1a: %s\n",
-				    m_HeaderPart.OperationalPattern.EncodeString(strbuf, IdentBufferLen));
-	    }
-	  else
-	    {
-	      DefaultLogSink().Warn("Operational pattern is not OP-1a: %s\n", Entry->name);
-	    }
-	}
-
-      //
-      if ( ! m_RIP.PairArray.empty() )
-	{
-	  if ( m_RIP.PairArray.front().ByteOffset != 0 )
-	    {
-	      DefaultLogSink().Error("First Partition in RIP is not at offset 0.\n");
-	      return RESULT_AS02_FORMAT;
-	    }
-	}
-
-      Kumu::fpos_t first_partition_after_header = 0;
-      bool has_body_sid = false;
-      RIP::pair_iterator r_i;
-
-      for ( r_i = m_RIP.PairArray.begin(); r_i != m_RIP.PairArray.end(); ++r_i )
-	{
-	  if ( r_i->BodySID != 0 )
-	    {
-	      has_body_sid = true;
-	    }
-
-	  if ( first_partition_after_header == 0 && r_i->ByteOffset != 0 )
-	    {
-	      first_partition_after_header = r_i->ByteOffset;
-	    }
-	}
-
-      // essence in header partition?
-      Kumu::fpos_t header_end = m_HeaderPart.HeaderByteCount + m_HeaderPart.ArchiveSize();
-      has_header_essence = header_end < first_partition_after_header;
-
-      if ( has_header_essence )
-	{
-	  DefaultLogSink().Warn("File header partition contains essence data.\n");
-	}
-
-      if ( ! has_body_sid )
-	{
-	  DefaultLogSink().Error("File contains no essence.\n");
-	  return RESULT_AS02_FORMAT;
-	}
+      if ( Entry == 0 )
+      {
+        DefaultLogSink().Warn("Operational pattern is not OP-1a: %s\n",
+                              m_HeaderPart.OperationalPattern.EncodeString(strbuf, IdentBufferLen));
+      }
+      else
+      {
+        DefaultLogSink().Warn("Operational pattern is not OP-1a: %s\n", Entry->name);
+      }
     }
+
+    //
+    if ( ! m_RIP.PairArray.empty() )
+    {
+      if ( m_RIP.PairArray.front().ByteOffset != 0 )
+      {
+        DefaultLogSink().Error("First Partition in RIP is not at offset 0.\n");
+        return RESULT_AS02_FORMAT;
+      }
+    }
+
+    Kumu::fpos_t first_partition_after_header = 0;
+    bool has_body_sid = false;
+    RIP::pair_iterator r_i;
+
+    for ( r_i = m_RIP.PairArray.begin(); r_i != m_RIP.PairArray.end(); ++r_i )
+    {
+      if ( r_i->BodySID != 0 )
+      {
+        has_body_sid = true;
+      }
+
+      if ( first_partition_after_header == 0 && r_i->ByteOffset != 0 )
+      {
+        first_partition_after_header = r_i->ByteOffset;
+      }
+    }
+
+    // essence in header partition?
+    Kumu::fpos_t header_end = m_HeaderPart.HeaderByteCount + m_HeaderPart.ArchiveSize();
+    has_header_essence = header_end < first_partition_after_header;
+
+    if ( has_header_essence )
+    {
+      DefaultLogSink().Warn("File header partition contains essence data.\n");
+    }
+
+    if ( ! has_body_sid )
+    {
+      DefaultLogSink().Error("File contains no essence.\n");
+      return RESULT_AS02_FORMAT;
+    }
+  }
 
   if ( KM_SUCCESS(result) )
-    {
-      m_IndexAccess.m_Lookup = &m_HeaderPart.m_Primer;
-      result = m_IndexAccess.InitFromFile(m_File, m_RIP, has_header_essence);
-    }
+  {
+    m_IndexAccess.m_Lookup = &m_HeaderPart.m_Primer;
+    result = m_IndexAccess.InitFromFile(m_File, m_RIP, has_header_essence);
+  }
 
   return result;
 }
@@ -484,7 +484,7 @@ AS_02::h__AS02Reader::OpenMXFRead(const std::string& filename)
 // AS-DCP method of reading a plaintext or encrypted frame
 Result_t
 AS_02::h__AS02Reader::ReadEKLVFrame(ui32_t FrameNum, ASDCP::FrameBuffer& FrameBuf,
-				     const byte_t* EssenceUL, AESDecContext* Ctx, HMACContext* HMAC)
+                                    const byte_t* EssenceUL, AESDecContext* Ctx, HMACContext* HMAC)
 {
   return ASDCP::MXF::TrackFileReader<OP1aHeader, AS_02::MXF::AS02IndexReader>::ReadEKLVFrame(FrameNum, FrameBuf, EssenceUL, Ctx, HMAC);
 }

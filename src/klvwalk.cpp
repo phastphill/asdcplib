@@ -70,7 +70,7 @@ Copyright (c) 2005-2013 John Hurst\n\
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME, PROGRAM_NAME);
 }
 
 //
@@ -95,72 +95,72 @@ USAGE: %s [-r|-p] [-v] <input-file> [<input-file2> ...]\n\
 
 //
 //
- class CommandOptions
- {
-   CommandOptions();
+class CommandOptions
+{
+  CommandOptions();
 
- public:
-   bool   error_flag;               // true if the given options are in error or not complete
-   bool   version_flag;             // true if the version display option was selected
-   bool   help_flag;                // true if the help display option was selected
-   bool   verbose_flag;             // true if the informative messages option was selected
-   bool   read_mxf_flag;            // true if the -r option was selected
-   bool   walk_parts_flag;          // true if the -p option was selected
-   FileList_t inFileList;           // File to operate on
+public:
+  bool   error_flag;               // true if the given options are in error or not complete
+  bool   version_flag;             // true if the version display option was selected
+  bool   help_flag;                // true if the help display option was selected
+  bool   verbose_flag;             // true if the informative messages option was selected
+  bool   read_mxf_flag;            // true if the -r option was selected
+  bool   walk_parts_flag;          // true if the -p option was selected
+  FileList_t inFileList;           // File to operate on
 
-   CommandOptions(int argc, const char** argv) :
-     error_flag(true), version_flag(false), help_flag(false),
-     verbose_flag(false), read_mxf_flag(false), walk_parts_flag(false)
-   {
-     for ( int i = 1; i < argc; i++ )
-       {
+  CommandOptions(int argc, const char** argv) :
+      error_flag(true), version_flag(false), help_flag(false),
+      verbose_flag(false), read_mxf_flag(false), walk_parts_flag(false)
+  {
+    for ( int i = 1; i < argc; i++ )
+    {
 
-	 if ( (strcmp( argv[i], "-help") == 0) )
-	   {
-	     help_flag = true;
-	     continue;
-	   }
-         
-	 if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
-	   {
-	     switch ( argv[i][1] )
-	       {
-	       case 'h': help_flag = true; break;
-	       case 'r': read_mxf_flag = true; break;
-	       case 'p': walk_parts_flag = true; break;
-	       case 'V': version_flag = true; break;
-	       case 'v': verbose_flag = true; break;
+      if ( (strcmp( argv[i], "-help") == 0) )
+      {
+        help_flag = true;
+        continue;
+      }
 
-	       default:
-		 fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-		 return;
-	       }
-	   }
-	 else
-	   {
-	     if ( argv[i][0] != '-' )
-	       inFileList.push_back(argv[i]);
+      if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
+      {
+        switch ( argv[i][1] )
+        {
+          case 'h': help_flag = true; break;
+          case 'r': read_mxf_flag = true; break;
+          case 'p': walk_parts_flag = true; break;
+          case 'V': version_flag = true; break;
+          case 'v': verbose_flag = true; break;
 
-	     else
-	       {
-       	         fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-		 return;
-	       }
-	   }
-       }
+          default:
+            fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+            return;
+        }
+      }
+      else
+      {
+        if ( argv[i][0] != '-' )
+          inFileList.push_back(argv[i]);
 
-     if ( help_flag || version_flag )
-       return;
-     
-     if ( inFileList.empty() )
-       {
-	 fputs("Input filename(s) required.\n", stderr);
-	 return;
-       }
-     
-     error_flag = false;
-   }
- };
+        else
+        {
+          fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+          return;
+        }
+      }
+    }
+
+    if ( help_flag || version_flag )
+      return;
+
+    if ( inFileList.empty() )
+    {
+      fputs("Input filename(s) required.\n", stderr);
+      return;
+    }
+
+    error_flag = false;
+  }
+};
 
 
 //---------------------------------------------------------------------------------------------------
@@ -181,190 +181,190 @@ main(int argc, const char** argv)
     return 0;
 
   if ( Options.error_flag )
-    {
-      fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
-      return 3;
-    }
+  {
+    fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
+    return 3;
+  }
 
   FileList_t::iterator fi;
   Result_t result = RESULT_OK;
 
   for ( fi = Options.inFileList.begin(); ASDCP_SUCCESS(result) && fi != Options.inFileList.end(); fi++ )
+  {
+    if (Options.verbose_flag)
+      fprintf(stderr, "Opening file %s\n", ((*fi).c_str()));
+
+    if ( Options.read_mxf_flag ) // dump MXF
     {
-      if (Options.verbose_flag)
-	fprintf(stderr, "Opening file %s\n", ((*fi).c_str()));
-      
-      if ( Options.read_mxf_flag ) // dump MXF
-	{
-	  Kumu::FileReader        Reader;
-	  const Dictionary* Dict = &DefaultCompositeDict();
-	  ASDCP::MXF::OP1aHeader Header(Dict);
-	  ASDCP::MXF::RIP RIP(Dict);
-	  
-	  result = Reader.OpenRead(*fi);
-	  
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      result = MXF::SeekToRIP(Reader);
-	      
-	      if ( ASDCP_SUCCESS(result) )
-		{
-		  result = RIP.InitFromFile(Reader);
-		  ui32_t test_s = RIP.PairArray.size();
+      Kumu::FileReader        Reader;
+      const Dictionary* Dict = &DefaultCompositeDict();
+      ASDCP::MXF::OP1aHeader Header(Dict);
+      ASDCP::MXF::RIP RIP(Dict);
 
-		  if ( ASDCP_FAILURE(result) )
-		    {
-		      DefaultLogSink().Error("File contains no RIP\n");
-		      result = RESULT_OK;
-		    }
-		  else if ( RIP.PairArray.empty() )
-		    {
-		      DefaultLogSink().Error("RIP contains no Pairs.\n");
-		    }
+      result = Reader.OpenRead(*fi);
 
-		  Reader.Seek(0);
-		}
-	      else
-		{
-		  DefaultLogSink().Error("read_mxf SeekToRIP failed: %s\n", result.Label());
-		}
-	    }
+      if ( ASDCP_SUCCESS(result) )
+      {
+        result = MXF::SeekToRIP(Reader);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Header.InitFromFile(Reader);
-	  
-	  if ( ASDCP_SUCCESS(result) )
-	    Header.Dump(stdout);
-	  
-	  if ( ASDCP_SUCCESS(result) && RIP.PairArray.size() > 2 )
-	    {
-	      MXF::RIP::const_pair_iterator pi = RIP.PairArray.begin();
+        if ( ASDCP_SUCCESS(result) )
+        {
+          result = RIP.InitFromFile(Reader);
+          ui32_t test_s = RIP.PairArray.size();
 
-	      for ( pi++; pi != RIP.PairArray.end() && ASDCP_SUCCESS(result); pi++ )
-		{
-		  result = Reader.Seek((*pi).ByteOffset);
+          if ( ASDCP_FAILURE(result) )
+          {
+            DefaultLogSink().Error("File contains no RIP\n");
+            result = RESULT_OK;
+          }
+          else if ( RIP.PairArray.empty() )
+          {
+            DefaultLogSink().Error("RIP contains no Pairs.\n");
+          }
 
-		  if ( ASDCP_SUCCESS(result) )
-		    {
-		      MXF::Partition TmpPart(Dict);
-		      result = TmpPart.InitFromFile(Reader);
+          Reader.Seek(0);
+        }
+        else
+        {
+          DefaultLogSink().Error("read_mxf SeekToRIP failed: %s\n", result.Label());
+        }
+      }
 
-		      if ( ASDCP_SUCCESS(result) && TmpPart.BodySID > 0 )
-			TmpPart.Dump(stdout);
-		    }
-		}
-	    }
+      if ( ASDCP_SUCCESS(result) )
+        result = Header.InitFromFile(Reader);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      ASDCP::MXF::OPAtomIndexFooter Index(Dict);
-	      result = Reader.Seek(Header.FooterPartition);
-	      
-	      if ( ASDCP_SUCCESS(result) )
-		{
-		  Index.m_Lookup = &Header.m_Primer;
-		  result = Index.InitFromFile(Reader);
-		}
-	      
-	      if ( ASDCP_SUCCESS(result) )
-		Index.Dump(stdout);
-	    }
+      if ( ASDCP_SUCCESS(result) )
+        Header.Dump(stdout);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    RIP.Dump(stdout);
-	}
-      else if ( Options.walk_parts_flag )
-	{
-	  Kumu::FileReader        Reader;
-	  const Dictionary* Dict = &DefaultCompositeDict();
-	  ASDCP::MXF::OP1aHeader Header(Dict);
-	  ASDCP::MXF::RIP RIP(Dict);
-	  
-	  result = Reader.OpenRead((*fi).c_str());
-	  
-	  if ( ASDCP_SUCCESS(result) )
-	    result = MXF::SeekToRIP(Reader);
+      if ( ASDCP_SUCCESS(result) && RIP.PairArray.size() > 2 )
+      {
+        MXF::RIP::const_pair_iterator pi = RIP.PairArray.begin();
 
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      result = RIP.InitFromFile(Reader);
-	      ui32_t test_s = RIP.PairArray.size();
+        for ( pi++; pi != RIP.PairArray.end() && ASDCP_SUCCESS(result); pi++ )
+        {
+          result = Reader.Seek((*pi).ByteOffset);
 
-	      if ( ASDCP_FAILURE(result) )
-		{
-		  DefaultLogSink().Error("File contains no RIP\n");
-		  result = RESULT_OK;
-		}
-	      else if ( RIP.PairArray.empty() )
-		{
-		  DefaultLogSink().Error("RIP contains no Pairs.\n");
-		}
+          if ( ASDCP_SUCCESS(result) )
+          {
+            MXF::Partition TmpPart(Dict);
+            result = TmpPart.InitFromFile(Reader);
 
-	      Reader.Seek(0);
-	    }
-	  else
-	    {
-	      DefaultLogSink().Error("walk_parts SeekToRIP failed: %s\n", result.Label());
-	    }
+            if ( ASDCP_SUCCESS(result) && TmpPart.BodySID > 0 )
+              TmpPart.Dump(stdout);
+          }
+        }
+      }
 
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      RIP.Dump();
+      if ( ASDCP_SUCCESS(result) )
+      {
+        ASDCP::MXF::OPAtomIndexFooter Index(Dict);
+        result = Reader.Seek(Header.FooterPartition);
 
-	      MXF::RIP::const_pair_iterator i;
-	      for ( i = RIP.PairArray.begin(); i != RIP.PairArray.end(); ++i )
-		{
-		  Reader.Seek(i->ByteOffset);
-		  MXF::Partition plain_part(Dict);
-		  plain_part.InitFromFile(Reader);
+        if ( ASDCP_SUCCESS(result) )
+        {
+          Index.m_Lookup = &Header.m_Primer;
+          result = Index.InitFromFile(Reader);
+        }
 
-		  if ( plain_part.ThisPartition != i->ByteOffset )
-		    {
-		      DefaultLogSink().Error("ThisPartition value error: wanted=%qu, got=%qu\n",
-					     plain_part.ThisPartition, i->ByteOffset);
-		    }
+        if ( ASDCP_SUCCESS(result) )
+          Index.Dump(stdout);
+      }
 
-		  plain_part.Dump();
-		}
-	    }
-	}
-      else // dump klv
-	{
-	  Kumu::FileReader Reader;
-	  KLVFilePacket KP;
-	  ui64_t pos = 0;
-
-	  result = Reader.OpenRead((*fi).c_str());
-	  
-	  if ( ASDCP_SUCCESS(result) )
-	    result = KP.InitFromFile(Reader);
-	  
-	  while ( ASDCP_SUCCESS(result) )
-	    {
-	      fprintf(stdout, "@0x%08llx: ", pos);
-	      KP.Dump(stdout, DefaultCompositeDict(), true);
-	      pos = Reader.Tell();
-	      result = KP.InitFromFile(Reader);
-	    }
-	  
-	  if( result == RESULT_ENDOFFILE )
-	    result = RESULT_OK;
-	}
+      if ( ASDCP_SUCCESS(result) )
+        RIP.Dump(stdout);
     }
+    else if ( Options.walk_parts_flag )
+    {
+      Kumu::FileReader        Reader;
+      const Dictionary* Dict = &DefaultCompositeDict();
+      ASDCP::MXF::OP1aHeader Header(Dict);
+      ASDCP::MXF::RIP RIP(Dict);
+
+      result = Reader.OpenRead((*fi).c_str());
+
+      if ( ASDCP_SUCCESS(result) )
+        result = MXF::SeekToRIP(Reader);
+
+      if ( ASDCP_SUCCESS(result) )
+      {
+        result = RIP.InitFromFile(Reader);
+        ui32_t test_s = RIP.PairArray.size();
+
+        if ( ASDCP_FAILURE(result) )
+        {
+          DefaultLogSink().Error("File contains no RIP\n");
+          result = RESULT_OK;
+        }
+        else if ( RIP.PairArray.empty() )
+        {
+          DefaultLogSink().Error("RIP contains no Pairs.\n");
+        }
+
+        Reader.Seek(0);
+      }
+      else
+      {
+        DefaultLogSink().Error("walk_parts SeekToRIP failed: %s\n", result.Label());
+      }
+
+      if ( ASDCP_SUCCESS(result) )
+      {
+        RIP.Dump();
+
+        MXF::RIP::const_pair_iterator i;
+        for ( i = RIP.PairArray.begin(); i != RIP.PairArray.end(); ++i )
+        {
+          Reader.Seek(i->ByteOffset);
+          MXF::Partition plain_part(Dict);
+          plain_part.InitFromFile(Reader);
+
+          if ( plain_part.ThisPartition != i->ByteOffset )
+          {
+            DefaultLogSink().Error("ThisPartition value error: wanted=%qu, got=%qu\n",
+                                   plain_part.ThisPartition, i->ByteOffset);
+          }
+
+          plain_part.Dump();
+        }
+      }
+    }
+    else // dump klv
+    {
+      Kumu::FileReader Reader;
+      KLVFilePacket KP;
+      ui64_t pos = 0;
+
+      result = Reader.OpenRead((*fi).c_str());
+
+      if ( ASDCP_SUCCESS(result) )
+        result = KP.InitFromFile(Reader);
+
+      while ( ASDCP_SUCCESS(result) )
+      {
+        fprintf(stdout, "@0x%08llx: ", pos);
+        KP.Dump(stdout, DefaultCompositeDict(), true);
+        pos = Reader.Tell();
+        result = KP.InitFromFile(Reader);
+      }
+
+      if( result == RESULT_ENDOFFILE )
+        result = RESULT_OK;
+    }
+  }
 
   if ( ASDCP_FAILURE(result) )
+  {
+    fputs("Program stopped on error.\n", stderr);
+
+    if ( result != RESULT_FAIL )
     {
-      fputs("Program stopped on error.\n", stderr);
-      
-      if ( result != RESULT_FAIL )
-	{
-	  fputs(result, stderr);
-	  fputc('\n', stderr);
-	}
-      
-      return 1;
+      fputs(result, stderr);
+      fputc('\n', stderr);
     }
-  
+
+    return 1;
+  }
+
   return 0;
 }
 

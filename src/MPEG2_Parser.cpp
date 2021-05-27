@@ -46,26 +46,26 @@ const ui32_t VESReadSize = 4 * Kumu::Kilobyte;
 
 //
 enum ParserState_t {
-    ST_INIT,
-    ST_SEQ,
-    ST_PIC,
-    ST_GOP,
-    ST_EXT,
-    ST_SLICE,
+  ST_INIT,
+  ST_SEQ,
+  ST_PIC,
+  ST_GOP,
+  ST_EXT,
+  ST_SLICE,
 };
 
 const char*
 StringParserState(ParserState_t state)
 {
   switch ( state )
-    {
+  {
     case ST_INIT:  return "INIT";
     case ST_SEQ:   return "SEQ";
     case ST_PIC:   return "PIC";
     case ST_GOP:   return "GOP";
     case ST_EXT:   return "EXT";
     case ST_SLICE: return "SLICE";
-    }
+  }
 
   return "*UNKNOWN*";
 }
@@ -78,7 +78,7 @@ class h__ParserState
   ParserState_t m_State;
   ASDCP_NO_COPY_CONSTRUCT(h__ParserState);
 
- public:
+public:
   h__ParserState() : m_State(ST_INIT) {}
   ~h__ParserState() {}
 
@@ -87,65 +87,65 @@ class h__ParserState
 
   //
   inline Result_t Goto_SEQ()
+  {
+    switch ( m_State )
     {
-      switch ( m_State )
-	{
-	case ST_INIT:
-	case ST_EXT:
-	  m_State = ST_SEQ;
-	  return RESULT_OK;
-	}
-      
-      DefaultLogSink().Error("SEQ follows %s\n", StringParserState(m_State));
-      return RESULT_STATE;
+      case ST_INIT:
+      case ST_EXT:
+        m_State = ST_SEQ;
+        return RESULT_OK;
     }
+
+    DefaultLogSink().Error("SEQ follows %s\n", StringParserState(m_State));
+    return RESULT_STATE;
+  }
 
 
   //
   inline Result_t Goto_SLICE()
+  {
+    switch ( m_State )
     {
-      switch ( m_State )
-	{
-	case ST_PIC:
-	case ST_EXT:
-	  m_State = ST_SLICE;
-	  return RESULT_OK;
-	}
-      
-      DefaultLogSink().Error("Slice follows %s\n", StringParserState(m_State));
-      return RESULT_STATE;
+      case ST_PIC:
+      case ST_EXT:
+        m_State = ST_SLICE;
+        return RESULT_OK;
     }
+
+    DefaultLogSink().Error("Slice follows %s\n", StringParserState(m_State));
+    return RESULT_STATE;
+  }
 
 
   //
   inline Result_t Goto_PIC()
+  {
+    switch ( m_State )
     {
-      switch ( m_State )
-	{
-	case ST_INIT:
-	case ST_SEQ:
-	case ST_GOP:
-	case ST_EXT:
-	  m_State = ST_PIC;
-	  return RESULT_OK;
-	}
-      
-      DefaultLogSink().Error("PIC follows %s\n", StringParserState(m_State));
-      return RESULT_STATE;
+      case ST_INIT:
+      case ST_SEQ:
+      case ST_GOP:
+      case ST_EXT:
+        m_State = ST_PIC;
+        return RESULT_OK;
     }
+
+    DefaultLogSink().Error("PIC follows %s\n", StringParserState(m_State));
+    return RESULT_STATE;
+  }
 
 
   //
   inline Result_t Goto_GOP()
   {
     switch ( m_State )
-      {
+    {
       case ST_EXT:
       case ST_SEQ:
-	m_State = ST_GOP;
-	return RESULT_OK;
-      }
-    
+        m_State = ST_GOP;
+        return RESULT_OK;
+    }
+
     DefaultLogSink().Error("GOP follows %s\n", StringParserState(m_State));
     return RESULT_STATE;
   }
@@ -154,14 +154,14 @@ class h__ParserState
   inline Result_t Goto_EXT()
   {
     switch ( m_State )
-      {
-	case ST_PIC:
-	case ST_EXT:
-	case ST_SEQ:
-	case ST_GOP:
-	  m_State = ST_EXT;
-	  return RESULT_OK;
-      }
+    {
+      case ST_PIC:
+      case ST_EXT:
+      case ST_SEQ:
+      case ST_GOP:
+        m_State = ST_EXT;
+        return RESULT_OK;
+    }
 
     DefaultLogSink().Error("EXT follows %s\n", StringParserState(m_State));
     return RESULT_STATE;
@@ -274,7 +274,7 @@ public:
   }
 
   ~FrameParser() {}
-  
+
   void Reset()
   {
     m_FrameSize = 0;
@@ -284,15 +284,15 @@ public:
     m_PlaintextOffset = 0;
     m_FrameType = FRAME_U;
     m_State.Reset();
- }
+  }
 
   Result_t Sequence(VESParser*, const byte_t* b, ui32_t s)
   {
     if ( m_State.Test_SLICE() )
-      {
-	m_CompletePicture = true;
-	return RESULT_FALSE;
-      }
+    {
+      m_CompletePicture = true;
+      return RESULT_FALSE;
+    }
 
     m_FrameSize += s;
     return m_State.Goto_SEQ();
@@ -301,10 +301,10 @@ public:
   Result_t Picture(VESParser*, const byte_t* b, ui32_t s)
   {
     if ( m_State.Test_SLICE() )
-      {
-	m_CompletePicture = true;
-	return RESULT_FALSE;
-      }
+    {
+      m_CompletePicture = true;
+      return RESULT_FALSE;
+    }
 
     Accessor::Picture pic(b);
     m_TemporalRef = pic.TemporalRef();
@@ -316,10 +316,10 @@ public:
   Result_t Slice(VESParser*, byte_t slice_id)
   {
     if ( slice_id == FIRST_SLICE )
-      {
-	m_PlaintextOffset = m_FrameSize;
-	return m_State.Goto_SLICE();
-      }
+    {
+      m_PlaintextOffset = m_FrameSize;
+      return m_State.Goto_SLICE();
+    }
 
     return m_State.Test_SLICE() ? RESULT_OK : RESULT_FAIL;
   }
@@ -404,47 +404,47 @@ ASDCP::MPEG2::Parser::h__Parser::OpenRead(const std::string& filename)
   ui32_t read_count = 0;
 
   Result_t result = m_FileReader.OpenRead(filename);
-  
+
   if ( ASDCP_SUCCESS(result) )
     result = m_FileReader.Read(m_TmpBuffer.Data(), m_TmpBuffer.Capacity(), &read_count);
-  
-  if ( ASDCP_SUCCESS(result) )
-    {
-      const byte_t* p = m_TmpBuffer.RoData();
-
-      // the mxflib parser demanded the file start with a sequence header.
-      // Since no one complained and that's the easiest thing to implement,
-      // I have left it that way. Let me know if you want to be able to
-      // locate the first GOP in the stream.
-      ui32_t i = 0;
-      while ( p[i] == 0 ) i++;
-
-      if ( i < 2 || p[i] != 1 || ! ( p[i+1] == SEQ_START || p[i+1] == PIC_START ) )
-	{
-	  DefaultLogSink().Error("Frame buffer does not begin with a PIC or SEQ start code.\n");
-	  return RESULT_RAW_FORMAT;
-	}
-
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  m_Parser.SetDelegate(&m_ParamsDelegate);
-	  result = m_Parser.Parse(p, read_count);
-	}
-    }
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    const byte_t* p = m_TmpBuffer.RoData();
+
+    // the mxflib parser demanded the file start with a sequence header.
+    // Since no one complained and that's the easiest thing to implement,
+    // I have left it that way. Let me know if you want to be able to
+    // locate the first GOP in the stream.
+    ui32_t i = 0;
+    while ( p[i] == 0 ) i++;
+
+    if ( i < 2 || p[i] != 1 || ! ( p[i+1] == SEQ_START || p[i+1] == PIC_START ) )
     {
-      ui64_t tmp = m_FileReader.Size() / 65536; // a gross approximation
-      m_ParamsDelegate.m_VDesc.ContainerDuration = (ui32_t) tmp;
-      m_Parser.SetDelegate(&m_ParserDelegate);
-      m_FileReader.Seek(0);
+      DefaultLogSink().Error("Frame buffer does not begin with a PIC or SEQ start code.\n");
+      return RESULT_RAW_FORMAT;
     }
+
+    if ( ASDCP_SUCCESS(result) )
+    {
+      m_Parser.SetDelegate(&m_ParamsDelegate);
+      result = m_Parser.Parse(p, read_count);
+    }
+  }
+
+  if ( ASDCP_SUCCESS(result) )
+  {
+    ui64_t tmp = m_FileReader.Size() / 65536; // a gross approximation
+    m_ParamsDelegate.m_VDesc.ContainerDuration = (ui32_t) tmp;
+    m_Parser.SetDelegate(&m_ParserDelegate);
+    m_FileReader.Seek(0);
+  }
 
   if ( ASDCP_FAILURE(result) )
-    {
-      DefaultLogSink().Error("Unable to identify a wrapping mode for the essence in file \"%s\"\n", filename.c_str());
-      m_FileReader.Close();
-    }
+  {
+    DefaultLogSink().Error("Unable to identify a wrapping mode for the essence in file \"%s\"\n", filename.c_str());
+    m_FileReader.Close();
+  }
 
   return result;}
 
@@ -471,74 +471,74 @@ ASDCP::MPEG2::Parser::h__Parser::ReadFrame(FrameBuffer& FB)
   m_Parser.Reset();
 
   if ( m_TmpBuffer.Size() > 0 )
-    {
-      memcpy(FB.Data(), m_TmpBuffer.RoData(), m_TmpBuffer.Size());
-      result = m_Parser.Parse(FB.RoData(), m_TmpBuffer.Size());
-      write_offset = m_TmpBuffer.Size();
-      m_TmpBuffer.Size(0);
-    }
+  {
+    memcpy(FB.Data(), m_TmpBuffer.RoData(), m_TmpBuffer.Size());
+    result = m_Parser.Parse(FB.RoData(), m_TmpBuffer.Size());
+    write_offset = m_TmpBuffer.Size();
+    m_TmpBuffer.Size(0);
+  }
 
   while ( ! m_ParserDelegate.m_CompletePicture && result == RESULT_OK )
+  {
+    if ( FB.Capacity() < ( write_offset + VESReadSize ) )
     {
-      if ( FB.Capacity() < ( write_offset + VESReadSize ) )
-	{
-	  DefaultLogSink().Error("FrameBuf.Capacity: %u FrameLength: %u\n",
-				 FB.Capacity(), ( write_offset + VESReadSize ));
-	  return RESULT_SMALLBUF;
-	}
-
-      result = m_FileReader.Read(FB.Data() + write_offset, VESReadSize, &read_count);
-
-      if ( result == RESULT_ENDOFFILE || read_count == 0 )
-	{
-	  m_EOF = true;
-
-	  if ( write_offset > 0 )
-	    result = RESULT_OK;
-	}
-
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  result = m_Parser.Parse(FB.RoData() + write_offset, read_count);
-	  write_offset += read_count;
-	}
-
-      if ( m_EOF )
-	break;
+      DefaultLogSink().Error("FrameBuf.Capacity: %u FrameLength: %u\n",
+                             FB.Capacity(), ( write_offset + VESReadSize ));
+      return RESULT_SMALLBUF;
     }
+
+    result = m_FileReader.Read(FB.Data() + write_offset, VESReadSize, &read_count);
+
+    if ( result == RESULT_ENDOFFILE || read_count == 0 )
+    {
+      m_EOF = true;
+
+      if ( write_offset > 0 )
+        result = RESULT_OK;
+    }
+
+    if ( ASDCP_SUCCESS(result) )
+    {
+      result = m_Parser.Parse(FB.RoData() + write_offset, read_count);
+      write_offset += read_count;
+    }
+
+    if ( m_EOF )
+      break;
+  }
   assert(m_ParserDelegate.m_FrameSize <= write_offset);
 
   if ( ASDCP_SUCCESS(result)
        && m_ParserDelegate.m_FrameSize < write_offset )
-    {
-      assert(m_TmpBuffer.Size() == 0);
-      ui32_t diff = write_offset - m_ParserDelegate.m_FrameSize;
-      assert(diff <= m_TmpBuffer.Capacity());
+  {
+    assert(m_TmpBuffer.Size() == 0);
+    ui32_t diff = write_offset - m_ParserDelegate.m_FrameSize;
+    assert(diff <= m_TmpBuffer.Capacity());
 
-      memcpy(m_TmpBuffer.Data(), FB.RoData() + m_ParserDelegate.m_FrameSize, diff);
-      m_TmpBuffer.Size(diff);
-    }
-
-  if ( ASDCP_SUCCESS(result) )
-    {
-      const byte_t* p = FB.RoData();
-      if ( p[0] != 0 || p[1] != 0 || p[2] != 1 || ! ( p[3] == SEQ_START || p[3] == PIC_START ) )
-        {
-          DefaultLogSink().Error("Frame buffer does not begin with a PIC or SEQ start code.\n");
-          return RESULT_RAW_FORMAT;
-        }
-    }
+    memcpy(m_TmpBuffer.Data(), FB.RoData() + m_ParserDelegate.m_FrameSize, diff);
+    m_TmpBuffer.Size(diff);
+  }
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    const byte_t* p = FB.RoData();
+    if ( p[0] != 0 || p[1] != 0 || p[2] != 1 || ! ( p[3] == SEQ_START || p[3] == PIC_START ) )
     {
-      FB.Size(m_ParserDelegate.m_FrameSize);
-      FB.TemporalOffset(m_ParserDelegate.m_TemporalRef);
-      FB.FrameType(m_ParserDelegate.m_FrameType);
-      FB.PlaintextOffset(m_ParserDelegate.m_PlaintextOffset);
-      FB.FrameNumber(m_FrameNumber++);
-      FB.GOPStart(m_ParserDelegate.m_HasGOP);
-      FB.ClosedGOP(m_ParserDelegate.m_ClosedGOP);
+      DefaultLogSink().Error("Frame buffer does not begin with a PIC or SEQ start code.\n");
+      return RESULT_RAW_FORMAT;
     }
+  }
+
+  if ( ASDCP_SUCCESS(result) )
+  {
+    FB.Size(m_ParserDelegate.m_FrameSize);
+    FB.TemporalOffset(m_ParserDelegate.m_TemporalRef);
+    FB.FrameType(m_ParserDelegate.m_FrameType);
+    FB.PlaintextOffset(m_ParserDelegate.m_PlaintextOffset);
+    FB.FrameNumber(m_FrameNumber++);
+    FB.GOPStart(m_ParserDelegate.m_HasGOP);
+    FB.ClosedGOP(m_ParserDelegate.m_ClosedGOP);
+  }
 
   return result;
 }

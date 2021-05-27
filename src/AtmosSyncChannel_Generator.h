@@ -41,107 +41,107 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace ASDCP
 {
-    namespace ATMOS
+  namespace ATMOS
+  {
+    static const ui32_t SYNC_CHANNEL = 14;
+  }
+
+  namespace PCM
+  {
+
+    static const ui16_t NUM_BYTES_PER_INT24 = 3;
+
+    class AtmosSyncChannelGenerator
     {
-        static const ui32_t SYNC_CHANNEL = 14;
-    }
+      SYNCENCODER  m_syncEncoder;
+      UUIDINFORMATION m_audioTrackUUID;
+      AudioDescriptor m_ADesc;
+      float *m_syncSignalBuffer;
+      ui32_t m_numSamplesPerFrame;
+      ui32_t m_currentFrameNumber;
+      ui32_t m_numBytesPerFrame;
+      bool m_isSyncEncoderInitialized;
 
-    namespace PCM
-    {
+      ASDCP_NO_COPY_CONSTRUCT(AtmosSyncChannelGenerator);
 
-        static const ui16_t NUM_BYTES_PER_INT24 = 3;
+    public:
+      /**
+       * Constructor
+       *
+       * @param bitsPerSample the number of bits in each sample of pcm data
+       * @param sampleRate the sampling rate
+       * @param editRate the edit rate of the associated picture track.
+       * @param atmosUUID the UUID of the associated ATMOS track file.
+       *
+       */
+      AtmosSyncChannelGenerator(ui16_t bitsPerSample, ui32_t sampleRate,
+                                const ASDCP::Rational& editRate, const byte_t* uuid);
+      ~AtmosSyncChannelGenerator();
 
-        class AtmosSyncChannelGenerator
+      /**
+       * Set the frame number when seeking
+       * Use override the default starting frame number for a new track or
+       * to set the frame number when doing random access.
+       *
+       * @param frameNumber
+       *
+       */
+      void setFrameNumber(ui32_t frameNumber) { m_currentFrameNumber = frameNumber; };
+
+      /**
+       * Get the number of bytes per frame.
+       *
+       * @return Number of bytes per frame
+       *
+       */
+      ui32_t getBytesPerFrame() { return m_numBytesPerFrame; }
+
+      /**
+       * Generates the next frame of sync data.
+       * Generates the next frame of sync data and places it
+       * the frame buffer. Fails if the buffer is too small.
+       * **Automatically increments the frame number.**
+       *
+       * @param buf the buffer that the generated frame data will be written to.
+       *
+       * @return Kumu::RESULT_OK if the buffer is succesfully filled with sync
+       *  data for the next frame.
+       */
+      Result_t ReadFrame(FrameBuffer& buf);
+
+      /**
+       * Reset the frame count.
+       *
+       * @return Kumu::RESULT_OK
+       */
+      Result_t Reset();
+
+      /**
+       * Fill the AudioDescriptor with the relevant information.
+       *
+       * @return Kumu::RESULT_OK
+       */
+      Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
+
+      /**
+       * Converts a sample float into
+       * 24-bit PCM data.
+       *
+       */
+      static inline i32_t convertSampleFloatToInt24(float sample)
+      {
+        if (sample >= 0.0)
         {
-            SYNCENCODER  m_syncEncoder;
-            UUIDINFORMATION m_audioTrackUUID;
-            AudioDescriptor m_ADesc;
-            float *m_syncSignalBuffer;
-            ui32_t m_numSamplesPerFrame;
-            ui32_t m_currentFrameNumber;
-            ui32_t m_numBytesPerFrame;
-            bool m_isSyncEncoderInitialized;
+          return (static_cast<i32_t>(sample * INT24_MAX) << 8);
+        }
+        else
+        {
+          return (static_cast<i32_t>(-sample * INT24_MIN) << 8);
+        }
+      }
+    };
 
-            ASDCP_NO_COPY_CONSTRUCT(AtmosSyncChannelGenerator);
-
-        public:
-            /**
-             * Constructor
-             *
-             * @param bitsPerSample the number of bits in each sample of pcm data
-             * @param sampleRate the sampling rate
-             * @param editRate the edit rate of the associated picture track.
-             * @param atmosUUID the UUID of the associated ATMOS track file.
-             *
-             */
-            AtmosSyncChannelGenerator(ui16_t bitsPerSample, ui32_t sampleRate,
-                               const ASDCP::Rational& editRate, const byte_t* uuid);
-            ~AtmosSyncChannelGenerator();
-
-            /**
-             * Set the frame number when seeking
-             * Use override the default starting frame number for a new track or
-             * to set the frame number when doing random access.
-             *
-             * @param frameNumber
-             *
-             */
-            void setFrameNumber(ui32_t frameNumber) { m_currentFrameNumber = frameNumber; };
-
-            /**
-             * Get the number of bytes per frame.
-             *
-             * @return Number of bytes per frame
-             *
-             */
-            ui32_t getBytesPerFrame() { return m_numBytesPerFrame; }
-
-            /**
-             * Generates the next frame of sync data.
-             * Generates the next frame of sync data and places it
-             * the frame buffer. Fails if the buffer is too small.
-             * **Automatically increments the frame number.**
-             *
-             * @param buf the buffer that the generated frame data will be written to.
-             *
-             * @return Kumu::RESULT_OK if the buffer is succesfully filled with sync
-             *  data for the next frame.
-             */
-            Result_t ReadFrame(FrameBuffer& buf);
-
-            /**
-             * Reset the frame count.
-             *
-             * @return Kumu::RESULT_OK
-             */
-            Result_t Reset();
-
-            /**
-             * Fill the AudioDescriptor with the relevant information.
-             *
-             * @return Kumu::RESULT_OK
-             */
-            Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
-
-            /**
-             * Converts a sample float into
-             * 24-bit PCM data.
-             *
-             */
-            static inline i32_t convertSampleFloatToInt24(float sample)
-            {
-                if (sample >= 0.0)
-                {
-                    return (static_cast<i32_t>(sample * INT24_MAX) << 8);
-                }
-                else
-                {
-                    return (static_cast<i32_t>(-sample * INT24_MIN) << 8);
-                }
-            }
-        };
-
-    } // namespace PCM
+  } // namespace PCM
 } // namespace ASDCP
 
 #endif // _ATMOSSYNCCHANNEL_GENERATOR_H_

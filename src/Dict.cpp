@@ -48,15 +48,15 @@ const ASDCP::Dictionary&
 ASDCP::DefaultCompositeDict()
 {
   if ( ! s_CompositeDictInit )
-    {
-      Kumu::AutoMutex AL(s_CompositeDictLock);
+  {
+    Kumu::AutoMutex AL(s_CompositeDictLock);
 
-      if ( ! s_CompositeDictInit )
-	{
-	  s_CompositeDict.Init();
-	  s_CompositeDictInit = true;
-	}
+    if ( ! s_CompositeDictInit )
+    {
+      s_CompositeDict.Init();
+      s_CompositeDictInit = true;
     }
+  }
 
   return s_CompositeDict;
 }
@@ -72,25 +72,25 @@ const ASDCP::Dictionary&
 ASDCP::DefaultInteropDict()
 {
   if ( ! s_InteropDictInit )
+  {
+    Kumu::AutoMutex AL(s_InteropDictLock);
+
+    if ( ! s_InteropDictInit )
     {
-      Kumu::AutoMutex AL(s_InteropDictLock);
+      s_InteropDict.Init();
 
-      if ( ! s_InteropDictInit )
-	{
-	  s_InteropDict.Init();
+      s_InteropDict.DeleteEntry(MDD_MXFInterop_OPAtom);
+      s_InteropDict.DeleteEntry(MDD_MXFInterop_CryptEssence);
+      s_InteropDict.DeleteEntry(MDD_MXFInterop_GenericDescriptor_SubDescriptors);
 
-	  s_InteropDict.DeleteEntry(MDD_MXFInterop_OPAtom);
-	  s_InteropDict.DeleteEntry(MDD_MXFInterop_CryptEssence);
-	  s_InteropDict.DeleteEntry(MDD_MXFInterop_GenericDescriptor_SubDescriptors);
+      s_InteropDict.AddEntry(s_MDD_Table[MDD_MXFInterop_OPAtom], MDD_OPAtom);
+      s_InteropDict.AddEntry(s_MDD_Table[MDD_MXFInterop_CryptEssence], MDD_CryptEssence);
+      s_InteropDict.AddEntry(s_MDD_Table[MDD_MXFInterop_GenericDescriptor_SubDescriptors],
+                             MDD_GenericDescriptor_SubDescriptors);
 
-	  s_InteropDict.AddEntry(s_MDD_Table[MDD_MXFInterop_OPAtom], MDD_OPAtom);
-	  s_InteropDict.AddEntry(s_MDD_Table[MDD_MXFInterop_CryptEssence], MDD_CryptEssence);
-	  s_InteropDict.AddEntry(s_MDD_Table[MDD_MXFInterop_GenericDescriptor_SubDescriptors],
-				     MDD_GenericDescriptor_SubDescriptors);
-
-	  s_InteropDictInit = true;
-	}
+      s_InteropDictInit = true;
     }
+  }
 
   return s_InteropDict;
 }
@@ -106,20 +106,20 @@ const ASDCP::Dictionary&
 ASDCP::DefaultSMPTEDict()
 {
   if ( ! s_SMPTEDictInit )
+  {
+    Kumu::AutoMutex AL(s_SMPTEDictLock);
+
+    if ( ! s_SMPTEDictInit )
     {
-      Kumu::AutoMutex AL(s_SMPTEDictLock);
+      s_SMPTEDict.Init();
 
-      if ( ! s_SMPTEDictInit )
-	{
-	  s_SMPTEDict.Init();
+      s_SMPTEDict.DeleteEntry(MDD_MXFInterop_OPAtom);
+      s_SMPTEDict.DeleteEntry(MDD_MXFInterop_CryptEssence);
+      s_SMPTEDict.DeleteEntry(MDD_MXFInterop_GenericDescriptor_SubDescriptors);
 
-	  s_SMPTEDict.DeleteEntry(MDD_MXFInterop_OPAtom);
-	  s_SMPTEDict.DeleteEntry(MDD_MXFInterop_CryptEssence);
-	  s_SMPTEDict.DeleteEntry(MDD_MXFInterop_GenericDescriptor_SubDescriptors);
-
-	  s_SMPTEDictInit = true;
-	}
+      s_SMPTEDictInit = true;
     }
+  }
 
   return s_SMPTEDict;
 }
@@ -147,24 +147,24 @@ const ASDCP::Dictionary&
 ASDCP::AtmosSMPTEDict()
 {
   if ( ! s_AtmosSMPTEDictInit )
+  {
+    Kumu::AutoMutex AL(s_AtmosSMPTEDictLock);
+
+    if ( ! s_AtmosSMPTEDictInit )
     {
-      Kumu::AutoMutex AL(s_AtmosSMPTEDictLock);
+      s_AtmosSMPTEDict.Init();
 
-      if ( ! s_AtmosSMPTEDictInit )
-	{
-	  s_AtmosSMPTEDict.Init();
+      s_AtmosSMPTEDict.DeleteEntry(MDD_MXFInterop_OPAtom);
+      s_AtmosSMPTEDict.DeleteEntry(MDD_MXFInterop_CryptEssence);
+      s_AtmosSMPTEDict.DeleteEntry(MDD_MXFInterop_GenericDescriptor_SubDescriptors);
 
-	  s_AtmosSMPTEDict.DeleteEntry(MDD_MXFInterop_OPAtom);
-	  s_AtmosSMPTEDict.DeleteEntry(MDD_MXFInterop_CryptEssence);
-	  s_AtmosSMPTEDict.DeleteEntry(MDD_MXFInterop_GenericDescriptor_SubDescriptors);
+      // legacy Atmos files have the wrong version byte
+      assert(s_AtmosSMPTEDict.Type(MDD_GenericDataEssenceDescriptor_DataEssenceCoding).ul[7] == 0x03);
+      s_AtmosSMPTEDict.MutableType(MDD_GenericDataEssenceDescriptor_DataEssenceCoding).ul[7] = 0x05;
 
-	  // legacy Atmos files have the wrong version byte
-	  assert(s_AtmosSMPTEDict.Type(MDD_GenericDataEssenceDescriptor_DataEssenceCoding).ul[7] == 0x03);
-	  s_AtmosSMPTEDict.MutableType(MDD_GenericDataEssenceDescriptor_DataEssenceCoding).ul[7] = 0x05;
-	  
-	  s_AtmosSMPTEDictInit = true;
-	}
+      s_AtmosSMPTEDictInit = true;
     }
+  }
 
   return s_AtmosSMPTEDict;
 }
@@ -183,26 +183,26 @@ ASDCP::Dictionary::Init()
   memset(m_MDD_Table, 0, sizeof(m_MDD_Table));
 
   for ( ui32_t x = 0; x < (ui32_t)ASDCP::MDD_Max; ++x )
-    {
-      if ( x == MDD_PartitionMetadata_IndexSID_DEPRECATED  // 30
-	   || x == MDD_PartitionMetadata_BodySID_DEPRECATED  // 32
-	   || x == MDD_PartitionMetadata_OperationalPattern_DEPRECATED  // 33
-	   || x == MDD_PartitionMetadata_EssenceContainers_DEPRECATED  // 34
-	   || x == MDD_IndexTableSegmentBase_IndexSID_DEPRECATED  // 56
-	   || x == MDD_IndexTableSegmentBase_BodySID_DEPRECATED  // 57
-	   || x == MDD_PartitionArray_RandomIndexMetadata_BodySID_DEPRECATED  // 73
-	   || x == MDD_Preface_OperationalPattern_DEPRECATED  // 84
-	   || x == MDD_Preface_EssenceContainers_DEPRECATED  // 85
-	   || x == MDD_EssenceContainerData_IndexSID_DEPRECATED  // 103
-	   || x == MDD_EssenceContainerData_BodySID_DEPRECATED  // 104
-	   || x == MDD_TimedTextResourceSubDescriptor_EssenceStreamID_DEPRECATED // 264
-	   || x == MDD_DMSegment_DataDefinition_DEPRECATED // 266
-	   || x == MDD_DMSegment_Duration_DEPRECATED // 267
-	   )
-	continue;
+  {
+    if ( x == MDD_PartitionMetadata_IndexSID_DEPRECATED  // 30
+         || x == MDD_PartitionMetadata_BodySID_DEPRECATED  // 32
+         || x == MDD_PartitionMetadata_OperationalPattern_DEPRECATED  // 33
+         || x == MDD_PartitionMetadata_EssenceContainers_DEPRECATED  // 34
+         || x == MDD_IndexTableSegmentBase_IndexSID_DEPRECATED  // 56
+         || x == MDD_IndexTableSegmentBase_BodySID_DEPRECATED  // 57
+         || x == MDD_PartitionArray_RandomIndexMetadata_BodySID_DEPRECATED  // 73
+         || x == MDD_Preface_OperationalPattern_DEPRECATED  // 84
+         || x == MDD_Preface_EssenceContainers_DEPRECATED  // 85
+         || x == MDD_EssenceContainerData_IndexSID_DEPRECATED  // 103
+         || x == MDD_EssenceContainerData_BodySID_DEPRECATED  // 104
+         || x == MDD_TimedTextResourceSubDescriptor_EssenceStreamID_DEPRECATED // 264
+         || x == MDD_DMSegment_DataDefinition_DEPRECATED // 266
+         || x == MDD_DMSegment_Duration_DEPRECATED // 267
+        )
+      continue;
 
-      AddEntry(s_MDD_Table[x], x);
-    }
+    AddEntry(s_MDD_Table[x], x);
+  }
 }
 
 //
@@ -210,20 +210,20 @@ bool
 ASDCP::Dictionary::AddEntry(const MDDEntry& Entry, ui32_t index)
 {
   if ( index >= (ui32_t)MDD_Max )
-    {
-      Kumu::DefaultLogSink().Warn("UL Dictionary: index exceeds maximum: %d\n", index);
-      return false;
-    }
+  {
+    Kumu::DefaultLogSink().Warn("UL Dictionary: index exceeds maximum: %d\n", index);
+    return false;
+  }
 
   bool result = true;
   // is this index already there?
   std::map<ui32_t, ASDCP::UL>::iterator rii = m_md_rev_lookup.find(index);
 
   if ( rii != m_md_rev_lookup.end() )
-    {
-      DeleteEntry(index);
-      result = false;
-    }
+  {
+    DeleteEntry(index);
+    result = false;
+  }
 
   UL TmpUL(Entry.ul);
 
@@ -232,13 +232,13 @@ ASDCP::Dictionary::AddEntry(const MDDEntry& Entry, ui32_t index)
   char buf[64];
   std::map<ASDCP::UL, ui32_t>::iterator ii = m_md_lookup.find(TmpUL);
   if ( ii != m_md_lookup.end() )
-    {
-      Kumu::DefaultLogSink().Warn("Duplicate Dictionary item: %s (%02x, %02x) %s | (%02x, %02x) %s\n",
-	      TmpUL.EncodeString(buf, 64),
-	      m_MDD_Table[ii->second].tag.a, m_MDD_Table[ii->second].tag.b,
-	      m_MDD_Table[ii->second].name,
-	      Entry.tag.a, Entry.tag.b, Entry.name);
-    }
+  {
+    Kumu::DefaultLogSink().Warn("Duplicate Dictionary item: %s (%02x, %02x) %s | (%02x, %02x) %s\n",
+                                TmpUL.EncodeString(buf, 64),
+                                m_MDD_Table[ii->second].tag.a, m_MDD_Table[ii->second].tag.b,
+                                m_MDD_Table[ii->second].name,
+                                Entry.tag.a, Entry.tag.b, Entry.name);
+  }
 #endif
 
   m_md_lookup.insert(std::map<UL, ui32_t>::value_type(TmpUL, index));
@@ -255,18 +255,18 @@ ASDCP::Dictionary::DeleteEntry(ui32_t index)
 {
   std::map<ui32_t, ASDCP::UL>::iterator rii = m_md_rev_lookup.find(index);
   if ( rii != m_md_rev_lookup.end() )
-    {
-      std::map<ASDCP::UL, ui32_t>::iterator ii = m_md_lookup.find(rii->second);
-      assert(ii != m_md_lookup.end());
+  {
+    std::map<ASDCP::UL, ui32_t>::iterator ii = m_md_lookup.find(rii->second);
+    assert(ii != m_md_lookup.end());
 
-      MDDEntry NilEntry;
-      memset(&NilEntry, 0, sizeof(NilEntry));
+    MDDEntry NilEntry;
+    memset(&NilEntry, 0, sizeof(NilEntry));
 
-      m_md_lookup.erase(ii);
-      m_md_rev_lookup.erase(rii);
-      m_MDD_Table[index] = NilEntry;
-      return true;
-    }
+    m_md_lookup.erase(ii);
+    m_md_rev_lookup.erase(rii);
+    m_MDD_Table[index] = NilEntry;
+    return true;
+  }
 
   return false;
 }
@@ -312,27 +312,27 @@ ASDCP::Dictionary::FindULAnyVersion(const byte_t* ul_buf) const
   std::map<UL, ui32_t>::const_iterator lower = m_md_lookup.lower_bound(UL(search_ul));
 
   for ( ; lower != m_md_lookup.end(); ++lower )
+  {
+    if ( lower->first.MatchExact(target) )
     {
-      if ( lower->first.MatchExact(target) )
-	{
-	  found_entry = &m_MDD_Table[lower->second];
-	  break;
-	}
-      else if ( found_entry == 0 && lower->first.MatchIgnoreStream(target) )
-	{
-	  found_entry = &m_MDD_Table[lower->second];
-	}
-      else if ( found_entry != 0 && ! lower->first.MatchIgnoreStream(target) )
-	{
-	  break;
-	}
+      found_entry = &m_MDD_Table[lower->second];
+      break;
     }
+    else if ( found_entry == 0 && lower->first.MatchIgnoreStream(target) )
+    {
+      found_entry = &m_MDD_Table[lower->second];
+    }
+    else if ( found_entry != 0 && ! lower->first.MatchIgnoreStream(target) )
+    {
+      break;
+    }
+  }
 
   if ( found_entry == 0 )
-    {
-      char buf[64];
-      Kumu::DefaultLogSink().Warn("UL Dictionary: unknown UL: %s\n", target.EncodeString(buf, 64));
-    }
+  {
+    char buf[64];
+    Kumu::DefaultLogSink().Warn("UL Dictionary: unknown UL: %s\n", target.EncodeString(buf, 64));
+  }
 
   return found_entry;
 }
@@ -343,14 +343,14 @@ ASDCP::Dictionary::FindULExact(const byte_t* ul_buf) const
 {
   assert(m_MDD_Table[0].name[0]);
   std::map<UL, ui32_t>::const_iterator i = m_md_lookup.find(UL(ul_buf));
-  
+
   if ( i == m_md_lookup.end() )
-    {
-      char buf[64];
-      UL tmp_ul(ul_buf);
-      Kumu::DefaultLogSink().Warn("UL Dictionary: unknown UL: %s\n", tmp_ul.EncodeString(buf, 64));
-      return 0;
-    }
+  {
+    char buf[64];
+    UL tmp_ul(ul_buf);
+    Kumu::DefaultLogSink().Warn("UL Dictionary: unknown UL: %s\n", tmp_ul.EncodeString(buf, 64));
+    return 0;
+  }
 
   return &m_MDD_Table[i->second];
 }
@@ -361,12 +361,12 @@ ASDCP::Dictionary::FindSymbol(const std::string& str) const
 {
   assert(m_MDD_Table[0].name[0]);
   std::map<std::string, ui32_t>::const_iterator i = m_md_sym_lookup.find(str);
-  
+
   if ( i == m_md_sym_lookup.end() )
-    {
-      Kumu::DefaultLogSink().Warn("UL Dictionary: unknown symbol: %s\n", str.c_str());
-      return 0;
-    }
+  {
+    Kumu::DefaultLogSink().Warn("UL Dictionary: unknown symbol: %s\n", str.c_str());
+    return 0;
+  }
 
   return &m_MDD_Table[i->second];
 }
@@ -382,15 +382,15 @@ ASDCP::Dictionary::Dump(FILE* stream) const
   char     str_buf[64];
 
   while ( di < MDD_Max )
+  {
+    if ( m_MDD_Table[di].name != 0 )
     {
-      if ( m_MDD_Table[di].name != 0 )
-	{
-	  UL TmpUL(m_MDD_Table[di].ul);
-	  fprintf(stream, "%s: %s\n", TmpUL.EncodeString(str_buf, 64), m_MDD_Table[di].name);
-	}
-
-      di = (MDD_t)(di + 1);
+      UL TmpUL(m_MDD_Table[di].ul);
+      fprintf(stream, "%s: %s\n", TmpUL.EncodeString(str_buf, 64), m_MDD_Table[di].name);
     }
+
+    di = (MDD_t)(di + 1);
+  }
 }
 
 //

@@ -62,7 +62,7 @@ Copyright (c) 2015 John Hurst\n\n\
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME, PROGRAM_NAME);
 }
 
 //
@@ -103,50 +103,50 @@ public:
   const char* filename;  //
 
   CommandOptions(int argc, const char** argv) :
-    error_flag(true), verbose_flag(false), version_flag(false), help_flag(false), s96_flag(false),
-    duration(1440), HpFc(PinkFilterHighPassConstant), LpFc(PinkFilterLowPassConstant), filename(0)
+      error_flag(true), verbose_flag(false), version_flag(false), help_flag(false), s96_flag(false),
+      duration(1440), HpFc(PinkFilterHighPassConstant), LpFc(PinkFilterLowPassConstant), filename(0)
   {
     for ( int i = 1; i < argc; i++ )
+    {
+      if ( argv[i][0] == '-' && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) ) && argv[i][2] == 0 )
       {
-	if ( argv[i][0] == '-' && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) ) && argv[i][2] == 0 )
-	  {
-	    switch ( argv[i][1] )
-	      {
-	      case 'V': version_flag = true; break;
-	      case 'h': help_flag = true; break;
-	      case 'v': verbose_flag = true; break;
+        switch ( argv[i][1] )
+        {
+          case 'V': version_flag = true; break;
+          case 'h': help_flag = true; break;
+          case 'v': verbose_flag = true; break;
 
-	      case 'd':
-		TEST_EXTRA_ARG(i, 'd');
-		duration = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
+          case 'd':
+            TEST_EXTRA_ARG(i, 'd');
+            duration = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
 
-	      case '9':
-		s96_flag = true;
-		break;
+          case '9':
+            s96_flag = true;
+            break;
 
-	      default:
-		fprintf(stderr, "Unrecognized option: %c\n", argv[i][1]);
-		return;
-	      }
-	  }
-	else
-	  {
-	    if ( filename )
-	      {
-		fprintf(stderr, "Unexpected extra filename.\n");
-		return;
-	      }
-
-	    filename = argv[i];
-	  }
+          default:
+            fprintf(stderr, "Unrecognized option: %c\n", argv[i][1]);
+            return;
+        }
       }
+      else
+      {
+        if ( filename )
+        {
+          fprintf(stderr, "Unexpected extra filename.\n");
+          return;
+        }
+
+        filename = argv[i];
+      }
+    }
 
     if ( filename == 0 )
-      {
-	fputs("Output filename required.\n", stderr);
-	return;
-      }
+    {
+      fputs("Output filename required.\n", stderr);
+      return;
+    }
 
     error_flag = false;
   }
@@ -172,7 +172,7 @@ make_pink_wav_file(CommandOptions& Options)
 
   // set up LCG and pink filter
   PinkFilter pink_filter(Options.s96_flag ? ASDCP::SampleRate_96k.Numerator : ASDCP::SampleRate_48k.Numerator,
-			 Options.HpFc, Options.LpFc);
+                         Options.HpFc, Options.LpFc);
 
   LinearCongruentialGenerator lcg(Options.s96_flag ? ASDCP::SampleRate_96k.Numerator : ASDCP::SampleRate_48k.Numerator);
 
@@ -182,44 +182,44 @@ make_pink_wav_file(CommandOptions& Options)
   ui32_t samples_per_frame = PCM::CalcSamplesPerFrame(ADesc);
 
   if ( Options.verbose_flag )
-    {
-      fprintf(stderr, "%s kHz PCM Audio, 24 fps (%u spf)\n",
-	      (Options.s96_flag?"96":"48"), samples_per_frame);
-      fputs("AudioDescriptor:\n", stderr);
-      PCM::AudioDescriptorDump(ADesc);
-    }
+  {
+    fprintf(stderr, "%s kHz PCM Audio, 24 fps (%u spf)\n",
+            (Options.s96_flag?"96":"48"), samples_per_frame);
+    fputs("AudioDescriptor:\n", stderr);
+    PCM::AudioDescriptorDump(ADesc);
+  }
 
   // set up output file
   Kumu::FileWriter OutFile;
   Result_t result = OutFile.OpenWrite(Options.filename);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-       RF64::SimpleRF64Header WavHeader(ADesc);
-       result = WavHeader.WriteToFile(OutFile);
-    }
+  {
+    RF64::SimpleRF64Header WavHeader(ADesc);
+    result = WavHeader.WriteToFile(OutFile);
+  }
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    ui32_t write_count = 0;
+    ui32_t duration = 0;
+    byte_t scaled_pink[sizeof(ui32_t)];
+
+    while ( ASDCP_SUCCESS(result) && (duration++ < Options.duration) )
     {
-      ui32_t write_count = 0;
-      ui32_t duration = 0;
-      byte_t scaled_pink[sizeof(ui32_t)];
+      // fill the frame buffer with a frame of pink noise
+      byte_t *p = FrameBuffer.Data();
 
-      while ( ASDCP_SUCCESS(result) && (duration++ < Options.duration) )
-	{
-	  // fill the frame buffer with a frame of pink noise
-	  byte_t *p = FrameBuffer.Data();
+      for ( int i = 0; i < samples_per_frame; ++i )
+      {
+        float pink_sample = pink_filter.GetNextSample(lcg.GetNextSample());
+        ScalePackSample(pink_sample, p, ADesc.BlockAlign);
+        p += ADesc.BlockAlign;
+      }
 
-	  for ( int i = 0; i < samples_per_frame; ++i )
-	    {
-	      float pink_sample = pink_filter.GetNextSample(lcg.GetNextSample());
-	      ScalePackSample(pink_sample, p, ADesc.BlockAlign);
-	      p += ADesc.BlockAlign;
-	    }
-
-	  result = OutFile.Write(FrameBuffer.RoData(), FrameBuffer.Size(), &write_count);
-	}
+      result = OutFile.Write(FrameBuffer.RoData(), FrameBuffer.Size(), &write_count);
     }
+  }
 
   return result;
 }
@@ -233,10 +233,10 @@ main(int argc, const char** argv)
   CommandOptions Options(argc, argv);
 
   if ( Options.help_flag )
-    {
-      usage();
-      return 0;
-    }
+  {
+    usage();
+    return 0;
+  }
 
   if ( Options.error_flag )
     return 3;
@@ -248,17 +248,17 @@ main(int argc, const char** argv)
     result = make_pink_wav_file(Options);
 
   if ( result != RESULT_OK )
+  {
+    fputs("Program stopped on error.\n", stderr);
+
+    if ( result != RESULT_FAIL )
     {
-      fputs("Program stopped on error.\n", stderr);
-
-      if ( result != RESULT_FAIL )
-	{
-	  fputs(result, stderr);
-	  fputc('\n', stderr);
-	}
-
-      return 1;
+      fputs(result, stderr);
+      fputc('\n', stderr);
     }
+
+    return 1;
+  }
 
   return 0;
 }

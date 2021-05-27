@@ -59,22 +59,22 @@ public:
 
     if ( ASDCP_SUCCESS(result) )
     {
-        Kumu::fsize_t file_size = m_File.Size();
+      Kumu::fsize_t file_size = m_File.Size();
 
-        if ( FB.Capacity() < file_size )
-        {
-            DefaultLogSink().Error("FrameBuf.Capacity: %u frame length: %u\n", FB.Capacity(), (ui32_t)file_size);
-            return RESULT_SMALLBUF;
-        }
+      if ( FB.Capacity() < file_size )
+      {
+        DefaultLogSink().Error("FrameBuf.Capacity: %u frame length: %u\n", FB.Capacity(), (ui32_t)file_size);
+        return RESULT_SMALLBUF;
+      }
     }
 
     ui32_t read_count;
 
     if ( ASDCP_SUCCESS(result) )
-        result = m_File.Read(FB.Data(), FB.Capacity(), &read_count);
+      result = m_File.Read(FB.Data(), FB.Capacity(), &read_count);
 
     if ( ASDCP_SUCCESS(result) )
-        FB.Size(read_count);
+      FB.Size(read_count);
 
     return result;
   }

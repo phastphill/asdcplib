@@ -41,73 +41,73 @@ namespace ASDCP
   // PCM Data Provider Interface
   class PCMDataProviderInterface
   {
-      ASDCP_NO_COPY_CONSTRUCT(PCMDataProviderInterface);
+    ASDCP_NO_COPY_CONSTRUCT(PCMDataProviderInterface);
 
   public:
-      PCMDataProviderInterface() {};
-      virtual ~PCMDataProviderInterface() = 0;
-      virtual Result_t PutSample(const ui32_t numChannels, byte_t* buf, ui32_t* bytesWritten) = 0;
-      virtual Result_t ReadFrame() = 0;
-      virtual Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const = 0;
-      virtual Result_t Reset() = 0;
+    PCMDataProviderInterface() {};
+    virtual ~PCMDataProviderInterface() = 0;
+    virtual Result_t PutSample(const ui32_t numChannels, byte_t* buf, ui32_t* bytesWritten) = 0;
+    virtual Result_t ReadFrame() = 0;
+    virtual Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const = 0;
+    virtual Result_t Reset() = 0;
   };
 
   // WAV file implementation of the PCM Data Provider Interface
   class WAVDataProvider : public PCMDataProviderInterface
   {
-      ASDCP_NO_COPY_CONSTRUCT(WAVDataProvider);
-      PCM::WAVParser       m_Parser;
-      PCM::FrameBuffer     m_FB;
-      PCM::AudioDescriptor m_ADesc;
-      const byte_t*        m_ptr;
-      ui32_t               m_SampleSize;
+    ASDCP_NO_COPY_CONSTRUCT(WAVDataProvider);
+    PCM::WAVParser       m_Parser;
+    PCM::FrameBuffer     m_FB;
+    PCM::AudioDescriptor m_ADesc;
+    const byte_t*        m_ptr;
+    ui32_t               m_SampleSize;
 
   public:
-      WAVDataProvider();
-      virtual ~WAVDataProvider();
-      virtual Result_t PutSample(const ui32_t numChannels, byte_t* buf, ui32_t* bytesWritten);
-      virtual Result_t ReadFrame();
-      virtual Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
-      virtual Result_t Reset();
-      Result_t OpenRead(const char* filename, const Rational& PictureRate);
+    WAVDataProvider();
+    virtual ~WAVDataProvider();
+    virtual Result_t PutSample(const ui32_t numChannels, byte_t* buf, ui32_t* bytesWritten);
+    virtual Result_t ReadFrame();
+    virtual Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
+    virtual Result_t Reset();
+    Result_t OpenRead(const char* filename, const Rational& PictureRate);
 
   };
 
   // Atmos Sync Channel implementation of the PCM Data Provider Interface
   class AtmosSyncDataProvider : public PCMDataProviderInterface
   {
-      ASDCP_NO_COPY_CONSTRUCT(AtmosSyncDataProvider);
-      PCM::AtmosSyncChannelGenerator m_Generator;
-      PCM::FrameBuffer                m_FB;
-      PCM::AudioDescriptor            m_ADesc;
-      const byte_t*                   m_ptr;
-      ui32_t                          m_SampleSize;
+    ASDCP_NO_COPY_CONSTRUCT(AtmosSyncDataProvider);
+    PCM::AtmosSyncChannelGenerator m_Generator;
+    PCM::FrameBuffer                m_FB;
+    PCM::AudioDescriptor            m_ADesc;
+    const byte_t*                   m_ptr;
+    ui32_t                          m_SampleSize;
 
   public:
-      AtmosSyncDataProvider(const ui16_t bitsPerSample, const ui32_t sampleRate,
-                            const ASDCP::Rational& PictureRate, const byte_t* uuid);
-      virtual ~AtmosSyncDataProvider();
-      virtual Result_t PutSample(const ui32_t numChannels, byte_t* buf, ui32_t* bytesWritten);
-      virtual Result_t ReadFrame();
-      virtual Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
-      virtual Result_t Reset();
+    AtmosSyncDataProvider(const ui16_t bitsPerSample, const ui32_t sampleRate,
+                          const ASDCP::Rational& PictureRate, const byte_t* uuid);
+    virtual ~AtmosSyncDataProvider();
+    virtual Result_t PutSample(const ui32_t numChannels, byte_t* buf, ui32_t* bytesWritten);
+    virtual Result_t ReadFrame();
+    virtual Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
+    virtual Result_t Reset();
   };
 
   // Silence Channel(s) implementation of the PCM Data Provider Interface
   class SilenceDataProvider : public PCMDataProviderInterface
   {
-      ASDCP_NO_COPY_CONSTRUCT(SilenceDataProvider);
-      PCM::AudioDescriptor  m_ADesc;
-      ui32_t                m_SampleSize;
+    ASDCP_NO_COPY_CONSTRUCT(SilenceDataProvider);
+    PCM::AudioDescriptor  m_ADesc;
+    ui32_t                m_SampleSize;
 
   public:
-      SilenceDataProvider(const ui16_t numChannels, const ui16_t bitsPerSample,
-                          const ui32_t sampleRate, const ASDCP::Rational& editRate);
-      virtual ~SilenceDataProvider();
-      virtual Result_t PutSample(const ui32_t numChannels, byte_t* buf, ui32_t* bytesWritten);
-      virtual Result_t ReadFrame();
-      virtual Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
-      virtual Result_t Reset();
+    SilenceDataProvider(const ui16_t numChannels, const ui16_t bitsPerSample,
+                        const ui32_t sampleRate, const ASDCP::Rational& editRate);
+    virtual ~SilenceDataProvider();
+    virtual Result_t PutSample(const ui32_t numChannels, byte_t* buf, ui32_t* bytesWritten);
+    virtual Result_t ReadFrame();
+    virtual Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
+    virtual Result_t Reset();
   };
 
 } // namespace ASDCP

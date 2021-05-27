@@ -74,7 +74,7 @@ Copyright (c) 2011-2018, Robert Scheler, Heiko Sparenberg Fraunhofer IIS, John H
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME);
+          PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME);
 }
 
 //
@@ -87,7 +87,7 @@ USAGE: %s [-h|-help] [-V]\n\
        %s [-1|-2] [-b <buffer-size>] [-d <duration>]\n\
        [-f <starting-frame>] [-m] [-p <frame-rate>] [-R] [-s <size>] [-v] [-W]\n\
        [-w] <input-file> [<file-prefix>]\n\n",
-	  PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, PROGRAM_NAME);
 
   fprintf(stream, "\
 Options:\n\
@@ -151,129 +151,129 @@ public:
 
   //
   CommandOptions(int argc, const char** argv) :
-    error_flag(true), key_flag(false), read_hmac(false), split_wav(false),
-    mono_wav(false), verbose_flag(false), fb_dump_size(0), no_write_flag(false),
-    version_flag(false), help_flag(false), number_width(6),
-    start_frame(0), duration(0xffffffff), duration_flag(false), j2c_pedantic(true),
-    picture_rate(24), fb_size(FRAME_BUFFER_SIZE), file_prefix(0),
-    input_filename(0), extension(0), g_stream_sid(0)
+      error_flag(true), key_flag(false), read_hmac(false), split_wav(false),
+      mono_wav(false), verbose_flag(false), fb_dump_size(0), no_write_flag(false),
+      version_flag(false), help_flag(false), number_width(6),
+      start_frame(0), duration(0xffffffff), duration_flag(false), j2c_pedantic(true),
+      picture_rate(24), fb_size(FRAME_BUFFER_SIZE), file_prefix(0),
+      input_filename(0), extension(0), g_stream_sid(0)
   {
     memset(key_value, 0, KeyLen);
     memset(key_id_value, 0, UUIDlen);
 
     for ( int i = 1; i < argc; ++i )
+    {
+
+      if ( (strcmp( argv[i], "-help") == 0) )
       {
-
-	if ( (strcmp( argv[i], "-help") == 0) )
-	  {
-	    help_flag = true;
-	    continue;
-	  }
-         
-	if ( argv[i][0] == '-'
-	     && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) )
-	     && argv[i][2] == 0 )
-	  {
-	    switch ( argv[i][1] )
-	      {
-	      case '1': mono_wav = true; break;
-	      case '2': split_wav = true; break;
-
-	      case 'b':
-		TEST_EXTRA_ARG(i, 'b');
-		fb_size = Kumu::xabs(strtol(argv[i], 0, 10));
-
-		if ( verbose_flag )
-		  fprintf(stderr, "Frame Buffer size: %u bytes.\n", fb_size);
-
-		break;
-
-	      case 'd':
-		TEST_EXTRA_ARG(i, 'd');
-		duration_flag = true;
-		duration = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'e':
-		TEST_EXTRA_ARG(i, 'e');
-		extension = argv[i];
-		break;
-
-	      case 'f':
-		TEST_EXTRA_ARG(i, 'f');
-		start_frame = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'g':
-		TEST_EXTRA_ARG(i, 'g');
-		g_stream_sid = strtol(argv[i], 0, 10);
-		break;
-		  
-	      case 'h': help_flag = true; break;
-	      case 'm': read_hmac = true; break;
-
-	      case 'p':
-		TEST_EXTRA_ARG(i, 'p');
-		picture_rate = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 's':
-		TEST_EXTRA_ARG(i, 's');
-		fb_dump_size = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'V': version_flag = true; break;
-	      case 'v': verbose_flag = true; break;
-	      case 'W': no_write_flag = true; break;
-
-	      case 'w':
-		TEST_EXTRA_ARG(i, 'w');
-		number_width = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'Z': j2c_pedantic = false; break;
-	      case 'z': j2c_pedantic = true; break;
-
-	      default:
-		fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-		return;
-	      }
-	  }
-	else
-	  {
-	    if ( argv[i][0] != '-' )
-	      {
-		if ( input_filename == 0 )
-		  {
-		    input_filename = argv[i];
-		  }
-		else if ( file_prefix == 0 )
-		  {
-		    file_prefix = argv[i];
-		  }
-	      }
-	    else
-	      {
-		fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
-		return;
-	      }
-	  }
+        help_flag = true;
+        continue;
       }
+
+      if ( argv[i][0] == '-'
+           && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) )
+           && argv[i][2] == 0 )
+      {
+        switch ( argv[i][1] )
+        {
+          case '1': mono_wav = true; break;
+          case '2': split_wav = true; break;
+
+          case 'b':
+            TEST_EXTRA_ARG(i, 'b');
+            fb_size = Kumu::xabs(strtol(argv[i], 0, 10));
+
+            if ( verbose_flag )
+              fprintf(stderr, "Frame Buffer size: %u bytes.\n", fb_size);
+
+            break;
+
+          case 'd':
+            TEST_EXTRA_ARG(i, 'd');
+            duration_flag = true;
+            duration = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'e':
+            TEST_EXTRA_ARG(i, 'e');
+            extension = argv[i];
+            break;
+
+          case 'f':
+            TEST_EXTRA_ARG(i, 'f');
+            start_frame = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'g':
+            TEST_EXTRA_ARG(i, 'g');
+            g_stream_sid = strtol(argv[i], 0, 10);
+            break;
+
+          case 'h': help_flag = true; break;
+          case 'm': read_hmac = true; break;
+
+          case 'p':
+            TEST_EXTRA_ARG(i, 'p');
+            picture_rate = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 's':
+            TEST_EXTRA_ARG(i, 's');
+            fb_dump_size = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'V': version_flag = true; break;
+          case 'v': verbose_flag = true; break;
+          case 'W': no_write_flag = true; break;
+
+          case 'w':
+            TEST_EXTRA_ARG(i, 'w');
+            number_width = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'Z': j2c_pedantic = false; break;
+          case 'z': j2c_pedantic = true; break;
+
+          default:
+            fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+            return;
+        }
+      }
+      else
+      {
+        if ( argv[i][0] != '-' )
+        {
+          if ( input_filename == 0 )
+          {
+            input_filename = argv[i];
+          }
+          else if ( file_prefix == 0 )
+          {
+            file_prefix = argv[i];
+          }
+        }
+        else
+        {
+          fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
+          return;
+        }
+      }
+    }
 
     if ( help_flag || version_flag )
       return;
-    
+
     if ( input_filename == 0 )
-      {
-	fputs("At least one filename argument is required.\n", stderr);
-	return;
-      }
+    {
+      fputs("At least one filename argument is required.\n", stderr);
+      return;
+    }
 
     if ( file_prefix == 0 )
-      {
-	prefix_buffer = Kumu::PathSetExtension(input_filename, "") + "_";
-	file_prefix = prefix_buffer.c_str();
-      }
+    {
+      prefix_buffer = Kumu::PathSetExtension(input_filename, "") + "_";
+      file_prefix = prefix_buffer.c_str();
+    }
 
     error_flag = false;
   }
@@ -300,83 +300,83 @@ read_JP2K_file(CommandOptions& Options)
   Result_t result = Reader.OpenRead(Options.input_filename);
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    if ( Options.verbose_flag )
     {
+      fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
+    }
+
+    ASDCP::MXF::RGBAEssenceDescriptor *rgba_descriptor = 0;
+    ASDCP::MXF::CDCIEssenceDescriptor *cdci_descriptor = 0;
+
+    result = Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_RGBAEssenceDescriptor),
+                                                   reinterpret_cast<MXF::InterchangeObject**>(&rgba_descriptor));
+
+    if ( KM_SUCCESS(result) )
+    {
+      assert(rgba_descriptor);
+      frame_count = (ui32_t)rgba_descriptor->ContainerDuration;
+
       if ( Options.verbose_flag )
-	{
-	  fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
-	}
-
-      ASDCP::MXF::RGBAEssenceDescriptor *rgba_descriptor = 0;
-      ASDCP::MXF::CDCIEssenceDescriptor *cdci_descriptor = 0;
-
-      result = Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_RGBAEssenceDescriptor),
-						     reinterpret_cast<MXF::InterchangeObject**>(&rgba_descriptor));
+      {
+        rgba_descriptor->Dump();
+      }
+    }
+    else
+    {
+      result = Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_CDCIEssenceDescriptor),
+                                                     reinterpret_cast<MXF::InterchangeObject**>(&cdci_descriptor));
 
       if ( KM_SUCCESS(result) )
-	{
-	  assert(rgba_descriptor);
-	  frame_count = (ui32_t)rgba_descriptor->ContainerDuration;
+      {
+        assert(cdci_descriptor);
+        frame_count = (ui32_t)cdci_descriptor->ContainerDuration;
 
-	  if ( Options.verbose_flag )
-	    {
-	      rgba_descriptor->Dump();
-	    }
-	}
+        if ( Options.verbose_flag )
+        {
+          cdci_descriptor->Dump();
+        }
+      }
       else
-	{
-	  result = Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_CDCIEssenceDescriptor),
-							 reinterpret_cast<MXF::InterchangeObject**>(&cdci_descriptor));
-
-	  if ( KM_SUCCESS(result) )
-	    {
-	      assert(cdci_descriptor);
-	      frame_count = (ui32_t)cdci_descriptor->ContainerDuration;
-
-	      if ( Options.verbose_flag )
-		{
-		  cdci_descriptor->Dump();
-		}
-	    }
-	  else
-	    {
-	      fprintf(stderr, "File does not contain an essence descriptor.\n");
-	      frame_count = Reader.AS02IndexReader().GetDuration();
-	    }
-	}
-
-      if ( frame_count == 0 )
-	{
-	  frame_count = Reader.AS02IndexReader().GetDuration();
-	}
-
-      if ( frame_count == 0 )
-	{
-	  fprintf(stderr, "Unable to determine file duration.\n");
-	  return RESULT_FAIL;
-	}
+      {
+        fprintf(stderr, "File does not contain an essence descriptor.\n");
+        frame_count = Reader.AS02IndexReader().GetDuration();
+      }
     }
+
+    if ( frame_count == 0 )
+    {
+      frame_count = Reader.AS02IndexReader().GetDuration();
+    }
+
+    if ( frame_count == 0 )
+    {
+      fprintf(stderr, "Unable to determine file duration.\n");
+      return RESULT_FAIL;
+    }
+  }
 
   if ( ASDCP_SUCCESS(result) && Options.key_flag )
+  {
+    Context = new AESDecContext;
+    result = Context->InitKey(Options.key_value);
+
+    if ( ASDCP_SUCCESS(result) && Options.read_hmac )
     {
-      Context = new AESDecContext;
-      result = Context->InitKey(Options.key_value);
+      WriterInfo Info;
+      Reader.FillWriterInfo(Info);
 
-      if ( ASDCP_SUCCESS(result) && Options.read_hmac )
-	{
-	  WriterInfo Info;
-	  Reader.FillWriterInfo(Info);
-
-	  if ( Info.UsesHMAC )
-	    {
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	  else
-	    {
-	      fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
-	    }
-	}
+      if ( Info.UsesHMAC )
+      {
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
+      else
+      {
+        fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
+      }
     }
+  }
 
   ui32_t last_frame = Options.start_frame + ( Options.duration ? Options.duration : frame_count);
   if ( last_frame > frame_count )
@@ -386,39 +386,39 @@ read_JP2K_file(CommandOptions& Options)
   snprintf(name_format,  64, "%%s%%0%du.j2c", Options.number_width);
 
   for ( ui32_t i = Options.start_frame; ASDCP_SUCCESS(result) && i < last_frame; i++ )
-    {
-      result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
+  {
+    result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
 
-      char filename[1024];
-      snprintf(filename, 1024, name_format, Options.file_prefix, i);
+    char filename[1024];
+    snprintf(filename, 1024, name_format, Options.file_prefix, i);
+
+    if ( ASDCP_SUCCESS(result) && Options.verbose_flag )
+    {
+      printf("Frame %d, %d bytes", i, FrameBuffer.Size());
+
+      if ( ! Options.no_write_flag )
+      {
+        printf(" -> %s", filename);
+      }
+
+      printf("\n");
+    }
+
+    if ( ASDCP_SUCCESS(result)  && ( ! Options.no_write_flag ) )
+    {
+      Kumu::FileWriter OutFile;
+      ui32_t write_count;
+      result = OutFile.OpenWrite(filename);
+
+      if ( ASDCP_SUCCESS(result) )
+        result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
 
       if ( ASDCP_SUCCESS(result) && Options.verbose_flag )
-	{
-	  printf("Frame %d, %d bytes", i, FrameBuffer.Size());
-
-	  if ( ! Options.no_write_flag )
-	    {
-	      printf(" -> %s", filename);
-	    }
-
-	  printf("\n");
-	}
-
-      if ( ASDCP_SUCCESS(result)  && ( ! Options.no_write_flag ) )
-	{
-	  Kumu::FileWriter OutFile;
-	  ui32_t write_count;
-	  result = OutFile.OpenWrite(filename);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
-
-	  if ( ASDCP_SUCCESS(result) && Options.verbose_flag )
-	    {
-	      FrameBuffer.Dump(stderr, Options.fb_dump_size);
-	    }
-	}
+      {
+        FrameBuffer.Dump(stderr, Options.fb_dump_size);
+      }
     }
+  }
 
   return result;
 }
@@ -449,7 +449,7 @@ read_ACES_file(CommandOptions& Options)
     ASDCP::MXF::RGBAEssenceDescriptor *aces_descriptor = 0;
 
     result = Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_RGBAEssenceDescriptor),
-      reinterpret_cast<MXF::InterchangeObject**>(&aces_descriptor));
+                                                   reinterpret_cast<MXF::InterchangeObject**>(&aces_descriptor));
 
     if (KM_SUCCESS(result))
     {
@@ -560,14 +560,14 @@ read_ACES_file(CommandOptions& Options)
       std::string extension;
       switch (it->Type)
       {
-      case AS_02::ACES::MT_PNG:
-        extension = "png";
-        break;
-      case AS_02::ACES::MT_TIFF:
-        extension = "tif";
-        break;
-      default:
-        break;
+        case AS_02::ACES::MT_PNG:
+          extension = "png";
+          break;
+        case AS_02::ACES::MT_TIFF:
+          extension = "tif";
+          break;
+        default:
+          break;
       }
       snprintf(filename, 1024, name_format, buf, extension.c_str());
 
@@ -626,151 +626,151 @@ read_PCM_file(CommandOptions& Options)
   ASDCP::MXF::WaveAudioDescriptor *wave_descriptor = 0;
 
   if ( Options.edit_rate == Rational(0,0) ) // todo, make this available to the CLI
-    {
-      Options.edit_rate = EditRate_24;
-    }
+  {
+    Options.edit_rate = EditRate_24;
+  }
 
   Result_t result = Reader.OpenRead(Options.input_filename, Options.edit_rate);
 
   if ( KM_SUCCESS(result) )
+  {
+    if ( Options.verbose_flag )
     {
-      if ( Options.verbose_flag )
-	{
-	  fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
-	}
-      
-      ASDCP::MXF::InterchangeObject* tmp_obj = 0;
-
-      result = Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_WaveAudioDescriptor), &tmp_obj);
-
-      if ( KM_SUCCESS(result) )
-	{
-	  wave_descriptor = dynamic_cast<ASDCP::MXF::WaveAudioDescriptor*>(tmp_obj);
-
-	  if ( wave_descriptor == 0 )
-	    {
-	      fprintf(stderr, "File does not contain an essence descriptor.\n");
-	      return RESULT_FAIL;
-	    }
-      
-	  if ( Options.verbose_flag )
-	    {
-	      wave_descriptor->Dump();
-	    }
-
-	  if ( wave_descriptor->ContainerDuration.get() == 0 )
-	    {
-	      fprintf(stderr, "ContainerDuration not set in file descriptor, attempting to use index duration.\n");
-	      last_frame = Reader.AS02IndexReader().GetDuration();
-	    }
-	  else
-	    {
-	      last_frame = (ui32_t)wave_descriptor->ContainerDuration;
-	    }
-
-	  if ( last_frame == 0 )
-	    {
-	      fprintf(stderr, "ContainerDuration not set in index, attempting to use Duration from SourceClip.\n");
-	      result = Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_SourceClip), &tmp_obj);
-	      if ( KM_SUCCESS(result))
-		{
-	    	  ASDCP::MXF::SourceClip *sourceClip = dynamic_cast<ASDCP::MXF::SourceClip*>(tmp_obj);
-	    	  if ( ! sourceClip->Duration.empty() )
-		    {
-		      last_frame = (ui32_t)sourceClip->Duration;
-		    }
-		}
-	    }
-
-	  if ( last_frame == 0 )
-	    {
-	      fprintf(stderr, "Unable to determine file duration.\n");
-	      return RESULT_FAIL;
-	    }
-
-	  assert(wave_descriptor);
-	  FrameBuffer.Capacity(AS_02::MXF::CalcFrameBufferSize(*wave_descriptor, Options.edit_rate));
-	  last_frame = AS_02::MXF::CalcFramesFromDurationInSamples(last_frame, *wave_descriptor, Options.edit_rate);
-	}
+      fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
     }
+
+    ASDCP::MXF::InterchangeObject* tmp_obj = 0;
+
+    result = Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_WaveAudioDescriptor), &tmp_obj);
+
+    if ( KM_SUCCESS(result) )
+    {
+      wave_descriptor = dynamic_cast<ASDCP::MXF::WaveAudioDescriptor*>(tmp_obj);
+
+      if ( wave_descriptor == 0 )
+      {
+        fprintf(stderr, "File does not contain an essence descriptor.\n");
+        return RESULT_FAIL;
+      }
+
+      if ( Options.verbose_flag )
+      {
+        wave_descriptor->Dump();
+      }
+
+      if ( wave_descriptor->ContainerDuration.get() == 0 )
+      {
+        fprintf(stderr, "ContainerDuration not set in file descriptor, attempting to use index duration.\n");
+        last_frame = Reader.AS02IndexReader().GetDuration();
+      }
+      else
+      {
+        last_frame = (ui32_t)wave_descriptor->ContainerDuration;
+      }
+
+      if ( last_frame == 0 )
+      {
+        fprintf(stderr, "ContainerDuration not set in index, attempting to use Duration from SourceClip.\n");
+        result = Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_SourceClip), &tmp_obj);
+        if ( KM_SUCCESS(result))
+        {
+          ASDCP::MXF::SourceClip *sourceClip = dynamic_cast<ASDCP::MXF::SourceClip*>(tmp_obj);
+          if ( ! sourceClip->Duration.empty() )
+          {
+            last_frame = (ui32_t)sourceClip->Duration;
+          }
+        }
+      }
+
+      if ( last_frame == 0 )
+      {
+        fprintf(stderr, "Unable to determine file duration.\n");
+        return RESULT_FAIL;
+      }
+
+      assert(wave_descriptor);
+      FrameBuffer.Capacity(AS_02::MXF::CalcFrameBufferSize(*wave_descriptor, Options.edit_rate));
+      last_frame = AS_02::MXF::CalcFramesFromDurationInSamples(last_frame, *wave_descriptor, Options.edit_rate);
+    }
+  }
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    if ( Options.duration > 0 && Options.duration < last_frame )
+      last_frame = Options.duration;
+
+    if ( Options.start_frame > 0 )
     {
-      if ( Options.duration > 0 && Options.duration < last_frame )
-	last_frame = Options.duration;
+      if ( Options.start_frame > last_frame )
+      {
+        fprintf(stderr, "Start value greater than file duration.\n");
+        return RESULT_FAIL;
+      }
 
-      if ( Options.start_frame > 0 )
-	{
-	  if ( Options.start_frame > last_frame )
-	    {
-	      fprintf(stderr, "Start value greater than file duration.\n");
-	      return RESULT_FAIL;
-	    }
-
-	  last_frame = Kumu::xmin(Options.start_frame + last_frame, last_frame);
-	}
-
-      last_frame = last_frame - Options.start_frame;
-
-      PCM::AudioDescriptor ADesc;
-
-      result = MD_to_PCM_ADesc(wave_descriptor, ADesc);
-
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  ADesc.ContainerDuration = last_frame;
-	  ADesc.EditRate = Options.edit_rate;
-
-	  result = OutWave.OpenWrite(ADesc, Options.file_prefix,
-				     ( Options.split_wav ? WavFileWriter::ST_STEREO : 
-				       ( Options.mono_wav ? WavFileWriter::ST_MONO : WavFileWriter::ST_NONE ) ));
-	}
+      last_frame = Kumu::xmin(Options.start_frame + last_frame, last_frame);
     }
+
+    last_frame = last_frame - Options.start_frame;
+
+    PCM::AudioDescriptor ADesc;
+
+    result = MD_to_PCM_ADesc(wave_descriptor, ADesc);
+
+    if ( ASDCP_SUCCESS(result) )
+    {
+      ADesc.ContainerDuration = last_frame;
+      ADesc.EditRate = Options.edit_rate;
+
+      result = OutWave.OpenWrite(ADesc, Options.file_prefix,
+                                 ( Options.split_wav ? WavFileWriter::ST_STEREO :
+                                   ( Options.mono_wav ? WavFileWriter::ST_MONO : WavFileWriter::ST_NONE ) ));
+    }
+  }
 
   if ( ASDCP_SUCCESS(result) && Options.key_flag )
+  {
+    Context = new AESDecContext;
+    result = Context->InitKey(Options.key_value);
+
+    if ( ASDCP_SUCCESS(result) && Options.read_hmac )
     {
-      Context = new AESDecContext;
-      result = Context->InitKey(Options.key_value);
+      WriterInfo Info;
+      Reader.FillWriterInfo(Info);
 
-      if ( ASDCP_SUCCESS(result) && Options.read_hmac )
-	{
-	  WriterInfo Info;
-	  Reader.FillWriterInfo(Info);
-
-	  if ( Info.UsesHMAC )
-	    {
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	  else
-	    {
-	      fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
-	    }
-	}
+      if ( Info.UsesHMAC )
+      {
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
+      else
+      {
+        fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
+      }
     }
+  }
 
   for ( ui32_t i = Options.start_frame; ASDCP_SUCCESS(result) && i < last_frame; i++ )
+  {
+    result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
+      if ( Options.verbose_flag )
+      {
+        FrameBuffer.FrameNumber(i);
+        FrameBuffer.Dump(stderr, Options.fb_dump_size);
+      }
 
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  if ( Options.verbose_flag )
-	    {
-	      FrameBuffer.FrameNumber(i);
-	      FrameBuffer.Dump(stderr, Options.fb_dump_size);
-	    }
+      if ( FrameBuffer.Size() != FrameBuffer.Capacity() )
+      {
+        fprintf(stderr, "Last frame is incomplete, padding with zeros.\n");
+        // actually, it has already been zeroed for us, we just need to recognize the appropriate size
+        FrameBuffer.Size(FrameBuffer.Capacity());
+      }
 
-	  if ( FrameBuffer.Size() != FrameBuffer.Capacity() )
-	    {
-	      fprintf(stderr, "Last frame is incomplete, padding with zeros.\n");
-	      // actually, it has already been zeroed for us, we just need to recognize the appropriate size
-	      FrameBuffer.Size(FrameBuffer.Capacity());
-	    }
-
-	  result = OutWave.WriteFrame(FrameBuffer);
-	}
+      result = OutWave.WriteFrame(FrameBuffer);
     }
+  }
 
   return result;
 }
@@ -795,65 +795,65 @@ read_timed_text_file(CommandOptions& Options)
   Result_t result = Reader.OpenRead(Options.input_filename);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      result = Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_TimedTextDescriptor),
-						     reinterpret_cast<MXF::InterchangeObject**>(&tt_descriptor));
+  {
+    result = Reader.OP1aHeader().GetMDObjectByType(DefaultCompositeDict().ul(MDD_TimedTextDescriptor),
+                                                   reinterpret_cast<MXF::InterchangeObject**>(&tt_descriptor));
     if ( Options.verbose_flag ) {
-    	tt_descriptor->Dump();
+      tt_descriptor->Dump();
     }
 
 
-  if ( ASDCP_FAILURE(result) )
-    return result;
+    if ( ASDCP_FAILURE(result) )
+      return result;
 
-  std::string XMLDoc;
-  std::string out_path = Kumu::PathDirname(Options.file_prefix);
-  ui32_t write_count;
-  char buf[64];
-  TimedText::ResourceList_t::const_iterator ri;
+    std::string XMLDoc;
+    std::string out_path = Kumu::PathDirname(Options.file_prefix);
+    ui32_t write_count;
+    char buf[64];
+    TimedText::ResourceList_t::const_iterator ri;
 
-  result = Reader.ReadTimedTextResource(XMLDoc);
+    result = Reader.ReadTimedTextResource(XMLDoc);
 
-  if ( ASDCP_SUCCESS(result) )
+    if ( ASDCP_SUCCESS(result) )
     {
       Reader.FillTimedTextDescriptor(TDesc);
       FrameBuffer.Capacity(Options.fb_size);
 
       if ( Options.verbose_flag )
-	TimedText::DescriptorDump(TDesc);
+        TimedText::DescriptorDump(TDesc);
     }
 
-  if ( ASDCP_SUCCESS(result) && ( ! Options.no_write_flag ) )
+    if ( ASDCP_SUCCESS(result) && ( ! Options.no_write_flag ) )
     {
       Kumu::FileWriter Writer;
       result = Writer.OpenWrite(Options.file_prefix);
 
       if ( ASDCP_SUCCESS(result) )
-	result = Writer.Write(reinterpret_cast<const byte_t*>(XMLDoc.c_str()), XMLDoc.size(), &write_count);
+        result = Writer.Write(reinterpret_cast<const byte_t*>(XMLDoc.c_str()), XMLDoc.size(), &write_count);
     }
 
-  for ( ri = TDesc.ResourceList.begin() ; ri != TDesc.ResourceList.end() && ASDCP_SUCCESS(result); ri++ )
+    for ( ri = TDesc.ResourceList.begin() ; ri != TDesc.ResourceList.end() && ASDCP_SUCCESS(result); ri++ )
     {
       result = Reader.ReadAncillaryResource(ri->ResourceID, FrameBuffer, Context, HMAC);
 
       if ( ASDCP_SUCCESS(result) && ( ! Options.no_write_flag ) )
-	{
-	  Kumu::FileWriter Writer;
-	  if (out_path != "") {
-		  result = Writer.OpenWrite(Kumu::PathJoin(out_path, Kumu::UUID(ri->ResourceID).EncodeHex(buf, 64)).c_str());
-	  } else {
-		  // Workaround for a bug in Kumu::PathJoin
-		  result = Writer.OpenWrite(Kumu::UUID(ri->ResourceID).EncodeHex(buf, 64));
-	  }
+      {
+        Kumu::FileWriter Writer;
+        if (out_path != "") {
+          result = Writer.OpenWrite(Kumu::PathJoin(out_path, Kumu::UUID(ri->ResourceID).EncodeHex(buf, 64)).c_str());
+        } else {
+          // Workaround for a bug in Kumu::PathJoin
+          result = Writer.OpenWrite(Kumu::UUID(ri->ResourceID).EncodeHex(buf, 64));
+        }
 
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Writer.Write(FrameBuffer.RoData(), FrameBuffer.Size(), &write_count);
+        if ( ASDCP_SUCCESS(result) )
+          result = Writer.Write(FrameBuffer.RoData(), FrameBuffer.Size(), &write_count);
 
-	      if ( Options.verbose_flag )
-		FrameBuffer.Dump(stderr, Options.fb_dump_size);
-	}
+        if ( Options.verbose_flag )
+          FrameBuffer.Dump(stderr, Options.fb_dump_size);
+      }
     }
-    }
+  }
   return result;
 }
 
@@ -870,46 +870,46 @@ read_isxd_file(CommandOptions& Options)
   Result_t result = Reader.OpenRead(Options.input_filename);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      result = FrameBuffer.Capacity(Options.fb_size);
-      frame_count = Reader.AS02IndexReader().GetDuration();
-    }
+  {
+    result = FrameBuffer.Capacity(Options.fb_size);
+    frame_count = Reader.AS02IndexReader().GetDuration();
+  }
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      std::list<MXF::InterchangeObject*> object_list;
-      Reader.OP1aHeader().GetMDObjectsByType(DefaultSMPTEDict().ul(MDD_GenericStreamTextBasedSet), object_list);
+  {
+    std::list<MXF::InterchangeObject*> object_list;
+    Reader.OP1aHeader().GetMDObjectsByType(DefaultSMPTEDict().ul(MDD_GenericStreamTextBasedSet), object_list);
 
-      std::list<MXF::InterchangeObject*>::iterator i;
-      for ( i = object_list.begin(); i != object_list.end(); ++i )
-	{
-	  MXF::GenericStreamTextBasedSet *text_object = dynamic_cast<MXF::GenericStreamTextBasedSet*>(*i);
-	  assert(text_object);
-	  text_object->Dump(stderr);
-	}
+    std::list<MXF::InterchangeObject*>::iterator i;
+    for ( i = object_list.begin(); i != object_list.end(); ++i )
+    {
+      MXF::GenericStreamTextBasedSet *text_object = dynamic_cast<MXF::GenericStreamTextBasedSet*>(*i);
+      assert(text_object);
+      text_object->Dump(stderr);
     }
+  }
 
   if ( ASDCP_SUCCESS(result) && Options.key_flag )
+  {
+    Context = new AESDecContext;
+    result = Context->InitKey(Options.key_value);
+
+    if ( ASDCP_SUCCESS(result) && Options.read_hmac )
     {
-      Context = new AESDecContext;
-      result = Context->InitKey(Options.key_value);
+      WriterInfo Info;
+      Reader.FillWriterInfo(Info);
 
-      if ( ASDCP_SUCCESS(result) && Options.read_hmac )
-	{
-	  WriterInfo Info;
-	  Reader.FillWriterInfo(Info);
-
-	  if ( Info.UsesHMAC )
-	    {
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	  else
-	    {
-	      fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
-	    }
-	}
+      if ( Info.UsesHMAC )
+      {
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
+      else
+      {
+        fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
+      }
     }
+  }
 
   ui32_t last_frame = Options.start_frame + ( Options.duration ? Options.duration : frame_count);
   if ( last_frame > frame_count )
@@ -919,24 +919,24 @@ read_isxd_file(CommandOptions& Options)
   snprintf(name_format,  64, "%%s%%0%du.%s", Options.number_width, Options.extension);
 
   for ( ui32_t i = Options.start_frame; ASDCP_SUCCESS(result) && i < last_frame; i++ )
+  {
+    result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
+      if ( ! Options.no_write_flag )
+      {
+        Kumu::FileWriter OutFile;
+        char filename[256];
+        ui32_t write_count;
+        snprintf(filename, 256, name_format, Options.file_prefix, i);
+        result = OutFile.OpenWrite(filename);
 
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  if ( ! Options.no_write_flag )
-	    {
-	      Kumu::FileWriter OutFile;
-	      char filename[256];
-	      ui32_t write_count;
-	      snprintf(filename, 256, name_format, Options.file_prefix, i);
-	      result = OutFile.OpenWrite(filename);
-
-	      if ( ASDCP_SUCCESS(result) )
-		result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
-	    }
-	}
+        if ( ASDCP_SUCCESS(result) )
+          result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
+      }
     }
+  }
 
   return result;
 }
@@ -948,23 +948,23 @@ extract_generic_stream_partition_payload(const std::string& in_filename, const u
   AS_02::ISXD::MXFReader reader;
 
   Result_t result = reader.OpenRead(in_filename);
-          
+
   if ( KM_SUCCESS(result) )
-    {
-      result = reader.ReadGenericStreamPartitionPayload(sid, payload);
-    }
-  
+  {
+    result = reader.ReadGenericStreamPartitionPayload(sid, payload);
+  }
+
   if ( KM_SUCCESS(result) )
+  {
+    Kumu::FileWriter writer;
+    ui32_t write_count = 0;
+    result = writer.OpenWrite(out_filename);
+
+    if ( KM_SUCCESS(result) )
     {
-      Kumu::FileWriter writer;
-      ui32_t write_count = 0;
-      result = writer.OpenWrite(out_filename);
-      
-      if ( KM_SUCCESS(result) )
-	{
-	  result = writer.Write(payload.RoData(), payload.Size(), &write_count);
-	}
+      result = writer.Write(payload.RoData(), payload.Size(), &write_count);
     }
+  }
 
   return result;
 }
@@ -986,66 +986,66 @@ main(int argc, const char** argv)
     return 0;
 
   if ( Options.error_flag )
-    {
-      fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
-      return 3;
-    }
+  {
+    fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
+    return 3;
+  }
 
   EssenceType_t EssenceType;
   Result_t result = ASDCP::EssenceType(Options.input_filename, EssenceType);
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    switch ( EssenceType )
     {
-      switch ( EssenceType )
-	{
-	case ESS_AS02_JPEG_2000:
-	  result = read_JP2K_file(Options);
-	  break;
-	//PB
-	case ESS_AS02_ACES:
-	  result = read_ACES_file(Options);
-	  break;
-	//--
-	case ESS_AS02_PCM_24b_48k:
-	case ESS_AS02_PCM_24b_96k:
-	  result = read_PCM_file(Options);
-	  break;
+      case ESS_AS02_JPEG_2000:
+        result = read_JP2K_file(Options);
+        break;
+        //PB
+      case ESS_AS02_ACES:
+        result = read_ACES_file(Options);
+        break;
+        //--
+      case ESS_AS02_PCM_24b_48k:
+      case ESS_AS02_PCM_24b_96k:
+        result = read_PCM_file(Options);
+        break;
 
-	case ESS_AS02_TIMED_TEXT:
-	  result = read_timed_text_file(Options);
-	  break;
+      case ESS_AS02_TIMED_TEXT:
+        result = read_timed_text_file(Options);
+        break;
 
-	case ESS_AS02_ISXD:
-	  if ( Options.g_stream_sid == 0 )
-	    {
-	      result = read_isxd_file(Options);
-	    }
-	  else
-	    {
-	      result = extract_generic_stream_partition_payload(Options.input_filename,
-								Options.g_stream_sid,
-								Options.file_prefix);
-	    }
-	  break;
+      case ESS_AS02_ISXD:
+        if ( Options.g_stream_sid == 0 )
+        {
+          result = read_isxd_file(Options);
+        }
+        else
+        {
+          result = extract_generic_stream_partition_payload(Options.input_filename,
+                                                            Options.g_stream_sid,
+                                                            Options.file_prefix);
+        }
+        break;
 
-	default:
-	  fprintf(stderr, "%s: Unknown file type (%d), not AS-02 essence.\n", Options.input_filename, EssenceType);
-	  return 5;
-	}
+      default:
+        fprintf(stderr, "%s: Unknown file type (%d), not AS-02 essence.\n", Options.input_filename, EssenceType);
+        return 5;
     }
+  }
 
   if ( ASDCP_FAILURE(result) )
+  {
+    fputs("Program stopped on error.\n", stderr);
+
+    if ( result != RESULT_FAIL )
     {
-      fputs("Program stopped on error.\n", stderr);
-
-      if ( result != RESULT_FAIL )
-	{
-	  fputs(result, stderr);
-	  fputc('\n', stderr);
-	}
-
-      return 1;
+      fputs(result, stderr);
+      fputc('\n', stderr);
     }
+
+    return 1;
+  }
 
   return 0;
 }

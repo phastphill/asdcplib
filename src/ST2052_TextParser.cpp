@@ -48,18 +48,18 @@ int const NS_ID_LENGTH = 16;
 
 //
 static byte_t s_png_id_prefix[NS_ID_LENGTH] = {
-  // RFC 4122 type 5
-  // 2067-2 5.4.5 / RFC4122 Appendix C
-  0x6b, 0xa7, 0xb8, 0x11, 0x9d, 0xad, 0x11, 0xd1,
-  0x80, 0xb4, 0x00, 0xc0, 0x4f, 0xd4, 0x30, 0xc8
+    // RFC 4122 type 5
+    // 2067-2 5.4.5 / RFC4122 Appendix C
+    0x6b, 0xa7, 0xb8, 0x11, 0x9d, 0xad, 0x11, 0xd1,
+    0x80, 0xb4, 0x00, 0xc0, 0x4f, 0xd4, 0x30, 0xc8
 };
 
 //
 static byte_t s_font_id_prefix[NS_ID_LENGTH] = {
-  // RFC 4122 type 5
-  // 2067-2 5.4.6
-  0xb6, 0xcc, 0x57, 0xa0, 0x87, 0xe7, 0x4e, 0x75,
-  0xb1, 0xc3, 0x33, 0x59, 0xf3, 0xae, 0x88, 0x17
+    // RFC 4122 type 5
+    // 2067-2 5.4.6
+    0xb6, 0xcc, 0x57, 0xa0, 0x87, 0xe7, 0x4e, 0x75,
+    0xb1, 0xc3, 0x33, 0x59, 0xf3, 0xae, 0x88, 0x17
 };
 
 //
@@ -139,49 +139,49 @@ AS_02::TimedText::Type5UUIDFilenameResolver::OpenRead(const std::string& dirname
   byte_t read_buffer[16];
 
   if ( abs_dirname.empty() )
-    {
-      abs_dirname = ".";
-    }
+  {
+    abs_dirname = ".";
+  }
 
   Result_t result = dir_reader.Open(abs_dirname);
 
   if ( KM_SUCCESS(result) )
+  {
+    while ( KM_SUCCESS(dir_reader.GetNext(next_item, ft)) )
     {
-      while ( KM_SUCCESS(dir_reader.GetNext(next_item, ft)) )
+      if ( next_item[0] == '.' ) continue; // no hidden files
+      std::string tmp_path = PathJoin(abs_dirname, next_item);
+
+      if ( ft == DET_FILE )
+      {
+        FileReader reader;
+        Result_t read_result = reader.OpenRead(tmp_path);
+
+        if ( KM_SUCCESS(read_result) )
         {
-          if ( next_item[0] == '.' ) continue; // no hidden files
-	  std::string tmp_path = PathJoin(abs_dirname, next_item);
+          read_result = reader.Read(read_buffer, 16);
+        }
 
-	  if ( ft == DET_FILE )
-	    {
-	      FileReader reader;
-	      Result_t read_result = reader.OpenRead(tmp_path);
-
-	      if ( KM_SUCCESS(read_result) )
-		{
-		  read_result = reader.Read(read_buffer, 16);
-		}
-
-	      if ( KM_SUCCESS(read_result) )
-		{
-		  // is it PNG?
-		  if ( memcmp(read_buffer, PNGMagic, sizeof(PNGMagic)) == 0 )
-		    {
-		      UUID asset_id = CreatePNGNameId(PathBasename(next_item));
-		      m_ResourceMap.insert(ResourceMap::value_type(asset_id, next_item));
-		    }
-		  // is it a font?
-		  else if ( memcmp(read_buffer, OpenTypeMagic, sizeof(OpenTypeMagic)) == 0
-			    || memcmp(read_buffer, TrueTypeMagic, sizeof(TrueTypeMagic)) == 0 )
-		    {
-		      std::string font_root_name = PathSetExtension(next_item, "");
-		      UUID asset_id = CreateFontNameId(PathBasename(font_root_name));
-		      m_ResourceMap.insert(ResourceMap::value_type(asset_id, next_item));
-		    }
-		}
-	    }
-	}
+        if ( KM_SUCCESS(read_result) )
+        {
+          // is it PNG?
+          if ( memcmp(read_buffer, PNGMagic, sizeof(PNGMagic)) == 0 )
+          {
+            UUID asset_id = CreatePNGNameId(PathBasename(next_item));
+            m_ResourceMap.insert(ResourceMap::value_type(asset_id, next_item));
+          }
+            // is it a font?
+          else if ( memcmp(read_buffer, OpenTypeMagic, sizeof(OpenTypeMagic)) == 0
+                    || memcmp(read_buffer, TrueTypeMagic, sizeof(TrueTypeMagic)) == 0 )
+          {
+            std::string font_root_name = PathSetExtension(next_item, "");
+            UUID asset_id = CreateFontNameId(PathBasename(font_root_name));
+            m_ResourceMap.insert(ResourceMap::value_type(asset_id, next_item));
+          }
+        }
+      }
     }
+  }
 
   return result;
 }
@@ -196,10 +196,10 @@ AS_02::TimedText::Type5UUIDFilenameResolver::ResolveRID(const byte_t* uuid, ASDC
   ResourceMap::const_iterator i = m_ResourceMap.find(tmp_id);
 
   if ( i == m_ResourceMap.end() )
-    {
-      DefaultLogSink().Debug("Missing timed-text resource \"%s\"\n", tmp_id.EncodeHex(buf, 64));
-      return RESULT_NOT_FOUND;
-    }
+  {
+    DefaultLogSink().Debug("Missing timed-text resource \"%s\"\n", tmp_id.EncodeHex(buf, 64));
+    return RESULT_NOT_FOUND;
+  }
 
   FileReader Reader;
 
@@ -208,16 +208,16 @@ AS_02::TimedText::Type5UUIDFilenameResolver::ResolveRID(const byte_t* uuid, ASDC
   Result_t result = Reader.OpenRead(i->second.c_str());
 
   if ( KM_SUCCESS(result) )
-    {
-      ui32_t read_count, read_size = Reader.Size();
-      result = FrameBuf.Capacity(read_size);
-      
-      if ( KM_SUCCESS(result) )
-	result = Reader.Read(FrameBuf.Data(), read_size, &read_count);
-      
-      if ( KM_SUCCESS(result) )
-	FrameBuf.Size(read_count);
-    }
+  {
+    ui32_t read_count, read_size = Reader.Size();
+    result = FrameBuf.Capacity(read_size);
+
+    if ( KM_SUCCESS(result) )
+      result = Reader.Read(FrameBuf.Data(), read_size, &read_count);
+
+    if ( KM_SUCCESS(result) )
+      FrameBuf.Size(read_count);
+  }
 
   return result;
 }
@@ -250,19 +250,19 @@ public:
   ASDCP::TimedText::IResourceResolver* GetDefaultResolver()
   {
     if ( m_DefaultResolver.empty() )
-      {
-	AS_02::TimedText::Type5UUIDFilenameResolver *resolver = new AS_02::TimedText::Type5UUIDFilenameResolver;
-	resolver->OpenRead(PathDirname(m_Filename));
-	m_DefaultResolver = resolver;
-      }
-    
+    {
+      AS_02::TimedText::Type5UUIDFilenameResolver *resolver = new AS_02::TimedText::Type5UUIDFilenameResolver;
+      resolver->OpenRead(PathDirname(m_Filename));
+      m_DefaultResolver = resolver;
+    }
+
     return m_DefaultResolver;
   }
 
   Result_t OpenRead(const std::string& filename);
   Result_t OpenRead(const std::string& xml_doc, const std::string& filename);
   Result_t ReadAncillaryResource(const byte_t *uuid, ASDCP::TimedText::FrameBuffer& FrameBuf,
-				 const ASDCP::TimedText::IResourceResolver& Resolver) const;
+                                 const ASDCP::TimedText::IResourceResolver& Resolver) const;
 };
 
 //
@@ -272,10 +272,10 @@ AS_02::TimedText::ST2052_TextParser::h__TextParser::OpenRead(const std::string& 
   Result_t result = ReadFileIntoString(filename, m_XMLDoc);
 
   if ( KM_SUCCESS(result) )
-    {
-      m_Filename = filename;
-      result = OpenRead();
-    }
+  {
+    m_Filename = filename;
+    result = OpenRead();
+  }
 
   return result;
 }
@@ -301,10 +301,10 @@ AS_02::TimedText::ST2052_TextParser::h__TextParser::OpenRead()
   setup_default_font_family_list();
 
   if ( ! m_Root.ParseString(m_XMLDoc.c_str()) )
-    {
-      DefaultLogSink(). Error("ST 2052-1 document is not well-formed.\n");
-      return RESULT_FORMAT;
-    }
+  {
+    DefaultLogSink(). Error("ST 2052-1 document is not well-formed.\n");
+    return RESULT_FORMAT;
+  }
 
   m_TDesc.EncodingName = "UTF-8"; // the XML parser demands UTF-8
   m_TDesc.ResourceList.clear();
@@ -313,35 +313,35 @@ AS_02::TimedText::ST2052_TextParser::h__TextParser::OpenRead()
 
   // Attempt to set the profile from <conformsToStandard>
   if ( m_TDesc.NamespaceName.empty() )
-    {
-      ElementVisitor conforms_visitor("conformsToStandard");
-      apply_visitor(m_Root, conforms_visitor);
+  {
+    ElementVisitor conforms_visitor("conformsToStandard");
+    apply_visitor(m_Root, conforms_visitor);
 
-      for ( i = conforms_visitor.value_list.begin(); i != conforms_visitor.value_list.end(); ++i )
-	{
-	  if ( *i == IMSC1_imageProfile || *i == IMSC1_textProfile )
-	    {
-	      m_TDesc.NamespaceName = *i;
-	      break;
-	    }
-	}
+    for ( i = conforms_visitor.value_list.begin(); i != conforms_visitor.value_list.end(); ++i )
+    {
+      if ( *i == IMSC1_imageProfile || *i == IMSC1_textProfile )
+      {
+        m_TDesc.NamespaceName = *i;
+        break;
+      }
     }
+  }
 
   // Attempt to set the profile from the use of attribute "profile"
   if ( m_TDesc.NamespaceName.empty() )
-    {
-      AttributeVisitor profile_visitor("profile");
-      apply_visitor(m_Root, profile_visitor);
+  {
+    AttributeVisitor profile_visitor("profile");
+    apply_visitor(m_Root, profile_visitor);
 
-      for ( i = profile_visitor.value_list.begin(); i != profile_visitor.value_list.end(); ++i )
-	{
-	  if ( *i == IMSC1_imageProfile || *i == IMSC1_textProfile )
-	    {
-	      m_TDesc.NamespaceName = *i;
-	      break;
-	    }
-	}
+    for ( i = profile_visitor.value_list.begin(); i != profile_visitor.value_list.end(); ++i )
+    {
+      if ( *i == IMSC1_imageProfile || *i == IMSC1_textProfile )
+      {
+        m_TDesc.NamespaceName = *i;
+        break;
+      }
     }
+  }
 
   // Find image resources for later packaging as GS partitions.
   // Attempt to set the profile; infer from use of images.
@@ -349,33 +349,33 @@ AS_02::TimedText::ST2052_TextParser::h__TextParser::OpenRead()
   apply_visitor(m_Root, png_visitor);
 
   for ( i = png_visitor.value_list.begin(); i != png_visitor.value_list.end(); ++i )
-    {
-      UUID asset_id = CreatePNGNameId(PathBasename(*i));
-      TimedTextResourceDescriptor png_resource;
-      memcpy(png_resource.ResourceID, asset_id.Value(), UUIDlen);
-      png_resource.Type = ASDCP::TimedText::MT_PNG;
-      m_TDesc.ResourceList.push_back(png_resource);
-      m_ResourceTypes.insert(ResourceTypeMap_t::value_type(UUID(png_resource.ResourceID),
-							   ASDCP::TimedText::MT_PNG));
+  {
+    UUID asset_id = CreatePNGNameId(PathBasename(*i));
+    TimedTextResourceDescriptor png_resource;
+    memcpy(png_resource.ResourceID, asset_id.Value(), UUIDlen);
+    png_resource.Type = ASDCP::TimedText::MT_PNG;
+    m_TDesc.ResourceList.push_back(png_resource);
+    m_ResourceTypes.insert(ResourceTypeMap_t::value_type(UUID(png_resource.ResourceID),
+                                                         ASDCP::TimedText::MT_PNG));
 
-      if ( m_TDesc.NamespaceName.empty() )
-	{
-	  m_TDesc.NamespaceName = IMSC1_imageProfile;
-	}
+    if ( m_TDesc.NamespaceName.empty() )
+    {
+      m_TDesc.NamespaceName = IMSC1_imageProfile;
     }
+  }
 
   // If images are present and profile is "text" make sure to say something.
   if ( ! m_ResourceTypes.empty() && m_TDesc.NamespaceName == IMSC1_textProfile )
-    {
-      DefaultLogSink().Warn("Unexpected IMSC-1 text profile; document contains images.\n ");
-    }
-  
+  {
+    DefaultLogSink().Warn("Unexpected IMSC-1 text profile; document contains images.\n ");
+  }
+
   // If all else fails set the profile to "text".
   if ( m_TDesc.NamespaceName.empty() )
-    {
-      DefaultLogSink().Warn("Using default IMSC-1 text profile.\n ");
-      m_TDesc.NamespaceName = IMSC1_textProfile;
-    }
+  {
+    DefaultLogSink().Warn("Using default IMSC-1 text profile.\n ");
+    m_TDesc.NamespaceName = IMSC1_textProfile;
+  }
 
   // Find font resources for later packaging as GS partitions.
   AttributeVisitor font_visitor("fontFamily");
@@ -383,30 +383,30 @@ AS_02::TimedText::ST2052_TextParser::h__TextParser::OpenRead()
   char buf[64];
 
   for ( i = font_visitor.value_list.begin(); i != font_visitor.value_list.end(); ++i )
-    {
-      UUID font_id = CreateFontNameId(PathBasename(*i));
+  {
+    UUID font_id = CreateFontNameId(PathBasename(*i));
 
-      if ( PathIsFile(font_id.EncodeHex(buf, 64))
-	   || PathIsFile(*i+".ttf")
-	   || PathIsFile(*i+".otf") )
-	{
-	  TimedTextResourceDescriptor font_resource;
-	  memcpy(font_resource.ResourceID, font_id.Value(), UUIDlen);
-	  font_resource.Type = ASDCP::TimedText::MT_OPENTYPE;
-	  m_TDesc.ResourceList.push_back(font_resource);
-	  m_ResourceTypes.insert(ResourceTypeMap_t::value_type(UUID(font_resource.ResourceID),
-							       ASDCP::TimedText::MT_OPENTYPE));
-	}
-      else
-	{
-	  AutoMutex l(sg_default_font_family_list_lock);
-	  if ( sg_default_font_family_list.find(*i) == sg_default_font_family_list.end() )
-	    {
-	      DefaultLogSink(). Error("Unable to locate external font resource \"%s\".\n", i->c_str());
-	      return RESULT_FORMAT;
-	    }
-	}
+    if ( PathIsFile(font_id.EncodeHex(buf, 64))
+         || PathIsFile(*i+".ttf")
+         || PathIsFile(*i+".otf") )
+    {
+      TimedTextResourceDescriptor font_resource;
+      memcpy(font_resource.ResourceID, font_id.Value(), UUIDlen);
+      font_resource.Type = ASDCP::TimedText::MT_OPENTYPE;
+      m_TDesc.ResourceList.push_back(font_resource);
+      m_ResourceTypes.insert(ResourceTypeMap_t::value_type(UUID(font_resource.ResourceID),
+                                                           ASDCP::TimedText::MT_OPENTYPE));
     }
+    else
+    {
+      AutoMutex l(sg_default_font_family_list_lock);
+      if ( sg_default_font_family_list.find(*i) == sg_default_font_family_list.end() )
+      {
+        DefaultLogSink(). Error("Unable to locate external font resource \"%s\".\n", i->c_str());
+        return RESULT_FORMAT;
+      }
+    }
+  }
 
   return RESULT_OK;
 }
@@ -414,7 +414,7 @@ AS_02::TimedText::ST2052_TextParser::h__TextParser::OpenRead()
 //
 Result_t
 AS_02::TimedText::ST2052_TextParser::h__TextParser::ReadAncillaryResource(const byte_t* uuid, ASDCP::TimedText::FrameBuffer& FrameBuf,
-									  const ASDCP::TimedText::IResourceResolver& Resolver) const
+                                                                          const ASDCP::TimedText::IResourceResolver& Resolver) const
 {
   FrameBuf.AssetID(uuid);
   UUID TmpID(uuid);
@@ -423,28 +423,28 @@ AS_02::TimedText::ST2052_TextParser::h__TextParser::ReadAncillaryResource(const 
   ResourceTypeMap_t::const_iterator rmi = m_ResourceTypes.find(TmpID);
 
   if ( rmi == m_ResourceTypes.end() )
-    {
-      DefaultLogSink().Error("Unknown ancillary resource id: %s\n", TmpID.EncodeHex(buf, 64));
-      return RESULT_RANGE;
-    }
+  {
+    DefaultLogSink().Error("Unknown ancillary resource id: %s\n", TmpID.EncodeHex(buf, 64));
+    return RESULT_RANGE;
+  }
 
   Result_t result = Resolver.ResolveRID(uuid, FrameBuf);
 
   if ( KM_SUCCESS(result) )
+  {
+    if ( (*rmi).second == ASDCP::TimedText::MT_PNG )
     {
-      if ( (*rmi).second == ASDCP::TimedText::MT_PNG )
-	{
-	  FrameBuf.MIMEType("image/png");
-	}    
-      else if ( (*rmi).second == ASDCP::TimedText::MT_OPENTYPE )
-	{
-	  FrameBuf.MIMEType("application/x-font-opentype");
-	}
-      else
-	{
-	  FrameBuf.MIMEType("application/octet-stream");
-	}
+      FrameBuf.MIMEType("image/png");
     }
+    else if ( (*rmi).second == ASDCP::TimedText::MT_OPENTYPE )
+    {
+      FrameBuf.MIMEType("application/x-font-opentype");
+    }
+    else
+    {
+      FrameBuf.MIMEType("application/octet-stream");
+    }
+  }
 
   return result;
 }
@@ -515,7 +515,7 @@ AS_02::TimedText::ST2052_TextParser::ReadTimedTextResource(std::string& s) const
 //
 ASDCP::Result_t
 AS_02::TimedText::ST2052_TextParser::ReadAncillaryResource(const Kumu::UUID& uuid, ASDCP::TimedText::FrameBuffer& FrameBuf,
-							   const ASDCP::TimedText::IResourceResolver* Resolver) const
+                                                           const ASDCP::TimedText::IResourceResolver* Resolver) const
 {
   if ( m_Parser.empty() )
     return RESULT_INIT;

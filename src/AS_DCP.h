@@ -319,25 +319,25 @@ namespace ASDCP {
   // Non-reference counting container for internal member objects.
   // Please do not use this class for any other purpose.
   template <class T>
-    class mem_ptr
-    {
-      T* m_p; // the thing we point to
-      mem_ptr(T&);
+  class mem_ptr
+  {
+    T* m_p; // the thing we point to
+    mem_ptr(T&);
 
-    public:
-      mem_ptr() : m_p(0) {}
-      mem_ptr(T* p) : m_p(p) {}
-      ~mem_ptr() { delete m_p; }
+  public:
+    mem_ptr() : m_p(0) {}
+    mem_ptr(T* p) : m_p(p) {}
+    ~mem_ptr() { delete m_p; }
 
-      inline T&   operator*()  const { return *m_p; }
-      inline T*   operator->() const { return m_p; }
-      inline      operator T*()const { return m_p; }
-      inline const mem_ptr<T>& operator=(T* p) { set(p); return *this; }
-      inline T*   set(T* p)          { delete m_p; m_p = p; return m_p; }
-      inline T*   get()        const { return m_p; }
-      inline void release()          { m_p = 0; }
-      inline bool empty()      const { return m_p == 0; }
-    };
+    inline T&   operator*()  const { return *m_p; }
+    inline T*   operator->() const { return m_p; }
+    inline      operator T*()const { return m_p; }
+    inline const mem_ptr<T>& operator=(T* p) { set(p); return *this; }
+    inline T*   set(T* p)          { delete m_p; m_p = p; return m_p; }
+    inline T*   get()        const { return m_p; }
+    inline void release()          { m_p = 0; }
+    inline bool empty()      const { return m_p == 0; }
+  };
 
 
   //---------------------------------------------------------------------------------
@@ -392,8 +392,8 @@ namespace ASDCP {
     WriterInfo() : EncryptedEssence(false), UsesHMAC(false), LabelSetType(LS_MXF_INTEROP)
     {
       static byte_t default_ProductUUID_Data[UUIDlen] = {
-	0x43, 0x05, 0x9a, 0x1d, 0x04, 0x32, 0x41, 0x01,
-	0xb8, 0x3f, 0x73, 0x68, 0x15, 0xac, 0xf3, 0x1d };
+          0x43, 0x05, 0x9a, 0x1d, 0x04, 0x32, 0x41, 0x01,
+          0xb8, 0x3f, 0x73, 0x68, 0x15, 0xac, 0xf3, 0x1d };
 
       memcpy(ProductUUID, default_ProductUUID_Data, UUIDlen);
       memset(AssetUUID, 0, UUIDlen);
@@ -424,96 +424,96 @@ namespace ASDCP {
 
   //
   class AESEncContext
-    {
-      class h__AESContext;
-      mem_ptr<h__AESContext> m_Context;
-      ASDCP_NO_COPY_CONSTRUCT(AESEncContext);
+  {
+    class h__AESContext;
+    mem_ptr<h__AESContext> m_Context;
+    ASDCP_NO_COPY_CONSTRUCT(AESEncContext);
 
-    public:
-      AESEncContext();
-      ~AESEncContext();
+  public:
+    AESEncContext();
+    ~AESEncContext();
 
-      // Initializes Rijndael CBC encryption context.
-      // Returns error if the key argument is NULL.
-      Result_t InitKey(const byte_t* key);
+    // Initializes Rijndael CBC encryption context.
+    // Returns error if the key argument is NULL.
+    Result_t InitKey(const byte_t* key);
 
-      // Initializes 16 byte CBC Initialization Vector. This operation may be performed
-      // any number of times for a given key.
-      // Returns error if the i_vec argument is NULL.
-      Result_t SetIVec(const byte_t* i_vec);
-      Result_t GetIVec(byte_t* i_vec) const;
+    // Initializes 16 byte CBC Initialization Vector. This operation may be performed
+    // any number of times for a given key.
+    // Returns error if the i_vec argument is NULL.
+    Result_t SetIVec(const byte_t* i_vec);
+    Result_t GetIVec(byte_t* i_vec) const;
 
-      // Encrypt a block of data. The block size must be a multiple of CBC_BLOCK_SIZE.
-      // Returns error if either argument is NULL.
-      Result_t EncryptBlock(const byte_t* pt_buf, byte_t* ct_buf, ui32_t block_size);
-    };
+    // Encrypt a block of data. The block size must be a multiple of CBC_BLOCK_SIZE.
+    // Returns error if either argument is NULL.
+    Result_t EncryptBlock(const byte_t* pt_buf, byte_t* ct_buf, ui32_t block_size);
+  };
 
   //
   class AESDecContext
-    {
-      class h__AESContext;
-      mem_ptr<h__AESContext> m_Context;
-      ASDCP_NO_COPY_CONSTRUCT(AESDecContext);
+  {
+    class h__AESContext;
+    mem_ptr<h__AESContext> m_Context;
+    ASDCP_NO_COPY_CONSTRUCT(AESDecContext);
 
-    public:
-      AESDecContext();
-      ~AESDecContext();
+  public:
+    AESDecContext();
+    ~AESDecContext();
 
-      // Initializes Rijndael CBC decryption context.
-      // Returns error if the key argument is NULL.
-      Result_t InitKey(const byte_t* key);
+    // Initializes Rijndael CBC decryption context.
+    // Returns error if the key argument is NULL.
+    Result_t InitKey(const byte_t* key);
 
-      // Initializes 16 byte CBC Initialization Vector. This operation may be performed
-      // any number of times for a given key.
-      // Returns error if the i_vec argument is NULL.
-      Result_t SetIVec(const byte_t* i_vec);
+    // Initializes 16 byte CBC Initialization Vector. This operation may be performed
+    // any number of times for a given key.
+    // Returns error if the i_vec argument is NULL.
+    Result_t SetIVec(const byte_t* i_vec);
 
-      // Decrypt a block of data. The block size must be a multiple of CBC_BLOCK_SIZE.
-      // Returns error if either argument is NULL.
-      Result_t DecryptBlock(const byte_t* ct_buf, byte_t* pt_buf, ui32_t block_size);
-    };
+    // Decrypt a block of data. The block size must be a multiple of CBC_BLOCK_SIZE.
+    // Returns error if either argument is NULL.
+    Result_t DecryptBlock(const byte_t* ct_buf, byte_t* pt_buf, ui32_t block_size);
+  };
 
   //
   class HMACContext
-    {
-      class h__HMACContext;
-      mem_ptr<h__HMACContext> m_Context;
-      ASDCP_NO_COPY_CONSTRUCT(HMACContext);
+  {
+    class h__HMACContext;
+    mem_ptr<h__HMACContext> m_Context;
+    ASDCP_NO_COPY_CONSTRUCT(HMACContext);
 
-    public:
-      HMACContext();
-      ~HMACContext();
+  public:
+    HMACContext();
+    ~HMACContext();
 
-      // Initializes HMAC context. The key argument must point to a binary
-      // key that is CBC_KEY_SIZE bytes in length. Returns error if the key
-      // argument is NULL.
-      Result_t InitKey(const byte_t* key, LabelSet_t);
+    // Initializes HMAC context. The key argument must point to a binary
+    // key that is CBC_KEY_SIZE bytes in length. Returns error if the key
+    // argument is NULL.
+    Result_t InitKey(const byte_t* key, LabelSet_t);
 
-      // Reset internal state, allows repeated cycles of Update -> Finalize
-      void Reset();
+    // Reset internal state, allows repeated cycles of Update -> Finalize
+    void Reset();
 
-      // Add data to the digest. Returns error if the key argument is NULL or
-      // if the digest has been finalized.
-      Result_t Update(const byte_t* buf, ui32_t buf_len);
+    // Add data to the digest. Returns error if the key argument is NULL or
+    // if the digest has been finalized.
+    Result_t Update(const byte_t* buf, ui32_t buf_len);
 
-      // Finalize digest.  Returns error if the digest has already been finalized.
-      Result_t Finalize();
+    // Finalize digest.  Returns error if the digest has already been finalized.
+    Result_t Finalize();
 
-      // Writes HMAC value to given buffer. buf must point to a writable area of
-      // memory that is at least HMAC_SIZE bytes in length. Returns error if the
-      // buf argument is NULL or if the digest has not been finalized.
-      Result_t GetHMACValue(byte_t* buf) const;
+    // Writes HMAC value to given buffer. buf must point to a writable area of
+    // memory that is at least HMAC_SIZE bytes in length. Returns error if the
+    // buf argument is NULL or if the digest has not been finalized.
+    Result_t GetHMACValue(byte_t* buf) const;
 
-      // Tests the given value against the finalized value in the object. buf must
-      // point to a readable area of memory that is at least HMAC_SIZE bytes in length.
-      // Returns error if the buf argument is NULL or if the values do ot match.
-      Result_t TestHMACValue(const byte_t* buf) const;
+    // Tests the given value against the finalized value in the object. buf must
+    // point to a readable area of memory that is at least HMAC_SIZE bytes in length.
+    // Returns error if the buf argument is NULL or if the values do ot match.
+    Result_t TestHMACValue(const byte_t* buf) const;
 
-      // Writes MIC key to given buffer. buf must point to a writable area of
-      // memory that is at least KeyLen bytes in length. Returns error if the
-      // buf argument is NULL.
-      Result_t GetMICKey(byte_t* buf) const;
-    };
+    // Writes MIC key to given buffer. buf must point to a writable area of
+    // memory that is at least KeyLen bytes in length. Returns error if the
+    // buf argument is NULL.
+    Result_t GetMICKey(byte_t* buf) const;
+  };
 
   //---------------------------------------------------------------------------------
   // frame buffer base class
@@ -523,77 +523,77 @@ namespace ASDCP {
   // containing a frame of essence.
 
   class FrameBuffer
-    {
-      ASDCP_NO_COPY_CONSTRUCT(FrameBuffer);
+  {
+    ASDCP_NO_COPY_CONSTRUCT(FrameBuffer);
 
-    protected:
-      byte_t* m_Data;          // pointer to memory area containing frame data
-      ui32_t  m_Capacity;      // size of memory area pointed to by m_Data
-      bool    m_OwnMem;        // if false, m_Data points to externally allocated memory
-      ui32_t  m_Size;          // size of frame data in memory area pointed to by m_Data
-      ui32_t  m_FrameNumber;   // delivery-order frame number
+  protected:
+    byte_t* m_Data;          // pointer to memory area containing frame data
+    ui32_t  m_Capacity;      // size of memory area pointed to by m_Data
+    bool    m_OwnMem;        // if false, m_Data points to externally allocated memory
+    ui32_t  m_Size;          // size of frame data in memory area pointed to by m_Data
+    ui32_t  m_FrameNumber;   // delivery-order frame number
 
-      // It is possible to read raw ciphertext from an encrypted AS-DCP file.
-      // After reading an encrypted AS-DCP file in raw mode, the frame buffer will
-      // contain the encrypted source value portion of the Encrypted Triplet, followed
-      // by the integrity pack, if it exists.
-      // The buffer will begin with the IV and CheckValue, followed by encrypted essence
-      // and optional integrity pack
-      // The SourceLength and PlaintextOffset values from the packet will be held in the
-      // following variables:
-      ui32_t  m_SourceLength;       // plaintext length (delivered plaintext+decrypted ciphertext)
-      ui32_t  m_PlaintextOffset;    // offset to first byte of ciphertext
+    // It is possible to read raw ciphertext from an encrypted AS-DCP file.
+    // After reading an encrypted AS-DCP file in raw mode, the frame buffer will
+    // contain the encrypted source value portion of the Encrypted Triplet, followed
+    // by the integrity pack, if it exists.
+    // The buffer will begin with the IV and CheckValue, followed by encrypted essence
+    // and optional integrity pack
+    // The SourceLength and PlaintextOffset values from the packet will be held in the
+    // following variables:
+    ui32_t  m_SourceLength;       // plaintext length (delivered plaintext+decrypted ciphertext)
+    ui32_t  m_PlaintextOffset;    // offset to first byte of ciphertext
 
-     public:
-      FrameBuffer();
-      virtual ~FrameBuffer();
+  public:
+    FrameBuffer();
+    virtual ~FrameBuffer();
 
-      // Instructs the object to use an externally allocated buffer. The external
-      // buffer will not be cleaned up by the frame buffer when it exits.
-      // Call with (0,0) to revert to internally allocated buffer.
-      // Returns error if the buf_addr argument is NULL and buf_size is non-zero.
-      Result_t SetData(byte_t* buf_addr, ui32_t buf_size);
+    // Instructs the object to use an externally allocated buffer. The external
+    // buffer will not be cleaned up by the frame buffer when it exits.
+    // Call with (0,0) to revert to internally allocated buffer.
+    // Returns error if the buf_addr argument is NULL and buf_size is non-zero.
+    Result_t SetData(byte_t* buf_addr, ui32_t buf_size);
 
-      // Sets the size of the internally allocate buffer. Returns RESULT_CAPEXTMEM
-      // if the object is using an externally allocated buffer via SetData();
-      // Resets content size to zero.
-      Result_t Capacity(ui32_t cap);
+    // Sets the size of the internally allocate buffer. Returns RESULT_CAPEXTMEM
+    // if the object is using an externally allocated buffer via SetData();
+    // Resets content size to zero.
+    Result_t Capacity(ui32_t cap);
 
-      // returns the size of the buffer
-      inline ui32_t  Capacity() const { return m_Capacity; }
+    // returns the size of the buffer
+    inline ui32_t  Capacity() const { return m_Capacity; }
 
-      // returns a const pointer to the essence data
-      inline const byte_t* RoData() const { return m_Data; }
+    // returns a const pointer to the essence data
+    inline const byte_t* RoData() const { return m_Data; }
 
-      // returns a non-const pointer to the essence data
-      inline byte_t* Data() { return m_Data; }
+    // returns a non-const pointer to the essence data
+    inline byte_t* Data() { return m_Data; }
 
-      // set the size of the buffer's contents
-      inline ui32_t  Size(ui32_t size) { return m_Size = size; }
+    // set the size of the buffer's contents
+    inline ui32_t  Size(ui32_t size) { return m_Size = size; }
 
-      // returns the size of the buffer's contents
-      inline ui32_t  Size() const { return m_Size; }
+    // returns the size of the buffer's contents
+    inline ui32_t  Size() const { return m_Size; }
 
-      // Sets the absolute frame number of this frame in the file in delivery order.
-      inline void    FrameNumber(ui32_t num) { m_FrameNumber = num; }
+    // Sets the absolute frame number of this frame in the file in delivery order.
+    inline void    FrameNumber(ui32_t num) { m_FrameNumber = num; }
 
-      // Returns the absolute frame number of this frame in the file in delivery order.
-      inline ui32_t  FrameNumber() const { return m_FrameNumber; }
+    // Returns the absolute frame number of this frame in the file in delivery order.
+    inline ui32_t  FrameNumber() const { return m_FrameNumber; }
 
-      // Sets the length of the plaintext essence data
-      inline void    SourceLength(ui32_t len) { m_SourceLength = len; }
+    // Sets the length of the plaintext essence data
+    inline void    SourceLength(ui32_t len) { m_SourceLength = len; }
 
-      // When this value is 0 (zero), the buffer contains only plaintext. When it is
-      // non-zero, the buffer contains raw ciphertext and the return value is the length
-      // of the original plaintext.
-      inline ui32_t  SourceLength() const { return m_SourceLength; }
+    // When this value is 0 (zero), the buffer contains only plaintext. When it is
+    // non-zero, the buffer contains raw ciphertext and the return value is the length
+    // of the original plaintext.
+    inline ui32_t  SourceLength() const { return m_SourceLength; }
 
-      // Sets the offset into the buffer at which encrypted data begins
-      inline void    PlaintextOffset(ui32_t ofst) { m_PlaintextOffset = ofst; }
+    // Sets the offset into the buffer at which encrypted data begins
+    inline void    PlaintextOffset(ui32_t ofst) { m_PlaintextOffset = ofst; }
 
-      // Returns offset into buffer of first byte of ciphertext.
-      inline ui32_t  PlaintextOffset() const { return m_PlaintextOffset; }
-    };
+    // Returns offset into buffer of first byte of ciphertext.
+    inline ui32_t  PlaintextOffset() const { return m_PlaintextOffset; }
+  };
 
   //---------------------------------------------------------------------------------
   // Accessors in the MXFReader and MXFWriter classes below return these types to
@@ -611,244 +611,244 @@ namespace ASDCP {
 
   //
   namespace MPEG2
+  {
+    // MPEG picture coding type
+    enum FrameType_t {
+      FRAME_U = 0x00, // Unknown
+      FRAME_I = 0x01, // I-Frame
+      FRAME_P = 0x02, // P-Frame
+      FRAME_B = 0x03  // B-Frame
+    };
+
+    // convert FrameType_t to char
+    inline char FrameTypeChar(FrameType_t type)
     {
-      // MPEG picture coding type
-      enum FrameType_t {
-	FRAME_U = 0x00, // Unknown
-	FRAME_I = 0x01, // I-Frame
-	FRAME_P = 0x02, // P-Frame
-	FRAME_B = 0x03  // B-Frame
-      };
+      switch ( type )
+      {
+        case FRAME_I: return 'I';
+        case FRAME_B: return 'B';
+        case FRAME_P: return 'P';
+        default: return 'U';
+      }
+    }
 
-      // convert FrameType_t to char
-      inline char FrameTypeChar(FrameType_t type)
-	{
-	  switch ( type )
-	    {
-	    case FRAME_I: return 'I';
-	    case FRAME_B: return 'B';
-	    case FRAME_P: return 'P';
-	    default: return 'U';
-	    }
-	}
+    // Structure represents the metadata elements in the file header's
+    // MPEG2VideoDescriptor object.
+    struct VideoDescriptor
+    {
+      Rational EditRate;                //
+      ui32_t   FrameRate;               //
+      Rational SampleRate;              //
+      ui8_t    FrameLayout;             //
+      ui32_t   StoredWidth;             //
+      ui32_t   StoredHeight;            //
+      Rational AspectRatio;             //
+      ui32_t   ComponentDepth;          //
+      ui32_t   HorizontalSubsampling;   //
+      ui32_t   VerticalSubsampling;     //
+      ui8_t    ColorSiting;             //
+      ui8_t    CodedContentType;        //
+      bool     LowDelay;                //
+      ui32_t   BitRate;                 //
+      ui8_t    ProfileAndLevel;         //
+      ui32_t   ContainerDuration;       //
+    };
 
-      // Structure represents the metadata elements in the file header's
-      // MPEG2VideoDescriptor object.
-      struct VideoDescriptor
-	{
-	  Rational EditRate;                //
-	  ui32_t   FrameRate;               //
-	  Rational SampleRate;              //
-	  ui8_t    FrameLayout;             //
-	  ui32_t   StoredWidth;             //
-	  ui32_t   StoredHeight;            //
-	  Rational AspectRatio;             //
-	  ui32_t   ComponentDepth;          //
-	  ui32_t   HorizontalSubsampling;   //
-	  ui32_t   VerticalSubsampling;     //
-	  ui8_t    ColorSiting;             //
-	  ui8_t    CodedContentType;        //
-	  bool     LowDelay;                //
-	  ui32_t   BitRate;                 //
-	  ui8_t    ProfileAndLevel;         //
-	  ui32_t   ContainerDuration;       //
-      };
+    // Print VideoDescriptor to std::ostream
+    std::ostream& operator << (std::ostream& strm, const VideoDescriptor& vdesc);
+    // Print VideoDescriptor to stream, stderr by default.
+    void VideoDescriptorDump(const VideoDescriptor&, FILE* = 0);
 
-      // Print VideoDescriptor to std::ostream
-      std::ostream& operator << (std::ostream& strm, const VideoDescriptor& vdesc);
-      // Print VideoDescriptor to stream, stderr by default.
-      void VideoDescriptorDump(const VideoDescriptor&, FILE* = 0);
+    // A container for MPEG frame data.
+    class FrameBuffer : public ASDCP::FrameBuffer
+    {
+      ASDCP_NO_COPY_CONSTRUCT(FrameBuffer); // TODO: should have copy construct
 
-      // A container for MPEG frame data.
-      class FrameBuffer : public ASDCP::FrameBuffer
-	{
-	  ASDCP_NO_COPY_CONSTRUCT(FrameBuffer); // TODO: should have copy construct
+    protected:
+      FrameType_t m_FrameType;
+      ui8_t       m_TemporalOffset;
+      bool        m_ClosedGOP;
+      bool        m_GOPStart;
 
-	protected:
-	  FrameType_t m_FrameType;
-	  ui8_t       m_TemporalOffset;
-	  bool        m_ClosedGOP;
-	  bool        m_GOPStart;
+    public:
+      FrameBuffer() :
+          m_FrameType(FRAME_U), m_TemporalOffset(0),
+          m_ClosedGOP(false), m_GOPStart(false) {}
 
-	public:
-	  FrameBuffer() :
-	    m_FrameType(FRAME_U), m_TemporalOffset(0),
-	    m_ClosedGOP(false), m_GOPStart(false) {}
+      FrameBuffer(ui32_t size) :
+          m_FrameType(FRAME_U), m_TemporalOffset(0),
+          m_ClosedGOP(false), m_GOPStart(false)
+      {
+        Capacity(size);
+      }
 
-	  FrameBuffer(ui32_t size) :
-	    m_FrameType(FRAME_U), m_TemporalOffset(0),
-	    m_ClosedGOP(false), m_GOPStart(false)
-	    {
-	      Capacity(size);
-	    }
+      virtual ~FrameBuffer() {}
 
-	  virtual ~FrameBuffer() {}
+      // Sets the MPEG frame type of the picture data in the frame buffer.
+      inline void FrameType(FrameType_t type) { m_FrameType = type; }
 
-	  // Sets the MPEG frame type of the picture data in the frame buffer.
-	  inline void FrameType(FrameType_t type) { m_FrameType = type; }
+      // Returns the MPEG frame type of the picture data in the frame buffer.
+      inline FrameType_t FrameType() const { return m_FrameType; }
 
-	  // Returns the MPEG frame type of the picture data in the frame buffer.
-	  inline FrameType_t FrameType() const { return m_FrameType; }
+      // Sets the MPEG temporal offset of the picture data in the frame buffer.
+      inline void TemporalOffset(ui8_t offset) { m_TemporalOffset = offset; }
 
-	  // Sets the MPEG temporal offset of the picture data in the frame buffer.
-	  inline void TemporalOffset(ui8_t offset) { m_TemporalOffset = offset; }
+      // Returns the MPEG temporal offset of the picture data in the frame buffer.
+      inline ui8_t TemporalOffset() const { return m_TemporalOffset; }
 
-	  // Returns the MPEG temporal offset of the picture data in the frame buffer.
-	  inline ui8_t TemporalOffset() const { return m_TemporalOffset; }
+      // Sets the MPEG GOP 'start' attribute for the frame buffer.
+      inline void GOPStart(bool start) { m_GOPStart = start; }
 
-	  // Sets the MPEG GOP 'start' attribute for the frame buffer.
-	  inline void GOPStart(bool start) { m_GOPStart = start; }
+      // True if the frame in the buffer is the first in the GOP (in transport order)
+      inline bool GOPStart() const { return m_GOPStart; }
 
-	  // True if the frame in the buffer is the first in the GOP (in transport order)
-	  inline bool GOPStart() const { return m_GOPStart; }
+      // Sets the MPEG GOP 'closed' attribute for the frame buffer.
+      inline void ClosedGOP(bool closed) { m_ClosedGOP = closed; }
 
-	  // Sets the MPEG GOP 'closed' attribute for the frame buffer.
-	  inline void ClosedGOP(bool closed) { m_ClosedGOP = closed; }
+      // Returns true if the frame in the buffer is from a closed GOP, false if
+      // the frame is from an open GOP.  Always returns false unless GOPStart()
+      // returns true.
+      inline bool ClosedGOP() const { return m_ClosedGOP; }
 
-	  // Returns true if the frame in the buffer is from a closed GOP, false if
-	  // the frame is from an open GOP.  Always returns false unless GOPStart()
-	  // returns true.
-	  inline bool ClosedGOP() const { return m_ClosedGOP; }
-
-	  // Print object state to stream, include n bytes of frame data if indicated.
-	  // Default stream is stderr.
-	  void    Dump(FILE* = 0, ui32_t dump_len = 0) const;
-	};
+      // Print object state to stream, include n bytes of frame data if indicated.
+      // Default stream is stderr.
+      void    Dump(FILE* = 0, ui32_t dump_len = 0) const;
+    };
 
 
-      // An object which opens and reads an MPEG2 Video Elementary Stream file.  The call to
-      // OpenRead() reads metadata from the file and populates an internal VideoDescriptor object.
-      // Each subsequent call to ReadFrame() reads exactly one frame from the stream into the
-      // given FrameBuffer object.
-      class Parser
-	{
-	  class h__Parser;
-	  mem_ptr<h__Parser> m_Parser;
-	  ASDCP_NO_COPY_CONSTRUCT(Parser);
+    // An object which opens and reads an MPEG2 Video Elementary Stream file.  The call to
+    // OpenRead() reads metadata from the file and populates an internal VideoDescriptor object.
+    // Each subsequent call to ReadFrame() reads exactly one frame from the stream into the
+    // given FrameBuffer object.
+    class Parser
+    {
+      class h__Parser;
+      mem_ptr<h__Parser> m_Parser;
+      ASDCP_NO_COPY_CONSTRUCT(Parser);
 
-	public:
-	  Parser();
-	  virtual ~Parser();
+    public:
+      Parser();
+      virtual ~Parser();
 
-	  // Opens the stream for reading, parses enough data to provide a complete
-	  // set of stream metadata for the MXFWriter below.
-	  Result_t OpenRead(const std::string& filename) const;
+      // Opens the stream for reading, parses enough data to provide a complete
+      // set of stream metadata for the MXFWriter below.
+      Result_t OpenRead(const std::string& filename) const;
 
-	  // Fill a VideoDescriptor struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillVideoDescriptor(VideoDescriptor&) const;
+      // Fill a VideoDescriptor struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillVideoDescriptor(VideoDescriptor&) const;
 
-	  // Rewind the stream to the beginning.
-	  Result_t Reset() const;
+      // Rewind the stream to the beginning.
+      Result_t Reset() const;
 
-	  // Reads the next sequential frame in the input file and places it in the
-	  // frame buffer. Fails if the buffer is too small or the stream is empty.
-	  // The frame buffer's PlaintextOffset parameter will be set to the first
-	  // data byte of the first slice. Set this value to zero if you want
-	  // encrypted headers.
-	  Result_t ReadFrame(FrameBuffer&) const;
-	};
+      // Reads the next sequential frame in the input file and places it in the
+      // frame buffer. Fails if the buffer is too small or the stream is empty.
+      // The frame buffer's PlaintextOffset parameter will be set to the first
+      // data byte of the first slice. Set this value to zero if you want
+      // encrypted headers.
+      Result_t ReadFrame(FrameBuffer&) const;
+    };
 
-      // A class which creates and writes MPEG frame data to an AS-DCP format MXF file.
-      // Not yet implemented
-      class MXFWriter
-	{
-	  class h__Writer;
-	  mem_ptr<h__Writer> m_Writer;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
+    // A class which creates and writes MPEG frame data to an AS-DCP format MXF file.
+    // Not yet implemented
+    class MXFWriter
+    {
+      class h__Writer;
+      mem_ptr<h__Writer> m_Writer;
+      ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
 
-	public:
-	  MXFWriter();
-	  virtual ~MXFWriter();
+    public:
+      MXFWriter();
+      virtual ~MXFWriter();
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	  // Open the file for writing. The file must not exist. Returns error if
-	  // the operation cannot be completed or if nonsensical data is discovered
-	  // in the essence descriptor.
-	  Result_t OpenWrite(const std::string& filename, const WriterInfo&,
-			     const VideoDescriptor&, ui32_t HeaderSize = 16384);
+      // Open the file for writing. The file must not exist. Returns error if
+      // the operation cannot be completed or if nonsensical data is discovered
+      // in the essence descriptor.
+      Result_t OpenWrite(const std::string& filename, const WriterInfo&,
+                         const VideoDescriptor&, ui32_t HeaderSize = 16384);
 
-	  // Writes a frame of essence to the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is encrypted prior to writing.
-	  // Fails if the file is not open, is finalized, or an operating system
-	  // error occurs.
-	  Result_t WriteFrame(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
+      // Writes a frame of essence to the MXF file. If the optional AESEncContext
+      // argument is present, the essence is encrypted prior to writing.
+      // Fails if the file is not open, is finalized, or an operating system
+      // error occurs.
+      Result_t WriteFrame(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
 
-	  // Closes the MXF file, writing the index and revised header.
-	  Result_t Finalize();
-	};
+      // Closes the MXF file, writing the index and revised header.
+      Result_t Finalize();
+    };
 
-      // A class which reads MPEG frame data from an AS-DCP format MXF file.
-      class MXFReader
-	{
-	  class h__Reader;
-	  mem_ptr<h__Reader> m_Reader;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFReader);
+    // A class which reads MPEG frame data from an AS-DCP format MXF file.
+    class MXFReader
+    {
+      class h__Reader;
+      mem_ptr<h__Reader> m_Reader;
+      ASDCP_NO_COPY_CONSTRUCT(MXFReader);
 
-	public:
-	  MXFReader();
-	  virtual ~MXFReader();
+    public:
+      MXFReader();
+      virtual ~MXFReader();
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	  // Open the file for reading. The file must exist. Returns error if the
-	  // operation cannot be completed.
-	  Result_t OpenRead(const std::string& filename) const;
+      // Open the file for reading. The file must exist. Returns error if the
+      // operation cannot be completed.
+      Result_t OpenRead(const std::string& filename) const;
 
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t Close() const;
+      // Returns RESULT_INIT if the file is not open.
+      Result_t Close() const;
 
-	  // Fill a VideoDescriptor struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillVideoDescriptor(VideoDescriptor&) const;
+      // Fill a VideoDescriptor struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillVideoDescriptor(VideoDescriptor&) const;
 
-	  // Fill a WriterInfo struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillWriterInfo(WriterInfo&) const;
+      // Fill a WriterInfo struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillWriterInfo(WriterInfo&) const;
 
-	  // Reads a frame of essence from the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is decrypted after reading. If the MXF
-	  // file is encrypted and the AESDecContext argument is NULL, the frame buffer
-	  // will contain the ciphertext frame data. If the HMACContext argument is
-	  // not NULL, the HMAC will be calculated (if the file supports it).
-	  // Returns RESULT_INIT if the file is not open, failure if the frame number is
-	  // out of range, or if optional decrypt or HAMC operations fail.
-	  Result_t ReadFrame(ui32_t frame_number, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
+      // Reads a frame of essence from the MXF file. If the optional AESEncContext
+      // argument is present, the essence is decrypted after reading. If the MXF
+      // file is encrypted and the AESDecContext argument is NULL, the frame buffer
+      // will contain the ciphertext frame data. If the HMACContext argument is
+      // not NULL, the HMAC will be calculated (if the file supports it).
+      // Returns RESULT_INIT if the file is not open, failure if the frame number is
+      // out of range, or if optional decrypt or HAMC operations fail.
+      Result_t ReadFrame(ui32_t frame_number, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
 
-	  // Using the index table read from the footer partition, lookup the frame number
-	  // and return the offset into the file at which to read that frame of essence.
-	  // Returns RESULT_INIT if the file is not open, and RESULT_RANGE if the frame number is
-	  // out of range.
-	  Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
+      // Using the index table read from the footer partition, lookup the frame number
+      // and return the offset into the file at which to read that frame of essence.
+      // Returns RESULT_INIT if the file is not open, and RESULT_RANGE if the frame number is
+      // out of range.
+      Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
 
-	  // Calculates the first frame in transport order of the GOP in which the requested
-	  // frame is located.  Calls ReadFrame() to fetch the frame at the calculated position.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t ReadFrameGOPStart(ui32_t frame_number, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
+      // Calculates the first frame in transport order of the GOP in which the requested
+      // frame is located.  Calls ReadFrame() to fetch the frame at the calculated position.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t ReadFrameGOPStart(ui32_t frame_number, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
 
-	  // Calculates the first frame in transport order of the GOP in which the requested
-	  // frame is located.  Sets key_frame_number to the number of the frame at the calculated position.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FindFrameGOPStart(ui32_t frame_number, ui32_t& key_frame_number) const;
+      // Calculates the first frame in transport order of the GOP in which the requested
+      // frame is located.  Sets key_frame_number to the number of the frame at the calculated position.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FindFrameGOPStart(ui32_t frame_number, ui32_t& key_frame_number) const;
 
-	  // Returns the type of the frame at the given position.
-	  // Returns RESULT_INIT if the file is not open or RESULT_RANGE if the index is out of range.
-	  Result_t FrameType(ui32_t frame_number, FrameType_t&) const;
+      // Returns the type of the frame at the given position.
+      // Returns RESULT_INIT if the file is not open or RESULT_RANGE if the index is out of range.
+      Result_t FrameType(ui32_t frame_number, FrameType_t&) const;
 
-	  // Print debugging information to stream
-	  void     DumpHeaderMetadata(FILE* = 0) const;
-	  void     DumpIndex(FILE* = 0) const;
-	};
-    } // namespace MPEG2
+      // Print debugging information to stream
+      void     DumpHeaderMetadata(FILE* = 0) const;
+      void     DumpIndex(FILE* = 0) const;
+    };
+  } // namespace MPEG2
 
   //---------------------------------------------------------------------------------
   //
@@ -856,822 +856,822 @@ namespace ASDCP {
 
 
   namespace PCM
+  {
+    // The default value of the ChannelFormat element of the AudioDescriptor struct
+    // is CF_NONE. If the value is set to one of the other ChannelFormat_t enum
+    // values, the file's Wave Audio Descriptor will contain a Channel Assignment
+    // element.
+    //
+    // The channel format should be one of (CF_CFG_1, CF_CFG_2, or CF_CFG_3) for
+    // SMPTE 429-2 files. It should normally be CF_NONE for JPEG Interop files, but
+    // the 429-2 may also be used.
+    //
+    enum ChannelFormat_t {
+      CF_NONE,
+      CF_CFG_1, // 5.1 with optional HI/VI
+      CF_CFG_2, // 6.1 (5.1 + center surround) with optional HI/VI
+      CF_CFG_3, // 7.1 (SDDS) with optional HI/VI
+      CF_CFG_4, // Wild Track Format
+      CF_CFG_5, // 7.1 DS with optional HI/VI
+      CF_CFG_6, // ST 377-4 (MCA) labels (see also ASDCP::MXF::decode_mca_string)
+      CF_MAXIMUM
+    };
+
+    struct AudioDescriptor
     {
-      // The default value of the ChannelFormat element of the AudioDescriptor struct
-      // is CF_NONE. If the value is set to one of the other ChannelFormat_t enum
-      // values, the file's Wave Audio Descriptor will contain a Channel Assignment
-      // element.
-      //
-      // The channel format should be one of (CF_CFG_1, CF_CFG_2, or CF_CFG_3) for
-      // SMPTE 429-2 files. It should normally be CF_NONE for JPEG Interop files, but
-      // the 429-2 may also be used.
-      //
-      enum ChannelFormat_t {
-	CF_NONE,
-	CF_CFG_1, // 5.1 with optional HI/VI
-	CF_CFG_2, // 6.1 (5.1 + center surround) with optional HI/VI
-	CF_CFG_3, // 7.1 (SDDS) with optional HI/VI
-	CF_CFG_4, // Wild Track Format
-	CF_CFG_5, // 7.1 DS with optional HI/VI
-	CF_CFG_6, // ST 377-4 (MCA) labels (see also ASDCP::MXF::decode_mca_string)
-	CF_MAXIMUM
-      };
+      Rational EditRate;         // rate of frame wrapping
+      Rational AudioSamplingRate;  // rate of audio sample
+      ui32_t   Locked;             //
+      ui32_t   ChannelCount;       // number of channels
+      ui32_t   QuantizationBits;   // number of bits per single-channel sample
+      ui32_t   BlockAlign;         // number of bytes ber sample, all channels
+      ui32_t   AvgBps;             //
+      ui32_t   LinkedTrackID;      //
+      ui32_t   ContainerDuration;  // number of frames
+      ChannelFormat_t ChannelFormat; // audio channel arrangement
+    };
 
-      struct AudioDescriptor
-	{
-	  Rational EditRate;         // rate of frame wrapping
-	  Rational AudioSamplingRate;  // rate of audio sample
-	  ui32_t   Locked;             //
-	  ui32_t   ChannelCount;       // number of channels
-	  ui32_t   QuantizationBits;   // number of bits per single-channel sample
-	  ui32_t   BlockAlign;         // number of bytes ber sample, all channels
-	  ui32_t   AvgBps;             //
-	  ui32_t   LinkedTrackID;      //
-	  ui32_t   ContainerDuration;  // number of frames
-	  ChannelFormat_t ChannelFormat; // audio channel arrangement
-      };
+    // Print AudioDescriptor to std::ostream
+    std::ostream& operator << (std::ostream& strm, const AudioDescriptor& adesc);
+    // Print debugging information to stream (stderr default)
+    void   AudioDescriptorDump(const AudioDescriptor&, FILE* = 0);
 
-      // Print AudioDescriptor to std::ostream
-      std::ostream& operator << (std::ostream& strm, const AudioDescriptor& adesc);
+    // Returns size in bytes of a single sample of data described by ADesc
+    inline ui32_t CalcSampleSize(const AudioDescriptor& ADesc)
+    {
+      return (ADesc.QuantizationBits / 8) * ADesc.ChannelCount;
+    }
+
+    // Returns number of samples per frame of data described by ADesc
+    inline ui32_t CalcSamplesPerFrame(const AudioDescriptor& ADesc)
+    {
+      double tmpd = ADesc.AudioSamplingRate.Quotient() / ADesc.EditRate.Quotient();
+      return (ui32_t)ceil(tmpd);
+    }
+
+    // Returns the size in bytes of a frame of data described by ADesc
+    inline ui32_t CalcFrameBufferSize(const AudioDescriptor& ADesc)
+    {
+      return CalcSampleSize(ADesc) * CalcSamplesPerFrame(ADesc);
+    }
+
+    //
+    class FrameBuffer : public ASDCP::FrameBuffer
+    {
+    public:
+      FrameBuffer() {}
+      FrameBuffer(ui32_t size) { Capacity(size); }
+      virtual ~FrameBuffer() {}
+
       // Print debugging information to stream (stderr default)
-      void   AudioDescriptorDump(const AudioDescriptor&, FILE* = 0);
+      void Dump(FILE* = 0, ui32_t dump_bytes = 0) const;
+    };
 
-      // Returns size in bytes of a single sample of data described by ADesc
-      inline ui32_t CalcSampleSize(const AudioDescriptor& ADesc)
-	{
-	  return (ADesc.QuantizationBits / 8) * ADesc.ChannelCount;
-	}
+    // An object which opens and reads a WAV file.  The call to OpenRead() reads metadata from
+    // the file and populates an internal AudioDescriptor object. Each subsequent call to
+    // ReadFrame() reads exactly one frame from the stream into the given FrameBuffer object.
+    // A "frame" is either 2000 or 2002 samples, depending upon the value of PictureRate.
+    class WAVParser
+    {
+      class h__WAVParser;
+      mem_ptr<h__WAVParser> m_Parser;
+      ASDCP_NO_COPY_CONSTRUCT(WAVParser);
 
-      // Returns number of samples per frame of data described by ADesc
-      inline ui32_t CalcSamplesPerFrame(const AudioDescriptor& ADesc)
-	{
-	  double tmpd = ADesc.AudioSamplingRate.Quotient() / ADesc.EditRate.Quotient();
-	  return (ui32_t)ceil(tmpd);
-	}
+    public:
+      WAVParser();
+      virtual ~WAVParser();
 
-      // Returns the size in bytes of a frame of data described by ADesc
-      inline ui32_t CalcFrameBufferSize(const AudioDescriptor& ADesc)
-	{
-	  return CalcSampleSize(ADesc) * CalcSamplesPerFrame(ADesc);
-	}
+      // Opens the stream for reading, parses enough data to provide a complete
+      // set of stream metadata for the MXFWriter below. PictureRate controls
+      // ther frame rate for the MXF frame wrapping option.
+      Result_t OpenRead(const std::string& filename, const Rational& PictureRate) const;
 
-      //
-      class FrameBuffer : public ASDCP::FrameBuffer
-	{
-	public:
-	  FrameBuffer() {}
-	  FrameBuffer(ui32_t size) { Capacity(size); }
-	  virtual ~FrameBuffer() {}
+      // Fill an AudioDescriptor struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillAudioDescriptor(AudioDescriptor&) const;
 
-	  // Print debugging information to stream (stderr default)
-	  void Dump(FILE* = 0, ui32_t dump_bytes = 0) const;
-	};
+      // Rewind the stream to the beginning.
+      Result_t Reset() const;
 
-      // An object which opens and reads a WAV file.  The call to OpenRead() reads metadata from
-      // the file and populates an internal AudioDescriptor object. Each subsequent call to
-      // ReadFrame() reads exactly one frame from the stream into the given FrameBuffer object.
-      // A "frame" is either 2000 or 2002 samples, depending upon the value of PictureRate.
-      class WAVParser
-	{
-	  class h__WAVParser;
-	  mem_ptr<h__WAVParser> m_Parser;
-	  ASDCP_NO_COPY_CONSTRUCT(WAVParser);
+      // Reads the next sequential frame in the input file and places it in the
+      // frame buffer. Fails if the buffer is too small or the stream is empty.
+      Result_t ReadFrame(FrameBuffer&) const;
 
-	public:
-	  WAVParser();
-	  virtual ~WAVParser();
-
-	  // Opens the stream for reading, parses enough data to provide a complete
-	  // set of stream metadata for the MXFWriter below. PictureRate controls
-	  // ther frame rate for the MXF frame wrapping option.
-	  Result_t OpenRead(const std::string& filename, const Rational& PictureRate) const;
-
-	  // Fill an AudioDescriptor struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillAudioDescriptor(AudioDescriptor&) const;
-
-	  // Rewind the stream to the beginning.
-	  Result_t Reset() const;
-
-	  // Reads the next sequential frame in the input file and places it in the
-	  // frame buffer. Fails if the buffer is too small or the stream is empty.
-	  Result_t ReadFrame(FrameBuffer&) const;
-
-	  Result_t Seek(ui32_t frame_number) const;
-	};
+      Result_t Seek(ui32_t frame_number) const;
+    };
 
 
-      //
-      class MXFWriter
-	{
-	  class h__Writer;
-	  mem_ptr<h__Writer> m_Writer;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
+    //
+    class MXFWriter
+    {
+      class h__Writer;
+      mem_ptr<h__Writer> m_Writer;
+      ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
 
-	public:
-	  MXFWriter();
-	  virtual ~MXFWriter();
+    public:
+      MXFWriter();
+      virtual ~MXFWriter();
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	  // Open the file for writing. The file must not exist. Returns error if
-	  // the operation cannot be completed or if nonsensical data is discovered
-	  // in the essence descriptor.
-	  Result_t OpenWrite(const std::string& filename, const WriterInfo&,
-			     const AudioDescriptor&, ui32_t HeaderSize = 16384);
+      // Open the file for writing. The file must not exist. Returns error if
+      // the operation cannot be completed or if nonsensical data is discovered
+      // in the essence descriptor.
+      Result_t OpenWrite(const std::string& filename, const WriterInfo&,
+                         const AudioDescriptor&, ui32_t HeaderSize = 16384);
 
-	  // Writes a frame of essence to the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is encrypted prior to writing.
-	  // Fails if the file is not open, is finalized, or an operating system
-	  // error occurs.
-	  Result_t WriteFrame(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
+      // Writes a frame of essence to the MXF file. If the optional AESEncContext
+      // argument is present, the essence is encrypted prior to writing.
+      // Fails if the file is not open, is finalized, or an operating system
+      // error occurs.
+      Result_t WriteFrame(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
 
-	  // Closes the MXF file, writing the index and revised header.
-	  Result_t Finalize();
-	};
+      // Closes the MXF file, writing the index and revised header.
+      Result_t Finalize();
+    };
 
-      //
-      class MXFReader
-	{
-	  class h__Reader;
-	  mem_ptr<h__Reader> m_Reader;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFReader);
+    //
+    class MXFReader
+    {
+      class h__Reader;
+      mem_ptr<h__Reader> m_Reader;
+      ASDCP_NO_COPY_CONSTRUCT(MXFReader);
 
-	public:
-	  MXFReader();
-	  virtual ~MXFReader();
+    public:
+      MXFReader();
+      virtual ~MXFReader();
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	  // Open the file for reading. The file must exist. Returns error if the
-	  // operation cannot be completed.
-	  Result_t OpenRead(const std::string& filename) const;
+      // Open the file for reading. The file must exist. Returns error if the
+      // operation cannot be completed.
+      Result_t OpenRead(const std::string& filename) const;
 
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t Close() const;
+      // Returns RESULT_INIT if the file is not open.
+      Result_t Close() const;
 
-	  // Fill an AudioDescriptor struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillAudioDescriptor(AudioDescriptor&) const;
+      // Fill an AudioDescriptor struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillAudioDescriptor(AudioDescriptor&) const;
 
-	  // Fill a WriterInfo struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillWriterInfo(WriterInfo&) const;
+      // Fill a WriterInfo struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillWriterInfo(WriterInfo&) const;
 
-	  // Reads a frame of essence from the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is decrypted after reading. If the MXF
-	  // file is encrypted and the AESDecContext argument is NULL, the frame buffer
-	  // will contain the ciphertext frame data. If the HMACContext argument is
-	  // not NULL, the HMAC will be calculated (if the file supports it).
-	  // Returns RESULT_INIT if the file is not open, failure if the frame number is
-	  // out of range, or if optional decrypt or HAMC operations fail.
-	  Result_t ReadFrame(ui32_t frame_number, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
+      // Reads a frame of essence from the MXF file. If the optional AESEncContext
+      // argument is present, the essence is decrypted after reading. If the MXF
+      // file is encrypted and the AESDecContext argument is NULL, the frame buffer
+      // will contain the ciphertext frame data. If the HMACContext argument is
+      // not NULL, the HMAC will be calculated (if the file supports it).
+      // Returns RESULT_INIT if the file is not open, failure if the frame number is
+      // out of range, or if optional decrypt or HAMC operations fail.
+      Result_t ReadFrame(ui32_t frame_number, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
 
-	  // Using the index table read from the footer partition, lookup the frame number
-	  // and return the offset into the file at which to read that frame of essence.
-	  // Returns RESULT_INIT if the file is not open, and RESULT_RANGE if the frame number is
-	  // out of range.
-	  Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
+      // Using the index table read from the footer partition, lookup the frame number
+      // and return the offset into the file at which to read that frame of essence.
+      // Returns RESULT_INIT if the file is not open, and RESULT_RANGE if the frame number is
+      // out of range.
+      Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
 
-	  // Print debugging information to stream
-	  void     DumpHeaderMetadata(FILE* = 0) const;
-	  void     DumpIndex(FILE* = 0) const;
-	};
-    } // namespace PCM
+      // Print debugging information to stream
+      void     DumpHeaderMetadata(FILE* = 0) const;
+      void     DumpIndex(FILE* = 0) const;
+    };
+  } // namespace PCM
 
   //---------------------------------------------------------------------------------
   //
   namespace JP2K
-    {
-      const ui32_t MaxComponents = 3;
-      const ui32_t MaxPrecincts = 32; // ISO 15444-1 Annex A.6.1
-      const ui32_t MaxDefaults = 256; // made up
-      const ui8_t  MaxCapabilities = 32;
-			const ui16_t MaxPRFN = 4;
-			const ui16_t MaxCPFN = 4;
-			const i8_t NoExtendedCapabilitiesSignaled = -1;
-			const ui16_t NoPRFSignaled = 0;
-			const ui16_t NoCPFSignaled = 0;
+  {
+    const ui32_t MaxComponents = 3;
+    const ui32_t MaxPrecincts = 32; // ISO 15444-1 Annex A.6.1
+    const ui32_t MaxDefaults = 256; // made up
+    const ui8_t  MaxCapabilities = 32;
+    const ui16_t MaxPRFN = 4;
+    const ui16_t MaxCPFN = 4;
+    const i8_t NoExtendedCapabilitiesSignaled = -1;
+    const ui16_t NoPRFSignaled = 0;
+    const ui16_t NoCPFSignaled = 0;
 
 #pragma pack(1)
-      struct ImageComponent_t  // ISO 15444-1 Annex A.5.1
+    struct ImageComponent_t  // ISO 15444-1 Annex A.5.1
+    {
+      ui8_t Ssize;
+      ui8_t XRsize;
+      ui8_t YRsize;
+    };
+
+    struct CodingStyleDefault_t // ISO 15444-1 Annex A.6.1
+    {
+      ui8_t   Scod;
+
+      struct
       {
-	ui8_t Ssize;
-	ui8_t XRsize;
-	ui8_t YRsize;
-      };
+        ui8_t  ProgressionOrder;
+        ui8_t  NumberOfLayers[sizeof(ui16_t)];
+        ui8_t  MultiCompTransform;
+      } SGcod;
 
-      struct CodingStyleDefault_t // ISO 15444-1 Annex A.6.1
+      struct
       {
-	ui8_t   Scod;
+        ui8_t  DecompositionLevels;
+        ui8_t  CodeblockWidth;
+        ui8_t  CodeblockHeight;
+        ui8_t  CodeblockStyle;
+        ui8_t  Transformation;
+        ui8_t  PrecinctSize[MaxPrecincts];
+      } SPcod;
+    };
 
-	struct
-	{
-	  ui8_t  ProgressionOrder;
-	  ui8_t  NumberOfLayers[sizeof(ui16_t)];
-	  ui8_t  MultiCompTransform;
-	} SGcod;
+    struct QuantizationDefault_t // ISO 15444-1 Annex A.6.4
+    {
+      ui8_t  Sqcd;
+      ui8_t  SPqcd[MaxDefaults];
+      ui8_t  SPqcdLength;
+    };
 
-	struct
-	{
-	  ui8_t  DecompositionLevels;
-	  ui8_t  CodeblockWidth;
-	  ui8_t  CodeblockHeight;
-	  ui8_t  CodeblockStyle;
-	  ui8_t  Transformation;
-	  ui8_t  PrecinctSize[MaxPrecincts];
-	} SPcod;
-      };
+    struct ExtendedCapabilities_t // ISO 15444-1 Annex A.5.2
+    {
+      ui32_t  Pcap; // Pcap = 0 means that no extended capabilities are required
+      i8_t N; // Number of Ccap elements, or NoExtendedCapabilitiesSignaled if no Extended Capabilities are signaled
+      ui16_t  Ccap[MaxCapabilities];
+    };
 
-      struct QuantizationDefault_t // ISO 15444-1 Annex A.6.4
-      {
-	ui8_t  Sqcd;
-	ui8_t  SPqcd[MaxDefaults];
-	ui8_t  SPqcdLength;
-      };
+    struct Profile_t // ISO 15444-1
+    {
+      ui16_t  N; // N = NoPRFSignaled means that Profile is signaled through Rsiz exclusively
+      ui16_t  Pprf[MaxPRFN]; // Pprf^i in ISO/IEC 15444-1 corresponds to Pprf[i -1]
+    };
 
-      struct ExtendedCapabilities_t // ISO 15444-1 Annex A.5.2
-      {
-	ui32_t  Pcap; // Pcap = 0 means that no extended capabilities are required
-	i8_t N; // Number of Ccap elements, or NoExtendedCapabilitiesSignaled if no Extended Capabilities are signaled
-	ui16_t  Ccap[MaxCapabilities]; 
-      };
-
-			struct Profile_t // ISO 15444-1
-      {
-	ui16_t  N; // N = NoPRFSignaled means that Profile is signaled through Rsiz exclusively
-	ui16_t  Pprf[MaxPRFN]; // Pprf^i in ISO/IEC 15444-1 corresponds to Pprf[i -1]
-      };
-
-			struct CorrespondingProfile_t // ISO 15444-1
-      {
-	ui16_t  N; // N = NoCPFSignaled means that no corresponding profile is signaled
-	ui16_t  Pcpf[MaxCPFN]; // Pcpf^i in ISO/IEC 15444-1 corresponds to Pcpf[i -1]
-      };
+    struct CorrespondingProfile_t // ISO 15444-1
+    {
+      ui16_t  N; // N = NoCPFSignaled means that no corresponding profile is signaled
+      ui16_t  Pcpf[MaxCPFN]; // Pcpf^i in ISO/IEC 15444-1 corresponds to Pcpf[i -1]
+    };
 
 #pragma pack()
 
-      struct PictureDescriptor
-      {
-	Rational       EditRate;
-	ui32_t         ContainerDuration;
-	Rational       SampleRate;
-	ui32_t         StoredWidth;
-	ui32_t         StoredHeight;
-	Rational       AspectRatio;
-	ui16_t         Rsize;
-	ui32_t         Xsize;
-	ui32_t         Ysize;
-	ui32_t         XOsize;
-	ui32_t         YOsize;
-	ui32_t         XTsize;
-	ui32_t         YTsize;
-	ui32_t         XTOsize;
-	ui32_t         YTOsize;
-	ui16_t         Csize;
-	ImageComponent_t      ImageComponents[MaxComponents];
-	CodingStyleDefault_t  CodingStyleDefault;
-	QuantizationDefault_t QuantizationDefault;
-  ExtendedCapabilities_t ExtendedCapabilities;
-  Profile_t   Profile;
-	CorrespondingProfile_t   CorrespondingProfile;    
-      };
+    struct PictureDescriptor
+    {
+      Rational       EditRate;
+      ui32_t         ContainerDuration;
+      Rational       SampleRate;
+      ui32_t         StoredWidth;
+      ui32_t         StoredHeight;
+      Rational       AspectRatio;
+      ui16_t         Rsize;
+      ui32_t         Xsize;
+      ui32_t         Ysize;
+      ui32_t         XOsize;
+      ui32_t         YOsize;
+      ui32_t         XTsize;
+      ui32_t         YTsize;
+      ui32_t         XTOsize;
+      ui32_t         YTOsize;
+      ui16_t         Csize;
+      ImageComponent_t      ImageComponents[MaxComponents];
+      CodingStyleDefault_t  CodingStyleDefault;
+      QuantizationDefault_t QuantizationDefault;
+      ExtendedCapabilities_t ExtendedCapabilities;
+      Profile_t   Profile;
+      CorrespondingProfile_t   CorrespondingProfile;
+    };
 
-      // Print debugging information to std::ostream
-      std::ostream& operator << (std::ostream& strm, const PictureDescriptor& pdesc);
+    // Print debugging information to std::ostream
+    std::ostream& operator << (std::ostream& strm, const PictureDescriptor& pdesc);
+    // Print debugging information to stream (stderr default)
+    void   PictureDescriptorDump(const PictureDescriptor&, FILE* = 0);
+
+    //
+    class FrameBuffer : public ASDCP::FrameBuffer
+    {
+    public:
+      FrameBuffer() {}
+      FrameBuffer(ui32_t size) { Capacity(size); }
+      virtual ~FrameBuffer() {}
+
       // Print debugging information to stream (stderr default)
-      void   PictureDescriptorDump(const PictureDescriptor&, FILE* = 0);
-
-      //
-      class FrameBuffer : public ASDCP::FrameBuffer
-	{
-	public:
-	  FrameBuffer() {}
-	  FrameBuffer(ui32_t size) { Capacity(size); }
-	  virtual ~FrameBuffer() {}
-
-	  // Print debugging information to stream (stderr default)
-	  void Dump(FILE* = 0, ui32_t dump_bytes = 0) const;
-	};
+      void Dump(FILE* = 0, ui32_t dump_bytes = 0) const;
+    };
 
 
-      // An object which opens and reads a JPEG 2000 codestream file.  The file is expected
-      // to contain exactly one complete frame of picture essence as an unwrapped (raw)
-      // ISO/IEC 15444 codestream.
-      class CodestreamParser
-	{
-	  class h__CodestreamParser;
-	  mem_ptr<h__CodestreamParser> m_Parser;
-	  ASDCP_NO_COPY_CONSTRUCT(CodestreamParser);
+    // An object which opens and reads a JPEG 2000 codestream file.  The file is expected
+    // to contain exactly one complete frame of picture essence as an unwrapped (raw)
+    // ISO/IEC 15444 codestream.
+    class CodestreamParser
+    {
+      class h__CodestreamParser;
+      mem_ptr<h__CodestreamParser> m_Parser;
+      ASDCP_NO_COPY_CONSTRUCT(CodestreamParser);
 
-	public:
-	  CodestreamParser();
-	  virtual ~CodestreamParser();
+    public:
+      CodestreamParser();
+      virtual ~CodestreamParser();
 
-	  // Opens a file for reading, parses enough data to provide a complete
-          // set of stream metadata for the MXFWriter below.
-	  // The frame buffer's PlaintextOffset parameter will be set to the first
-	  // byte of the data segment. Set this value to zero if you want
-	  // encrypted headers.
-	  Result_t OpenReadFrame(const std::string& filename, FrameBuffer&) const;
+      // Opens a file for reading, parses enough data to provide a complete
+      // set of stream metadata for the MXFWriter below.
+      // The frame buffer's PlaintextOffset parameter will be set to the first
+      // byte of the data segment. Set this value to zero if you want
+      // encrypted headers.
+      Result_t OpenReadFrame(const std::string& filename, FrameBuffer&) const;
 
-	  // Fill a PictureDescriptor struct with the values from the file's codestream.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillPictureDescriptor(PictureDescriptor&) const;
-	};
+      // Fill a PictureDescriptor struct with the values from the file's codestream.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillPictureDescriptor(PictureDescriptor&) const;
+    };
 
-      // Parses the data in the frame buffer to fill in the picture descriptor. Copies
-      // the offset of the image data into start_of_data. Returns error if the parser fails.
-      Result_t ParseMetadataIntoDesc(const FrameBuffer&, PictureDescriptor&, byte_t* start_of_data = 0);
+    // Parses the data in the frame buffer to fill in the picture descriptor. Copies
+    // the offset of the image data into start_of_data. Returns error if the parser fails.
+    Result_t ParseMetadataIntoDesc(const FrameBuffer&, PictureDescriptor&, byte_t* start_of_data = 0);
 
-      // An object which reads a sequence of files containing JPEG 2000 pictures.
-      class SequenceParser
-	{
-	  class h__SequenceParser;
-	  mem_ptr<h__SequenceParser> m_Parser;
-	  ASDCP_NO_COPY_CONSTRUCT(SequenceParser);
+    // An object which reads a sequence of files containing JPEG 2000 pictures.
+    class SequenceParser
+    {
+      class h__SequenceParser;
+      mem_ptr<h__SequenceParser> m_Parser;
+      ASDCP_NO_COPY_CONSTRUCT(SequenceParser);
 
-	public:
-	  SequenceParser();
-	  virtual ~SequenceParser();
+    public:
+      SequenceParser();
+      virtual ~SequenceParser();
 
-	  // Opens a directory for reading.  The directory is expected to contain one or
-	  // more files, each containing the codestream for exactly one picture. The
-	  // files must be named such that the frames are in temporal order when sorted
-	  // alphabetically by filename. The parser will automatically parse enough data
-	  // from the first file to provide a complete set of stream metadata for the
-	  // MXFWriter below.  If the "pedantic" parameter is given and is true, the
-	  // parser will check the metadata for each codestream and fail if a
-	  // mismatch is detected.
-	  Result_t OpenRead(const std::string& filename, bool pedantic = false) const;
+      // Opens a directory for reading.  The directory is expected to contain one or
+      // more files, each containing the codestream for exactly one picture. The
+      // files must be named such that the frames are in temporal order when sorted
+      // alphabetically by filename. The parser will automatically parse enough data
+      // from the first file to provide a complete set of stream metadata for the
+      // MXFWriter below.  If the "pedantic" parameter is given and is true, the
+      // parser will check the metadata for each codestream and fail if a
+      // mismatch is detected.
+      Result_t OpenRead(const std::string& filename, bool pedantic = false) const;
 
-	  // Opens a file sequence for reading.  The sequence is expected to contain one or
-	  // more filenames, each naming a file containing the codestream for exactly one
-	  // picture. The parser will automatically parse enough data
-	  // from the first file to provide a complete set of stream metadata for the
-	  // MXFWriter below.  If the "pedantic" parameter is given and is true, the
-	  // parser will check the metadata for each codestream and fail if a
-	  // mismatch is detected.
-	  Result_t OpenRead(const std::list<std::string>& file_list, bool pedantic = false) const;
+      // Opens a file sequence for reading.  The sequence is expected to contain one or
+      // more filenames, each naming a file containing the codestream for exactly one
+      // picture. The parser will automatically parse enough data
+      // from the first file to provide a complete set of stream metadata for the
+      // MXFWriter below.  If the "pedantic" parameter is given and is true, the
+      // parser will check the metadata for each codestream and fail if a
+      // mismatch is detected.
+      Result_t OpenRead(const std::list<std::string>& file_list, bool pedantic = false) const;
 
-	  // Fill a PictureDescriptor struct with the values from the first file's codestream.
-	  // Returns RESULT_INIT if the directory is not open.
-	  Result_t FillPictureDescriptor(PictureDescriptor&) const;
+      // Fill a PictureDescriptor struct with the values from the first file's codestream.
+      // Returns RESULT_INIT if the directory is not open.
+      Result_t FillPictureDescriptor(PictureDescriptor&) const;
 
-	  // Rewind the directory to the beginning.
-	  Result_t Reset() const;
+      // Rewind the directory to the beginning.
+      Result_t Reset() const;
 
-	  // Reads the next sequential frame in the directory and places it in the
-	  // frame buffer. Fails if the buffer is too small or the direcdtory
-	  // contains no more files.
-	  // The frame buffer's PlaintextOffset parameter will be set to the first
-	  // byte of the data segment. Set this value to zero if you want
-	  // encrypted headers.
-	  Result_t ReadFrame(FrameBuffer&) const;
-	};
-
-
-      //
-      class MXFWriter
-	{
-	  class h__Writer;
-	  mem_ptr<h__Writer> m_Writer;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
-
-	public:
-	  MXFWriter();
-	  virtual ~MXFWriter();
-
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
-
-	  // Open the file for writing. The file must not exist. Returns error if
-	  // the operation cannot be completed or if nonsensical data is discovered
-	  // in the essence descriptor.
-	  Result_t OpenWrite(const std::string& filename, const WriterInfo&,
-			     const PictureDescriptor&, ui32_t HeaderSize = 16384);
-
-	  // Writes a frame of essence to the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is encrypted prior to writing.
-	  // Fails if the file is not open, is finalized, or an operating system
-	  // error occurs.
-	  Result_t WriteFrame(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
-
-	  // Closes the MXF file, writing the index and revised header.
-	  Result_t Finalize();
-	};
-
-      //
-      class MXFReader
-	{
-	  class h__Reader;
-	  mem_ptr<h__Reader> m_Reader;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFReader);
-
-	public:
-	  MXFReader();
-	  virtual ~MXFReader();
-
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
-
-	  // Open the file for reading. The file must exist. Returns error if the
-	  // operation cannot be completed.
-	  Result_t OpenRead(const std::string& filename) const;
-
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t Close() const;
-
-	  // Fill an AudioDescriptor struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillPictureDescriptor(PictureDescriptor&) const;
-
-	  // Fill a WriterInfo struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillWriterInfo(WriterInfo&) const;
-
-	  // Reads a frame of essence from the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is decrypted after reading. If the MXF
-	  // file is encrypted and the AESDecContext argument is NULL, the frame buffer
-	  // will contain the ciphertext frame data. If the HMACContext argument is
-	  // not NULL, the HMAC will be calculated (if the file supports it).
-	  // Returns RESULT_INIT if the file is not open, failure if the frame number is
-	  // out of range, or if optional decrypt or HAMC operations fail.
-	  Result_t ReadFrame(ui32_t frame_number, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
-
-	  // Using the index table read from the footer partition, lookup the frame number
-	  // and return the offset into the file at which to read that frame of essence.
-	  // Returns RESULT_INIT if the file is not open, and RESULT_FRAME if the frame number is
-	  // out of range.
-	  Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
-
-	  // Print debugging information to stream
-	  void     DumpHeaderMetadata(FILE* = 0) const;
-	  void     DumpIndex(FILE* = 0) const;
-	};
+      // Reads the next sequential frame in the directory and places it in the
+      // frame buffer. Fails if the buffer is too small or the direcdtory
+      // contains no more files.
+      // The frame buffer's PlaintextOffset parameter will be set to the first
+      // byte of the data segment. Set this value to zero if you want
+      // encrypted headers.
+      Result_t ReadFrame(FrameBuffer&) const;
+    };
 
 
-      // Stereoscopic Image support
-      //
+    //
+    class MXFWriter
+    {
+      class h__Writer;
+      mem_ptr<h__Writer> m_Writer;
+      ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
 
-      enum StereoscopicPhase_t
-      {
-	SP_LEFT,
-	SP_RIGHT
-      };
+    public:
+      MXFWriter();
+      virtual ~MXFWriter();
 
-      struct SFrameBuffer
-      {
-	JP2K::FrameBuffer Left;
-	JP2K::FrameBuffer Right;
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	SFrameBuffer(ui32_t size) {
-	  Left.Capacity(size);
-	  Right.Capacity(size);
-	}
-      };
+      // Open the file for writing. The file must not exist. Returns error if
+      // the operation cannot be completed or if nonsensical data is discovered
+      // in the essence descriptor.
+      Result_t OpenWrite(const std::string& filename, const WriterInfo&,
+                         const PictureDescriptor&, ui32_t HeaderSize = 16384);
 
-      class MXFSWriter
-      {
-	  class h__SWriter;
-	  mem_ptr<h__SWriter> m_Writer;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFSWriter);
+      // Writes a frame of essence to the MXF file. If the optional AESEncContext
+      // argument is present, the essence is encrypted prior to writing.
+      // Fails if the file is not open, is finalized, or an operating system
+      // error occurs.
+      Result_t WriteFrame(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
 
-	public:
-	  MXFSWriter();
-	  virtual ~MXFSWriter();
+      // Closes the MXF file, writing the index and revised header.
+      Result_t Finalize();
+    };
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+    //
+    class MXFReader
+    {
+      class h__Reader;
+      mem_ptr<h__Reader> m_Reader;
+      ASDCP_NO_COPY_CONSTRUCT(MXFReader);
 
-	  // Open the file for writing. The file must not exist. Returns error if
-	  // the operation cannot be completed or if nonsensical data is discovered
-	  // in the essence descriptor.
-	  Result_t OpenWrite(const std::string& filename, const WriterInfo&,
-			     const PictureDescriptor&, ui32_t HeaderSize = 16384);
+    public:
+      MXFReader();
+      virtual ~MXFReader();
 
-	  // Writes a pair of frames of essence to the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is encrypted prior to writing.
-	  // Fails if the file is not open, is finalized, or an operating system
-	  // error occurs.
-	  Result_t WriteFrame(const SFrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	  // Writes a frame of essence to the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is encrypted prior to writing.
-	  // Fails if the file is not open, is finalized, or an operating system
-	  // error occurs. Frames must be written in the proper phase (L-R-L-R),
-	  // RESULT_SPHASE will be returned if phase is reversed. The first frame
-	  // written must be left eye.
-	  Result_t WriteFrame(const FrameBuffer&, StereoscopicPhase_t phase,
-			      AESEncContext* = 0, HMACContext* = 0);
+      // Open the file for reading. The file must exist. Returns error if the
+      // operation cannot be completed.
+      Result_t OpenRead(const std::string& filename) const;
 
-	  // Closes the MXF file, writing the index and revised header.  Returns
-	  // RESULT_SPHASE if WriteFrame was called an odd number of times.
-	  Result_t Finalize();
-	};
+      // Returns RESULT_INIT if the file is not open.
+      Result_t Close() const;
 
-      //
-      class MXFSReader
-	{
-	  class h__SReader;
-	  mem_ptr<h__SReader> m_Reader;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFSReader);
+      // Fill an AudioDescriptor struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillPictureDescriptor(PictureDescriptor&) const;
 
-	public:
-	  MXFSReader();
-	  virtual ~MXFSReader();
+      // Fill a WriterInfo struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillWriterInfo(WriterInfo&) const;
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+      // Reads a frame of essence from the MXF file. If the optional AESEncContext
+      // argument is present, the essence is decrypted after reading. If the MXF
+      // file is encrypted and the AESDecContext argument is NULL, the frame buffer
+      // will contain the ciphertext frame data. If the HMACContext argument is
+      // not NULL, the HMAC will be calculated (if the file supports it).
+      // Returns RESULT_INIT if the file is not open, failure if the frame number is
+      // out of range, or if optional decrypt or HAMC operations fail.
+      Result_t ReadFrame(ui32_t frame_number, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
 
-	  // Open the file for reading. The file must exist. Returns error if the
-	  // operation cannot be completed.
-	  Result_t OpenRead(const std::string& filename) const;
+      // Using the index table read from the footer partition, lookup the frame number
+      // and return the offset into the file at which to read that frame of essence.
+      // Returns RESULT_INIT if the file is not open, and RESULT_FRAME if the frame number is
+      // out of range.
+      Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
 
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t Close() const;
+      // Print debugging information to stream
+      void     DumpHeaderMetadata(FILE* = 0) const;
+      void     DumpIndex(FILE* = 0) const;
+    };
 
-	  // Fill an AudioDescriptor struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillPictureDescriptor(PictureDescriptor&) const;
 
-	  // Fill a WriterInfo struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillWriterInfo(WriterInfo&) const;
+    // Stereoscopic Image support
+    //
 
-	  // Reads a pair of frames of essence from the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is decrypted after reading. If the MXF
-	  // file is encrypted and the AESDecContext argument is NULL, the frame buffer
-	  // will contain the ciphertext frame data. If the HMACContext argument is
-	  // not NULL, the HMAC will be calculated (if the file supports it).
-	  // Returns RESULT_INIT if the file is not open, failure if the frame number is
-	  // out of range, or if optional decrypt or HAMC operations fail.
-	  Result_t ReadFrame(ui32_t frame_number, SFrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
+    enum StereoscopicPhase_t
+    {
+      SP_LEFT,
+      SP_RIGHT
+    };
 
-	  // Reads a frame of essence from the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is decrypted after reading. If the MXF
-	  // file is encrypted and the AESDecContext argument is NULL, the frame buffer
-	  // will contain the ciphertext frame data. If the HMACContext argument is
-	  // not NULL, the HMAC will be calculated (if the file supports it).
-	  // Returns RESULT_INIT if the file is not open, failure if the frame number is
-	  // out of range, or if optional decrypt or HAMC operations fail.
-	  Result_t ReadFrame(ui32_t frame_number, StereoscopicPhase_t phase,
-			     FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
+    struct SFrameBuffer
+    {
+      JP2K::FrameBuffer Left;
+      JP2K::FrameBuffer Right;
 
-	  // Using the index table read from the footer partition, lookup the frame number
-	  // and return the offset into the file at which to read that frame of essence.
-	  // Returns RESULT_INIT if the file is not open, and RESULT_FRAME if the frame number is
-	  // out of range.
-	  Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
+      SFrameBuffer(ui32_t size) {
+        Left.Capacity(size);
+        Right.Capacity(size);
+      }
+    };
 
-	  // Print debugging information to stream
-	  void     DumpHeaderMetadata(FILE* = 0) const;
-	  void     DumpIndex(FILE* = 0) const;
-	};
-    } // namespace JP2K
+    class MXFSWriter
+    {
+      class h__SWriter;
+      mem_ptr<h__SWriter> m_Writer;
+      ASDCP_NO_COPY_CONSTRUCT(MXFSWriter);
+
+    public:
+      MXFSWriter();
+      virtual ~MXFSWriter();
+
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
+
+      // Open the file for writing. The file must not exist. Returns error if
+      // the operation cannot be completed or if nonsensical data is discovered
+      // in the essence descriptor.
+      Result_t OpenWrite(const std::string& filename, const WriterInfo&,
+                         const PictureDescriptor&, ui32_t HeaderSize = 16384);
+
+      // Writes a pair of frames of essence to the MXF file. If the optional AESEncContext
+      // argument is present, the essence is encrypted prior to writing.
+      // Fails if the file is not open, is finalized, or an operating system
+      // error occurs.
+      Result_t WriteFrame(const SFrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
+
+      // Writes a frame of essence to the MXF file. If the optional AESEncContext
+      // argument is present, the essence is encrypted prior to writing.
+      // Fails if the file is not open, is finalized, or an operating system
+      // error occurs. Frames must be written in the proper phase (L-R-L-R),
+      // RESULT_SPHASE will be returned if phase is reversed. The first frame
+      // written must be left eye.
+      Result_t WriteFrame(const FrameBuffer&, StereoscopicPhase_t phase,
+                          AESEncContext* = 0, HMACContext* = 0);
+
+      // Closes the MXF file, writing the index and revised header.  Returns
+      // RESULT_SPHASE if WriteFrame was called an odd number of times.
+      Result_t Finalize();
+    };
+
+    //
+    class MXFSReader
+    {
+      class h__SReader;
+      mem_ptr<h__SReader> m_Reader;
+      ASDCP_NO_COPY_CONSTRUCT(MXFSReader);
+
+    public:
+      MXFSReader();
+      virtual ~MXFSReader();
+
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
+
+      // Open the file for reading. The file must exist. Returns error if the
+      // operation cannot be completed.
+      Result_t OpenRead(const std::string& filename) const;
+
+      // Returns RESULT_INIT if the file is not open.
+      Result_t Close() const;
+
+      // Fill an AudioDescriptor struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillPictureDescriptor(PictureDescriptor&) const;
+
+      // Fill a WriterInfo struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillWriterInfo(WriterInfo&) const;
+
+      // Reads a pair of frames of essence from the MXF file. If the optional AESEncContext
+      // argument is present, the essence is decrypted after reading. If the MXF
+      // file is encrypted and the AESDecContext argument is NULL, the frame buffer
+      // will contain the ciphertext frame data. If the HMACContext argument is
+      // not NULL, the HMAC will be calculated (if the file supports it).
+      // Returns RESULT_INIT if the file is not open, failure if the frame number is
+      // out of range, or if optional decrypt or HAMC operations fail.
+      Result_t ReadFrame(ui32_t frame_number, SFrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
+
+      // Reads a frame of essence from the MXF file. If the optional AESEncContext
+      // argument is present, the essence is decrypted after reading. If the MXF
+      // file is encrypted and the AESDecContext argument is NULL, the frame buffer
+      // will contain the ciphertext frame data. If the HMACContext argument is
+      // not NULL, the HMAC will be calculated (if the file supports it).
+      // Returns RESULT_INIT if the file is not open, failure if the frame number is
+      // out of range, or if optional decrypt or HAMC operations fail.
+      Result_t ReadFrame(ui32_t frame_number, StereoscopicPhase_t phase,
+                         FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
+
+      // Using the index table read from the footer partition, lookup the frame number
+      // and return the offset into the file at which to read that frame of essence.
+      // Returns RESULT_INIT if the file is not open, and RESULT_FRAME if the frame number is
+      // out of range.
+      Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
+
+      // Print debugging information to stream
+      void     DumpHeaderMetadata(FILE* = 0) const;
+      void     DumpIndex(FILE* = 0) const;
+    };
+  } // namespace JP2K
 
   //---------------------------------------------------------------------------------
   //
   namespace TimedText
+  {
+    enum MIMEType_t { MT_BIN, MT_PNG, MT_OPENTYPE };
+
+    struct TimedTextResourceDescriptor
     {
-      enum MIMEType_t { MT_BIN, MT_PNG, MT_OPENTYPE };
+      byte_t      ResourceID[UUIDlen];
+      MIMEType_t  Type;
 
-      struct TimedTextResourceDescriptor
-      {
-	byte_t      ResourceID[UUIDlen];
-          MIMEType_t  Type;
+      TimedTextResourceDescriptor() : Type(MT_BIN) { memset(ResourceID, 0, UUIDlen); }
+    };
 
-        TimedTextResourceDescriptor() : Type(MT_BIN) { memset(ResourceID, 0, UUIDlen); }
-      };
+    typedef std::list<TimedTextResourceDescriptor> ResourceList_t;
 
-      typedef std::list<TimedTextResourceDescriptor> ResourceList_t;
-
-      struct TimedTextDescriptor
-      {
-	Rational       EditRate;                //
-	ui32_t         ContainerDuration;
-	byte_t         AssetID[UUIDlen];
-	std::string    NamespaceName;
-	std::string    EncodingName;
-	ResourceList_t ResourceList;
+    struct TimedTextDescriptor
+    {
+      Rational       EditRate;                //
+      ui32_t         ContainerDuration;
+      byte_t         AssetID[UUIDlen];
+      std::string    NamespaceName;
+      std::string    EncodingName;
+      ResourceList_t ResourceList;
 
       TimedTextDescriptor() : ContainerDuration(0), EncodingName("UTF-8") { memset(AssetID, 0, UUIDlen); } // D-Cinema format is always UTF-8
-      };
+    };
 
-      // Print debugging information to std::ostream
-      std::ostream& operator << (std::ostream& strm, const TimedTextDescriptor& tinfo);
+    // Print debugging information to std::ostream
+    std::ostream& operator << (std::ostream& strm, const TimedTextDescriptor& tinfo);
+    // Print debugging information to stream (stderr default)
+    void   DescriptorDump(const TimedTextDescriptor&, FILE* = 0);
+
+    //
+    class FrameBuffer : public ASDCP::FrameBuffer
+    {
+      ASDCP_NO_COPY_CONSTRUCT(FrameBuffer); // TODO: should have copy construct
+
+    protected:
+      byte_t      m_AssetID[UUIDlen];
+      std::string m_MIMEType;
+
+    public:
+      FrameBuffer() { memset(m_AssetID, 0, UUIDlen); }
+      FrameBuffer(ui32_t size) { Capacity(size); memset(m_AssetID, 0, UUIDlen); }
+      virtual ~FrameBuffer() {}
+
+      inline const byte_t* AssetID() const { return m_AssetID; }
+      inline void          AssetID(const byte_t* buf) { memcpy(m_AssetID, buf, UUIDlen); }
+      inline const char*   MIMEType() const { return m_MIMEType.c_str(); }
+      inline void          MIMEType(const std::string& s) { m_MIMEType = s; }
+
       // Print debugging information to stream (stderr default)
-      void   DescriptorDump(const TimedTextDescriptor&, FILE* = 0);
+      void Dump(FILE* = 0, ui32_t dump_bytes = 0) const;
+    };
 
-      //
-      class FrameBuffer : public ASDCP::FrameBuffer
-      {
-	ASDCP_NO_COPY_CONSTRUCT(FrameBuffer); // TODO: should have copy construct
+    // An abstract base for a lookup service that returns the resource data
+    // identified by the given ancillary resource id.
+    //
+    class IResourceResolver
+    {
+    public:
+      virtual ~IResourceResolver() {}
+      virtual Result_t ResolveRID(const byte_t* uuid, FrameBuffer&) const = 0; // return data for RID
+    };
 
-      protected:
-	byte_t      m_AssetID[UUIDlen];
-	std::string m_MIMEType;
+    // Resolves resource references by testing the named directory for file names containing
+    // the respective UUID.
+    //
+    class LocalFilenameResolver : public ASDCP::TimedText::IResourceResolver
+    {
+      std::string m_Dirname;
+      ASDCP_NO_COPY_CONSTRUCT(LocalFilenameResolver);
 
-      public:
-	FrameBuffer() { memset(m_AssetID, 0, UUIDlen); }
-	FrameBuffer(ui32_t size) { Capacity(size); memset(m_AssetID, 0, UUIDlen); }
-	virtual ~FrameBuffer() {}
+    public:
+      LocalFilenameResolver();
+      virtual ~LocalFilenameResolver();
+      Result_t OpenRead(const std::string& dirname);
+      Result_t ResolveRID(const byte_t* uuid, FrameBuffer& FrameBuf) const;
+    };
 
-	inline const byte_t* AssetID() const { return m_AssetID; }
-	inline void          AssetID(const byte_t* buf) { memcpy(m_AssetID, buf, UUIDlen); }
-	inline const char*   MIMEType() const { return m_MIMEType.c_str(); }
-	inline void          MIMEType(const std::string& s) { m_MIMEType = s; }
+    //
+    class DCSubtitleParser
+    {
+      class h__SubtitleParser;
+      mem_ptr<h__SubtitleParser> m_Parser;
+      ASDCP_NO_COPY_CONSTRUCT(DCSubtitleParser);
 
-	// Print debugging information to stream (stderr default)
-	void Dump(FILE* = 0, ui32_t dump_bytes = 0) const;
-      };
+    public:
+      DCSubtitleParser();
+      virtual ~DCSubtitleParser();
 
-      // An abstract base for a lookup service that returns the resource data
-      // identified by the given ancillary resource id.
-      //
-      class IResourceResolver
-      {
-      public:
-	virtual ~IResourceResolver() {}
-	virtual Result_t ResolveRID(const byte_t* uuid, FrameBuffer&) const = 0; // return data for RID
-      };
+      // Opens an XML file for reading, parses data to provide a complete
+      // set of stream metadata for the MXFWriter below.
+      Result_t OpenRead(const std::string& filename) const;
 
-      // Resolves resource references by testing the named directory for file names containing
-      // the respective UUID.
-      //
-      class LocalFilenameResolver : public ASDCP::TimedText::IResourceResolver
-	{
-	  std::string m_Dirname;
-	  ASDCP_NO_COPY_CONSTRUCT(LocalFilenameResolver);
+      // Parses an XML document to provide a complete set of stream metadata
+      // for the MXFWriter below. The optional filename argument is used to
+      // initialize the default resource resolver (see ReadAncillaryResource).
+      Result_t OpenRead(const std::string& xml_doc, const std::string& filename) const;
 
-	public:
-	  LocalFilenameResolver();
-	  virtual ~LocalFilenameResolver();
-	  Result_t OpenRead(const std::string& dirname);
-	  Result_t ResolveRID(const byte_t* uuid, FrameBuffer& FrameBuf) const;
-	};
+      // Fill a TimedTextDescriptor struct with the values from the file's contents.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillTimedTextDescriptor(TimedTextDescriptor&) const;
 
-      //
-      class DCSubtitleParser
-	{
-	  class h__SubtitleParser;
-	  mem_ptr<h__SubtitleParser> m_Parser;
-	  ASDCP_NO_COPY_CONSTRUCT(DCSubtitleParser);
+      // Reads the complete Timed Text Resource into the given string.
+      Result_t ReadTimedTextResource(std::string&) const;
 
-	public:
-	  DCSubtitleParser();
-	  virtual ~DCSubtitleParser();
+      // Reads the Ancillary Resource having the given ID. Fails if the buffer
+      // is too small or the resource does not exist. The optional Resolver
+      // argument can be provided which will be used to retrieve the resource
+      // having a particulat UUID. If a Resolver is not supplied, the default
+      // internal resolver will return the contents of the file having the UUID
+      // as the filename. The filename must exist in the same directory as the
+      // XML file opened with OpenRead().
+      Result_t ReadAncillaryResource(const byte_t* uuid, FrameBuffer&,
+                                     const IResourceResolver* Resolver = 0) const;
+    };
 
-	  // Opens an XML file for reading, parses data to provide a complete
-	  // set of stream metadata for the MXFWriter below.
-	  Result_t OpenRead(const std::string& filename) const;
+    //
+    class MXFWriter
+    {
+      class h__Writer;
+      mem_ptr<h__Writer> m_Writer;
+      ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
 
-	  // Parses an XML document to provide a complete set of stream metadata
-	  // for the MXFWriter below. The optional filename argument is used to
-	  // initialize the default resource resolver (see ReadAncillaryResource).
-	  Result_t OpenRead(const std::string& xml_doc, const std::string& filename) const;
+    public:
+      MXFWriter();
+      virtual ~MXFWriter();
 
-	  // Fill a TimedTextDescriptor struct with the values from the file's contents.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillTimedTextDescriptor(TimedTextDescriptor&) const;
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	  // Reads the complete Timed Text Resource into the given string.
-	  Result_t ReadTimedTextResource(std::string&) const;
+      // Open the file for writing. The file must not exist. Returns error if
+      // the operation cannot be completed or if nonsensical data is discovered
+      // in the essence descriptor.
+      Result_t OpenWrite(const std::string& filename, const WriterInfo&,
+                         const TimedTextDescriptor&, ui32_t HeaderSize = 16384);
 
-	  // Reads the Ancillary Resource having the given ID. Fails if the buffer
-	  // is too small or the resource does not exist. The optional Resolver
-	  // argument can be provided which will be used to retrieve the resource
-	  // having a particulat UUID. If a Resolver is not supplied, the default
-	  // internal resolver will return the contents of the file having the UUID
-	  // as the filename. The filename must exist in the same directory as the
-	  // XML file opened with OpenRead().
-	  Result_t ReadAncillaryResource(const byte_t* uuid, FrameBuffer&,
-					 const IResourceResolver* Resolver = 0) const;
-	};
+      // Writes the Timed-Text Resource to the MXF file. The file must be UTF-8
+      // encoded. If the optional AESEncContext argument is present, the essence
+      // is encrypted prior to writing. Fails if the file is not open, is finalized,
+      // or an operating system error occurs.
+      // This method may only be called once, and it must be called before any
+      // call to WriteAncillaryResource(). RESULT_STATE will be returned if these
+      // conditions are not met.
+      Result_t WriteTimedTextResource(const std::string& XMLDoc, AESEncContext* = 0, HMACContext* = 0);
 
-      //
-      class MXFWriter
-	{
-	  class h__Writer;
-	  mem_ptr<h__Writer> m_Writer;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
+      // Writes an Ancillary Resource to the MXF file. If the optional AESEncContext
+      // argument is present, the essence is encrypted prior to writing.
+      // Fails if the file is not open, is finalized, or an operating system
+      // error occurs. RESULT_STATE will be returned if the method is called before
+      // WriteTimedTextResource()
+      Result_t WriteAncillaryResource(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
 
-	public:
-	  MXFWriter();
-	  virtual ~MXFWriter();
+      // Closes the MXF file, writing the index and revised header.
+      Result_t Finalize();
+    };
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+    //
+    class MXFReader
+    {
+      class h__Reader;
+      mem_ptr<h__Reader> m_Reader;
+      ASDCP_NO_COPY_CONSTRUCT(MXFReader);
 
-	  // Open the file for writing. The file must not exist. Returns error if
-	  // the operation cannot be completed or if nonsensical data is discovered
-	  // in the essence descriptor.
-	  Result_t OpenWrite(const std::string& filename, const WriterInfo&,
-			     const TimedTextDescriptor&, ui32_t HeaderSize = 16384);
+    public:
+      MXFReader();
+      virtual ~MXFReader();
 
-	  // Writes the Timed-Text Resource to the MXF file. The file must be UTF-8
-	  // encoded. If the optional AESEncContext argument is present, the essence
-	  // is encrypted prior to writing. Fails if the file is not open, is finalized,
-	  // or an operating system error occurs.
-	  // This method may only be called once, and it must be called before any
-	  // call to WriteAncillaryResource(). RESULT_STATE will be returned if these
-	  // conditions are not met.
-	  Result_t WriteTimedTextResource(const std::string& XMLDoc, AESEncContext* = 0, HMACContext* = 0);
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	  // Writes an Ancillary Resource to the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is encrypted prior to writing.
-	  // Fails if the file is not open, is finalized, or an operating system
-	  // error occurs. RESULT_STATE will be returned if the method is called before
-	  // WriteTimedTextResource()
-	  Result_t WriteAncillaryResource(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
+      // Open the file for reading. The file must exist. Returns error if the
+      // operation cannot be completed.
+      Result_t OpenRead(const std::string& filename) const;
 
-	  // Closes the MXF file, writing the index and revised header.
-	  Result_t Finalize();
-	};
+      // Returns RESULT_INIT if the file is not open.
+      Result_t Close() const;
 
-      //
-      class MXFReader
-	{
-	  class h__Reader;
-	  mem_ptr<h__Reader> m_Reader;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFReader);
+      // Fill a TimedTextDescriptor struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillTimedTextDescriptor(TimedTextDescriptor&) const;
 
-	public:
-	  MXFReader();
-	  virtual ~MXFReader();
+      // Fill a WriterInfo struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillWriterInfo(WriterInfo&) const;
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+      // Reads the complete Timed Text Resource into the given string. Fails if the resource
+      // is encrypted and AESDecContext is NULL (use the following method to retrieve the
+      // raw ciphertet block).
+      Result_t ReadTimedTextResource(std::string&, AESDecContext* = 0, HMACContext* = 0) const;
 
-	  // Open the file for reading. The file must exist. Returns error if the
-	  // operation cannot be completed.
-	  Result_t OpenRead(const std::string& filename) const;
+      // Reads the complete Timed Text Resource from the MXF file. If the optional AESEncContext
+      // argument is present, the resource is decrypted after reading. If the MXF
+      // file is encrypted and the AESDecContext argument is NULL, the frame buffer
+      // will contain the ciphertext frame data. If the HMACContext argument is
+      // not NULL, the HMAC will be calculated (if the file supports it).
+      // Returns RESULT_INIT if the file is not open, failure if the frame number is
+      // out of range, or if optional decrypt or HAMC operations fail.
+      Result_t ReadTimedTextResource(FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
 
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t Close() const;
+      // Reads the timed-text resource having the given UUID from the MXF file. If the
+      // optional AESEncContext argument is present, the resource is decrypted after
+      // reading. If the MXF file is encrypted and the AESDecContext argument is NULL,
+      // the frame buffer will contain the ciphertext frame data. If the HMACContext
+      // argument is not NULL, the HMAC will be calculated (if the file supports it).
+      // Returns RESULT_INIT if the file is not open, failure if the frame number is
+      // out of range, or if optional decrypt or HAMC operations fail.
+      Result_t ReadAncillaryResource(const byte_t* uuid, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
 
-	  // Fill a TimedTextDescriptor struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillTimedTextDescriptor(TimedTextDescriptor&) const;
-
-	  // Fill a WriterInfo struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillWriterInfo(WriterInfo&) const;
-
-	  // Reads the complete Timed Text Resource into the given string. Fails if the resource
-	  // is encrypted and AESDecContext is NULL (use the following method to retrieve the
-	  // raw ciphertet block).
-	  Result_t ReadTimedTextResource(std::string&, AESDecContext* = 0, HMACContext* = 0) const;
-
-	  // Reads the complete Timed Text Resource from the MXF file. If the optional AESEncContext
-	  // argument is present, the resource is decrypted after reading. If the MXF
-	  // file is encrypted and the AESDecContext argument is NULL, the frame buffer
-	  // will contain the ciphertext frame data. If the HMACContext argument is
-	  // not NULL, the HMAC will be calculated (if the file supports it).
-	  // Returns RESULT_INIT if the file is not open, failure if the frame number is
-	  // out of range, or if optional decrypt or HAMC operations fail.
-	  Result_t ReadTimedTextResource(FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
-
-	  // Reads the timed-text resource having the given UUID from the MXF file. If the
-	  // optional AESEncContext argument is present, the resource is decrypted after
-	  // reading. If the MXF file is encrypted and the AESDecContext argument is NULL,
-	  // the frame buffer will contain the ciphertext frame data. If the HMACContext
-	  // argument is not NULL, the HMAC will be calculated (if the file supports it).
-	  // Returns RESULT_INIT if the file is not open, failure if the frame number is
-	  // out of range, or if optional decrypt or HAMC operations fail.
-	  Result_t ReadAncillaryResource(const byte_t* uuid, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
-
-	  // Print debugging information to stream
-	  void     DumpHeaderMetadata(FILE* = 0) const;
-	  void     DumpIndex(FILE* = 0) const;
-	};
-    } // namespace TimedText
+      // Print debugging information to stream
+      void     DumpHeaderMetadata(FILE* = 0) const;
+      void     DumpIndex(FILE* = 0) const;
+    };
+  } // namespace TimedText
 
   //---------------------------------------------------------------------------------
   //
@@ -1692,163 +1692,163 @@ namespace ASDCP {
 
     //
     class FrameBuffer : public ASDCP::FrameBuffer
-	{
-     public:
-	  FrameBuffer() {}
-	  FrameBuffer(ui32_t size) { Capacity(size); }
-	  virtual ~FrameBuffer() {}
+    {
+    public:
+      FrameBuffer() {}
+      FrameBuffer(ui32_t size) { Capacity(size); }
+      virtual ~FrameBuffer() {}
 
-	  // Print debugging information to stream (stderr default)
-	  void Dump(FILE* = 0, ui32_t dump_bytes = 0) const;
-	};
+      // Print debugging information to stream (stderr default)
+      void Dump(FILE* = 0, ui32_t dump_bytes = 0) const;
+    };
 
     // An object which opens and reads a DC Data file.  The file is expected
     // to contain exactly one complete frame of DC data essence as an unwrapped (raw)
     // byte stream.
     class BytestreamParser
-	{
-	  class h__BytestreamParser;
-	  mem_ptr<h__BytestreamParser> m_Parser;
-	  ASDCP_NO_COPY_CONSTRUCT(BytestreamParser);
+    {
+      class h__BytestreamParser;
+      mem_ptr<h__BytestreamParser> m_Parser;
+      ASDCP_NO_COPY_CONSTRUCT(BytestreamParser);
 
-     public:
-	  BytestreamParser();
-	  virtual ~BytestreamParser();
+    public:
+      BytestreamParser();
+      virtual ~BytestreamParser();
 
-	  // Opens a file for reading, parses enough data to provide a complete
+      // Opens a file for reading, parses enough data to provide a complete
       // set of stream metadata for the MXFWriter below.
-	  // The frame buffer's PlaintextOffset parameter will be set to the first
-	  // byte of the data segment. Set this value to zero if you want
-	  // encrypted headers.
-	  Result_t OpenReadFrame(const std::string& filename, FrameBuffer&) const;
+      // The frame buffer's PlaintextOffset parameter will be set to the first
+      // byte of the data segment. Set this value to zero if you want
+      // encrypted headers.
+      Result_t OpenReadFrame(const std::string& filename, FrameBuffer&) const;
 
-	  // Fill a DCDataDescriptor struct with the values from the file's bytestream.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillDCDataDescriptor(DCDataDescriptor&) const;
-	};
+      // Fill a DCDataDescriptor struct with the values from the file's bytestream.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillDCDataDescriptor(DCDataDescriptor&) const;
+    };
 
     // An object which reads a sequence of files containing DC Data.
     class SequenceParser
-	{
-	  class h__SequenceParser;
-	  mem_ptr<h__SequenceParser> m_Parser;
-	  ASDCP_NO_COPY_CONSTRUCT(SequenceParser);
+    {
+      class h__SequenceParser;
+      mem_ptr<h__SequenceParser> m_Parser;
+      ASDCP_NO_COPY_CONSTRUCT(SequenceParser);
 
-     public:
-	  SequenceParser();
-	  virtual ~SequenceParser();
+    public:
+      SequenceParser();
+      virtual ~SequenceParser();
 
-	  // Opens a directory for reading.  The directory is expected to contain one or
-	  // more files, each containing the bytestream for exactly one frame. The files
+      // Opens a directory for reading.  The directory is expected to contain one or
+      // more files, each containing the bytestream for exactly one frame. The files
       // must be named such that the frames are in temporal order when sorted
-	  // alphabetically by filename.
-	  Result_t OpenRead(const std::string& filename) const;
+      // alphabetically by filename.
+      Result_t OpenRead(const std::string& filename) const;
 
-	  // Opens a file sequence for reading.  The sequence is expected to contain one or
-	  // more filenames, each naming a file containing the bytestream for exactly one
-	  // frame.
-	  Result_t OpenRead(const std::list<std::string>& file_list) const;
+      // Opens a file sequence for reading.  The sequence is expected to contain one or
+      // more filenames, each naming a file containing the bytestream for exactly one
+      // frame.
+      Result_t OpenRead(const std::list<std::string>& file_list) const;
 
-	  // Fill a DCDataDescriptor struct with default values.
-	  // Returns RESULT_INIT if the directory is not open.
-	  Result_t FillDCDataDescriptor(DCDataDescriptor&) const;
+      // Fill a DCDataDescriptor struct with default values.
+      // Returns RESULT_INIT if the directory is not open.
+      Result_t FillDCDataDescriptor(DCDataDescriptor&) const;
 
-	  // Rewind the directory to the beginning.
-	  Result_t Reset() const;
+      // Rewind the directory to the beginning.
+      Result_t Reset() const;
 
-	  // Reads the next sequential frame in the directory and places it in the
-	  // frame buffer. Fails if the buffer is too small or the direcdtory
-	  // contains no more files.
-	  // The frame buffer's PlaintextOffset parameter will be set to the first
-	  // byte of the data segment. Set this value to zero if you want
-	  // encrypted headers.
-	  Result_t ReadFrame(FrameBuffer&) const;
-	};
+      // Reads the next sequential frame in the directory and places it in the
+      // frame buffer. Fails if the buffer is too small or the direcdtory
+      // contains no more files.
+      // The frame buffer's PlaintextOffset parameter will be set to the first
+      // byte of the data segment. Set this value to zero if you want
+      // encrypted headers.
+      Result_t ReadFrame(FrameBuffer&) const;
+    };
 
     //
     class MXFWriter
-	{
-	  class h__Writer;
-	  mem_ptr<h__Writer> m_Writer;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
+    {
+      class h__Writer;
+      mem_ptr<h__Writer> m_Writer;
+      ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
 
-     public:
-	  MXFWriter();
-	  virtual ~MXFWriter();
+    public:
+      MXFWriter();
+      virtual ~MXFWriter();
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	  // Open the file for writing. The file must not exist. Returns error if
-	  // the operation cannot be completed or if nonsensical data is discovered
-	  // in the essence descriptor.
-	  Result_t OpenWrite(const std::string& filename, const WriterInfo&,
-			     const DCDataDescriptor&, ui32_t HeaderSize = 16384);
+      // Open the file for writing. The file must not exist. Returns error if
+      // the operation cannot be completed or if nonsensical data is discovered
+      // in the essence descriptor.
+      Result_t OpenWrite(const std::string& filename, const WriterInfo&,
+                         const DCDataDescriptor&, ui32_t HeaderSize = 16384);
 
-	  // Writes a frame of essence to the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is encrypted prior to writing.
-	  // Fails if the file is not open, is finalized, or an operating system
-	  // error occurs.
-	  Result_t WriteFrame(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
+      // Writes a frame of essence to the MXF file. If the optional AESEncContext
+      // argument is present, the essence is encrypted prior to writing.
+      // Fails if the file is not open, is finalized, or an operating system
+      // error occurs.
+      Result_t WriteFrame(const FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
 
-	  // Closes the MXF file, writing the index and revised header.
-	  Result_t Finalize();
-	};
+      // Closes the MXF file, writing the index and revised header.
+      Result_t Finalize();
+    };
 
     //
     class MXFReader
-	{
-	  class h__Reader;
-	  mem_ptr<h__Reader> m_Reader;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFReader);
+    {
+      class h__Reader;
+      mem_ptr<h__Reader> m_Reader;
+      ASDCP_NO_COPY_CONSTRUCT(MXFReader);
 
-     public:
-	  MXFReader();
-	  virtual ~MXFReader();
+    public:
+      MXFReader();
+      virtual ~MXFReader();
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	  // Open the file for reading. The file must exist. Returns error if the
-	  // operation cannot be completed.
-	  Result_t OpenRead(const std::string& filename) const;
+      // Open the file for reading. The file must exist. Returns error if the
+      // operation cannot be completed.
+      Result_t OpenRead(const std::string& filename) const;
 
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t Close() const;
+      // Returns RESULT_INIT if the file is not open.
+      Result_t Close() const;
 
-	  // Fill a DCDataDescriptor struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillDCDataDescriptor(DCDataDescriptor&) const;
+      // Fill a DCDataDescriptor struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillDCDataDescriptor(DCDataDescriptor&) const;
 
-	  // Fill a WriterInfo struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillWriterInfo(WriterInfo&) const;
+      // Fill a WriterInfo struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillWriterInfo(WriterInfo&) const;
 
-	  // Reads a frame of essence from the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is decrypted after reading. If the MXF
-	  // file is encrypted and the AESDecContext argument is NULL, the frame buffer
-	  // will contain the ciphertext frame data. If the HMACContext argument is
-	  // not NULL, the HMAC will be calculated (if the file supports it).
-	  // Returns RESULT_INIT if the file is not open, failure if the frame number is
-	  // out of range, or if optional decrypt or HAMC operations fail.
-	  Result_t ReadFrame(ui32_t frame_number, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
+      // Reads a frame of essence from the MXF file. If the optional AESEncContext
+      // argument is present, the essence is decrypted after reading. If the MXF
+      // file is encrypted and the AESDecContext argument is NULL, the frame buffer
+      // will contain the ciphertext frame data. If the HMACContext argument is
+      // not NULL, the HMAC will be calculated (if the file supports it).
+      // Returns RESULT_INIT if the file is not open, failure if the frame number is
+      // out of range, or if optional decrypt or HAMC operations fail.
+      Result_t ReadFrame(ui32_t frame_number, FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
 
-	  // Using the index table read from the footer partition, lookup the frame number
-	  // and return the offset into the file at which to read that frame of essence.
-	  // Returns RESULT_INIT if the file is not open, and RESULT_RANGE if the frame number is
-	  // out of range.
-	  Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
+      // Using the index table read from the footer partition, lookup the frame number
+      // and return the offset into the file at which to read that frame of essence.
+      // Returns RESULT_INIT if the file is not open, and RESULT_RANGE if the frame number is
+      // out of range.
+      Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
 
-	  // Print debugging information to stream
-	  void     DumpHeaderMetadata(FILE* = 0) const;
-	  void     DumpIndex(FILE* = 0) const;
-	};
+      // Print debugging information to stream
+      void     DumpHeaderMetadata(FILE* = 0) const;
+      void     DumpIndex(FILE* = 0) const;
+    };
 
   } // namespace DCData
 
@@ -1874,89 +1874,89 @@ namespace ASDCP {
 
     //
     class MXFWriter
-	{
+    {
 
       class h__Writer;
-	  mem_ptr<h__Writer> m_Writer;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
+      mem_ptr<h__Writer> m_Writer;
+      ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
 
-     public:
-	  MXFWriter();
-	  virtual ~MXFWriter();
+    public:
+      MXFWriter();
+      virtual ~MXFWriter();
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	  // Open the file for writing. The file must not exist. Returns error if
-	  // the operation cannot be completed or if nonsensical data is discovered
-	  // in the essence descriptor.
-	  Result_t OpenWrite(const std::string& filename, const WriterInfo&,
-			     const AtmosDescriptor&, ui32_t HeaderSize = 16384);
+      // Open the file for writing. The file must not exist. Returns error if
+      // the operation cannot be completed or if nonsensical data is discovered
+      // in the essence descriptor.
+      Result_t OpenWrite(const std::string& filename, const WriterInfo&,
+                         const AtmosDescriptor&, ui32_t HeaderSize = 16384);
 
-	  // Writes a frame of essence to the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is encrypted prior to writing.
-	  // Fails if the file is not open, is finalized, or an operating system
-	  // error occurs.
+      // Writes a frame of essence to the MXF file. If the optional AESEncContext
+      // argument is present, the essence is encrypted prior to writing.
+      // Fails if the file is not open, is finalized, or an operating system
+      // error occurs.
       Result_t WriteFrame(const DCData::FrameBuffer&, AESEncContext* = 0, HMACContext* = 0);
 
-	  // Closes the MXF file, writing the index and revised header.
-	  Result_t Finalize();
-	};
+      // Closes the MXF file, writing the index and revised header.
+      Result_t Finalize();
+    };
 
     //
     class MXFReader
-	{
+    {
       class h__Reader;
-	  mem_ptr<h__Reader> m_Reader;
-	  ASDCP_NO_COPY_CONSTRUCT(MXFReader);
+      mem_ptr<h__Reader> m_Reader;
+      ASDCP_NO_COPY_CONSTRUCT(MXFReader);
 
-     public:
-	  MXFReader();
-	  virtual ~MXFReader();
+    public:
+      MXFReader();
+      virtual ~MXFReader();
 
-	  // Warning: direct manipulation of MXF structures can interfere
-	  // with the normal operation of the wrapper.  Caveat emptor!
-	  virtual MXF::OP1aHeader& OP1aHeader();
-	  virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
-	  virtual MXF::RIP& RIP();
+      // Warning: direct manipulation of MXF structures can interfere
+      // with the normal operation of the wrapper.  Caveat emptor!
+      virtual MXF::OP1aHeader& OP1aHeader();
+      virtual MXF::OPAtomIndexFooter& OPAtomIndexFooter();
+      virtual MXF::RIP& RIP();
 
-	  // Open the file for reading. The file must exist. Returns error if the
-	  // operation cannot be completed.
-	  Result_t OpenRead(const std::string& filename) const;
+      // Open the file for reading. The file must exist. Returns error if the
+      // operation cannot be completed.
+      Result_t OpenRead(const std::string& filename) const;
 
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t Close() const;
+      // Returns RESULT_INIT if the file is not open.
+      Result_t Close() const;
 
-	  // Fill an AtmosDescriptor struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillAtmosDescriptor(AtmosDescriptor&) const;
+      // Fill an AtmosDescriptor struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillAtmosDescriptor(AtmosDescriptor&) const;
 
-	  // Fill a WriterInfo struct with the values from the file's header.
-	  // Returns RESULT_INIT if the file is not open.
-	  Result_t FillWriterInfo(WriterInfo&) const;
+      // Fill a WriterInfo struct with the values from the file's header.
+      // Returns RESULT_INIT if the file is not open.
+      Result_t FillWriterInfo(WriterInfo&) const;
 
-	  // Reads a frame of essence from the MXF file. If the optional AESEncContext
-	  // argument is present, the essence is decrypted after reading. If the MXF
-	  // file is encrypted and the AESDecContext argument is NULL, the frame buffer
-	  // will contain the ciphertext frame data. If the HMACContext argument is
-	  // not NULL, the HMAC will be calculated (if the file supports it).
-	  // Returns RESULT_INIT if the file is not open, failure if the frame number is
-	  // out of range, or if optional decrypt or HAMC operations fail.
-	  Result_t ReadFrame(ui32_t frame_number, DCData::FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
+      // Reads a frame of essence from the MXF file. If the optional AESEncContext
+      // argument is present, the essence is decrypted after reading. If the MXF
+      // file is encrypted and the AESDecContext argument is NULL, the frame buffer
+      // will contain the ciphertext frame data. If the HMACContext argument is
+      // not NULL, the HMAC will be calculated (if the file supports it).
+      // Returns RESULT_INIT if the file is not open, failure if the frame number is
+      // out of range, or if optional decrypt or HAMC operations fail.
+      Result_t ReadFrame(ui32_t frame_number, DCData::FrameBuffer&, AESDecContext* = 0, HMACContext* = 0) const;
 
-	  // Using the index table read from the footer partition, lookup the frame number
-	  // and return the offset into the file at which to read that frame of essence.
-	  // Returns RESULT_INIT if the file is not open, and RESULT_RANGE if the frame number is
-	  // out of range.
-	  Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
+      // Using the index table read from the footer partition, lookup the frame number
+      // and return the offset into the file at which to read that frame of essence.
+      // Returns RESULT_INIT if the file is not open, and RESULT_RANGE if the frame number is
+      // out of range.
+      Result_t LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const;
 
-	  // Print debugging information to stream
-	  void     DumpHeaderMetadata(FILE* = 0) const;
-	  void     DumpIndex(FILE* = 0) const;
-	};
+      // Print debugging information to stream
+      void     DumpHeaderMetadata(FILE* = 0) const;
+      void     DumpIndex(FILE* = 0) const;
+    };
 
   } // namespace ATMOS
 

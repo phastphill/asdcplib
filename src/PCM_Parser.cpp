@@ -61,13 +61,13 @@ public:
 
 
   h__WAVParser() :
-    m_EOF(false), m_DataStart(0), m_DataLength(0), m_ReadCount(0),
-    m_FrameBufferSize(0), m_FramesRead(0) {}
+      m_EOF(false), m_DataStart(0), m_DataLength(0), m_ReadCount(0),
+      m_FrameBufferSize(0), m_FramesRead(0) {}
 
   ~h__WAVParser()
   {
     Close();
-   }
+  }
 
   Result_t OpenRead(const std::string& filename, const Rational& PictureRate);
   void     Close();
@@ -100,53 +100,53 @@ ASDCP::PCM::WAVParser::h__WAVParser::OpenRead(const std::string& filename, const
   Result_t result = m_FileReader.OpenRead(filename);
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    SimpleWaveHeader WavHeader;
+    result = WavHeader.ReadFromFile(m_FileReader, &m_DataStart);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      SimpleWaveHeader WavHeader;
-      result = WavHeader.ReadFromFile(m_FileReader, &m_DataStart);
-  
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  WavHeader.FillADesc(m_ADesc, PictureRate);
-	  m_FrameBufferSize = ASDCP::PCM::CalcFrameBufferSize(m_ADesc);
-	  m_DataLength = WavHeader.data_len;
-	  m_ADesc.ContainerDuration = m_DataLength / m_FrameBufferSize;
-	  m_ADesc.ChannelFormat = PCM::CF_NONE;
-	  Reset();
-	}
-      else
-	{
-	  ASDCP::AIFF::SimpleAIFFHeader AIFFHeader;
-	  m_FileReader.Seek(0);
-
-	  result = AIFFHeader.ReadFromFile(m_FileReader, &m_DataStart);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      AIFFHeader.FillADesc(m_ADesc, PictureRate);
-	      m_FrameBufferSize = ASDCP::PCM::CalcFrameBufferSize(m_ADesc);
-	      m_DataLength = AIFFHeader.data_len;
-	      m_ADesc.ContainerDuration = m_DataLength / m_FrameBufferSize;
-	      m_ADesc.ChannelFormat = PCM::CF_NONE;
-	      Reset();
-	    }
-	  else
-	    {
-	      SimpleRF64Header RF64Header;
-	      m_FileReader.Seek(0);
-	      result = RF64Header.ReadFromFile(m_FileReader, &m_DataStart);
-
-	      if ( ASDCP_SUCCESS(result) )
-		{
-		  RF64Header.FillADesc(m_ADesc, PictureRate);
-		  m_FrameBufferSize = ASDCP::PCM::CalcFrameBufferSize(m_ADesc);
-		  m_DataLength = RF64Header.data_len;
-		  m_ADesc.ContainerDuration = m_DataLength / m_FrameBufferSize;
-		  m_ADesc.ChannelFormat = PCM::CF_NONE;
-		  Reset();
-		}
-	    }
-	}
+      WavHeader.FillADesc(m_ADesc, PictureRate);
+      m_FrameBufferSize = ASDCP::PCM::CalcFrameBufferSize(m_ADesc);
+      m_DataLength = WavHeader.data_len;
+      m_ADesc.ContainerDuration = m_DataLength / m_FrameBufferSize;
+      m_ADesc.ChannelFormat = PCM::CF_NONE;
+      Reset();
     }
+    else
+    {
+      ASDCP::AIFF::SimpleAIFFHeader AIFFHeader;
+      m_FileReader.Seek(0);
+
+      result = AIFFHeader.ReadFromFile(m_FileReader, &m_DataStart);
+
+      if ( ASDCP_SUCCESS(result) )
+      {
+        AIFFHeader.FillADesc(m_ADesc, PictureRate);
+        m_FrameBufferSize = ASDCP::PCM::CalcFrameBufferSize(m_ADesc);
+        m_DataLength = AIFFHeader.data_len;
+        m_ADesc.ContainerDuration = m_DataLength / m_FrameBufferSize;
+        m_ADesc.ChannelFormat = PCM::CF_NONE;
+        Reset();
+      }
+      else
+      {
+        SimpleRF64Header RF64Header;
+        m_FileReader.Seek(0);
+        result = RF64Header.ReadFromFile(m_FileReader, &m_DataStart);
+
+        if ( ASDCP_SUCCESS(result) )
+        {
+          RF64Header.FillADesc(m_ADesc, PictureRate);
+          m_FrameBufferSize = ASDCP::PCM::CalcFrameBufferSize(m_ADesc);
+          m_DataLength = RF64Header.data_len;
+          m_ADesc.ContainerDuration = m_DataLength / m_FrameBufferSize;
+          m_ADesc.ChannelFormat = PCM::CF_NONE;
+          Reset();
+        }
+      }
+    }
+  }
 
   return result;
 }
@@ -158,41 +158,41 @@ ASDCP::PCM::WAVParser::h__WAVParser::ReadFrame(FrameBuffer& FB)
   FB.Size(0);
 
   if ( m_EOF )
-    {
-      return RESULT_ENDOFFILE;
-    }
+  {
+    return RESULT_ENDOFFILE;
+  }
 
   if ( FB.Capacity() < m_FrameBufferSize )
-    {
-      DefaultLogSink().Error("FrameBuf.Capacity: %u FrameLength: %u\n",
-			     FB.Capacity(), m_FrameBufferSize);
-      return RESULT_SMALLBUF;
-    }
+  {
+    DefaultLogSink().Error("FrameBuf.Capacity: %u FrameLength: %u\n",
+                           FB.Capacity(), m_FrameBufferSize);
+    return RESULT_SMALLBUF;
+  }
 
   ui32_t read_count = 0;
   Result_t result = m_FileReader.Read(FB.Data(), m_FrameBufferSize, &read_count);
 
   if ( result == RESULT_ENDOFFILE )
-    {
-      m_EOF = true;
+  {
+    m_EOF = true;
 
-      if ( read_count > 0 )
-	{
-	  result = RESULT_OK;
-	}
+    if ( read_count > 0 )
+    {
+      result = RESULT_OK;
     }
+  }
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      m_ReadCount += read_count;
-      FB.Size(read_count);
-      FB.FrameNumber(m_FramesRead++);
+  {
+    m_ReadCount += read_count;
+    FB.Size(read_count);
+    FB.FrameNumber(m_FramesRead++);
 
-      if ( read_count < FB.Capacity() )
-	{
-	  memset(FB.Data() + FB.Size(), 0, FB.Capacity() - FB.Size());
-	}
+    if ( read_count < FB.Capacity() )
+    {
+      memset(FB.Data() + FB.Size(), 0, FB.Capacity() - FB.Size());
     }
+  }
 
   return result;
 }

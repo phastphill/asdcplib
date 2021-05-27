@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    KM_log.cpp
-    \version $Id$
-    \brief   message logging API
-  */
+/*! \file    KM_log.cpp
+  \version $Id$
+  \brief   message logging API
+*/
 
 #include <KM_util.h>
 #include <KM_log.h>
@@ -108,11 +108,11 @@ Kumu::StdioLogSink::WriteEntry(const LogEntry& Entry)
   WriteEntryToListeners(Entry);
 
   if ( Entry.TestFilter(m_filter) )
-    {
-      Entry.CreateStringWithOptions(buf, m_options);
-      fputs(buf.c_str(), m_stream);
-      fflush(m_stream);
-    }
+  {
+    Entry.CreateStringWithOptions(buf, m_options);
+    fputs(buf.c_str(), m_stream);
+    fflush(m_stream);
+  }
 }
 
 //---------------------------------------------------------------------------------
@@ -149,11 +149,11 @@ Kumu::StreamLogSink::WriteEntry(const LogEntry& Entry)
   WriteEntryToListeners(Entry);
 
   if ( Entry.TestFilter(m_filter) )
-    {
-      Entry.CreateStringWithOptions(buf, m_options);
-      ssize_t n = write(m_fd, buf.c_str(), buf.size());
-      assert(n==buf.size());
-    }
+  {
+    Entry.CreateStringWithOptions(buf, m_options);
+    ssize_t n = write(m_fd, buf.c_str(), buf.size());
+    assert(n==buf.size());
+  }
 }
 
 // foolin with symbols
@@ -195,7 +195,7 @@ Kumu::SyslogLogSink::WriteEntry(const LogEntry& Entry)
   int priority;
 
   switch ( Entry.Type )
-    {
+  {
     case Kumu::LOG_ALERT:   priority = SYSLOG_ALERT; break;
     case Kumu::LOG_CRIT:    priority = SYSLOG_CRIT; break;
     case Kumu::LOG_ERROR:   priority = SYSLOG_ERR; break;
@@ -203,15 +203,15 @@ Kumu::SyslogLogSink::WriteEntry(const LogEntry& Entry)
     case Kumu::LOG_NOTICE:  priority = SYSLOG_NOTICE; break;
     case Kumu::LOG_INFO:    priority = SYSLOG_INFO; break;
     case Kumu::LOG_DEBUG:   priority = SYSLOG_DEBUG; break;
-    }
+  }
 
   AutoMutex L(m_lock);
   WriteEntryToListeners(Entry);
 
   if ( Entry.TestFilter(m_filter) )
-    {
-      syslog(priority, "%s", Entry.Msg.substr(0, Entry.Msg.size() - 1).c_str());
-    }
+  {
+    syslog(priority, "%s", Entry.Msg.substr(0, Entry.Msg.size() - 1).c_str());
+  }
 }
 
 //
@@ -259,45 +259,45 @@ bool
 Kumu::LogEntry::TestFilter(i32_t filter) const
 {
   switch ( Type )
-    {
+  {
     case LOG_CRIT:
       if ( (filter & LOG_ALLOW_CRIT) == 0 )
-	return false;
+        return false;
       break;
 
     case LOG_ALERT:
       if ( (filter & LOG_ALLOW_ALERT) == 0 )
-	return false;
+        return false;
       break;
 
     case LOG_NOTICE:
       if ( (filter & LOG_ALLOW_NOTICE) == 0 )
-	return false;
+        return false;
       break;
 
     case LOG_ERROR:
       if ( (filter & LOG_ALLOW_ERROR) == 0 )
-	return false;
+        return false;
       break;
 
     case LOG_WARN:
       if ( (filter & LOG_ALLOW_WARN) == 0 )
-	return false;
+        return false;
       break;
 
     case LOG_INFO:
       if ( (filter & LOG_ALLOW_INFO) == 0 )
-	return false;
+        return false;
       break;
 
     case LOG_DEBUG:
       if ( (filter & LOG_ALLOW_DEBUG) == 0 )
-	return false;
+        return false;
       break;
 
-    }
+  }
 
- return true;
+  return true;
 }
 
 //
@@ -307,42 +307,42 @@ Kumu::LogEntry::CreateStringWithOptions(std::string& out_buf, i32_t opt) const
   out_buf.erase();
 
   if ( opt != 0 )
+  {
+    char buf[64];
+
+    if ( (opt & LOG_OPTION_TIMESTAMP) != 0 )
     {
-      char buf[64];
-
-      if ( (opt & LOG_OPTION_TIMESTAMP) != 0 )
-	{
-	  Timestamp Now;
-	  out_buf += Now.EncodeString(buf, 64);
-	}
-
-      if ( (opt & LOG_OPTION_PID) != 0 )
-	{
-	  if ( ! out_buf.empty() )  out_buf += " ";
-	  snprintf(buf, 64, "%d", PID);
-	  out_buf += buf;
-	}
-
-      if ( (opt & LOG_OPTION_TYPE) != 0 )
-	{
-	  if ( ! out_buf.empty() )  out_buf += " ";
-	  
-	  switch ( Type )
-	    {
-	    case LOG_CRIT:   out_buf += "CRT";      break;
-	    case LOG_ALERT:  out_buf += "ALR";      break;
-	    case LOG_NOTICE: out_buf += "NTC";      break;
-	    case LOG_ERROR:  out_buf += "ERR";      break;
-	    case LOG_WARN:   out_buf += "WRN";      break;
-	    case LOG_INFO:   out_buf += "INF";      break;
-	    case LOG_DEBUG:  out_buf += "DBG";      break;
-	    default:	     out_buf += "DFL";      break;
-	    }
-	}
-
-      out_buf.insert(0, "[");
-      out_buf += "]: ";
+      Timestamp Now;
+      out_buf += Now.EncodeString(buf, 64);
     }
+
+    if ( (opt & LOG_OPTION_PID) != 0 )
+    {
+      if ( ! out_buf.empty() )  out_buf += " ";
+      snprintf(buf, 64, "%d", PID);
+      out_buf += buf;
+    }
+
+    if ( (opt & LOG_OPTION_TYPE) != 0 )
+    {
+      if ( ! out_buf.empty() )  out_buf += " ";
+
+      switch ( Type )
+      {
+        case LOG_CRIT:   out_buf += "CRT";      break;
+        case LOG_ALERT:  out_buf += "ALR";      break;
+        case LOG_NOTICE: out_buf += "NTC";      break;
+        case LOG_ERROR:  out_buf += "ERR";      break;
+        case LOG_WARN:   out_buf += "WRN";      break;
+        case LOG_INFO:   out_buf += "INF";      break;
+        case LOG_DEBUG:  out_buf += "DBG";      break;
+        default:	     out_buf += "DFL";      break;
+      }
+    }
+
+    out_buf.insert(0, "[");
+    out_buf += "]: ";
+  }
 
   out_buf += Msg;
   return out_buf;
@@ -354,9 +354,9 @@ ui32_t
 Kumu::LogEntry::ArchiveLength() const
 {
   return sizeof(ui32_t)
-    + EventTime.ArchiveLength()
-    + sizeof(ui32_t)
-    + sizeof(ui32_t) + Msg.size();
+         + EventTime.ArchiveLength()
+         + sizeof(ui32_t)
+         + sizeof(ui32_t) + Msg.size();
 }
 
 //

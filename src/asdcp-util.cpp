@@ -66,7 +66,7 @@ Copyright (c) 2003-2012 John Hurst\n\n\
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME);
+          PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME);
 }
 
 //
@@ -79,7 +79,7 @@ USAGE: %s [-h|-help] [-V]\n\
        %s -d <input-file>\n\
 \n\
        %s -g | -u\n",
-	  PROGRAM_NAME, PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, PROGRAM_NAME, PROGRAM_NAME);
 
   fprintf(stream, "\
 Major modes:\n\
@@ -116,62 +116,62 @@ public:
 
   //
   CommandOptions(int argc, const char** argv) :
-    mode(MMT_NONE), error_flag(true), version_flag(false), help_flag(false)
+      mode(MMT_NONE), error_flag(true), version_flag(false), help_flag(false)
   {
     for ( int i = 1; i < argc; ++i )
+    {
+
+      if ( (strcmp( argv[i], "-help") == 0) )
       {
-
-	if ( (strcmp( argv[i], "-help") == 0) )
-	  {
-	    help_flag = true;
-	    continue;
-	  }
-         
-	if ( argv[i][0] == '-'
-	     && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) )
-	     && argv[i][2] == 0 )
-	  {
-	    switch ( argv[i][1] )
-	      {
-	      case 'd': mode = MMT_DIGEST; break;
-	      case 'g': mode = MMT_GEN_KEY; break;
-	      case 'h': help_flag = true; break;
-	      case 'u':	mode = MMT_GEN_ID; break;
-	      case 'V': version_flag = true; break;
-
-	      default:
-		fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-		return;
-	      }
-	  }
-	else
-	  {
-	    if ( argv[i][0] != '-' )
-	      {
-		filenames.push_back(argv[i]);
-	      }
-	    else
-	      {
-		fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
-		return;
-	      }
-	  }
+        help_flag = true;
+        continue;
       }
+
+      if ( argv[i][0] == '-'
+           && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) )
+           && argv[i][2] == 0 )
+      {
+        switch ( argv[i][1] )
+        {
+          case 'd': mode = MMT_DIGEST; break;
+          case 'g': mode = MMT_GEN_KEY; break;
+          case 'h': help_flag = true; break;
+          case 'u':	mode = MMT_GEN_ID; break;
+          case 'V': version_flag = true; break;
+
+          default:
+            fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+            return;
+        }
+      }
+      else
+      {
+        if ( argv[i][0] != '-' )
+        {
+          filenames.push_back(argv[i]);
+        }
+        else
+        {
+          fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
+          return;
+        }
+      }
+    }
 
     if ( help_flag || version_flag )
       return;
-    
+
     if ( ( mode == MMT_DIGEST ) && filenames.empty() )
-      {
-	fputs("Option requires at least one filename argument.\n", stderr);
-	return;
-      }
+    {
+      fputs("Option requires at least one filename argument.\n", stderr);
+      return;
+    }
 
     if ( mode == MMT_NONE && ! help_flag && ! version_flag )
-      {
-	fputs("No operation selected (use one of -[dgu] or -h for help).\n", stderr);
-	return;
-      }
+    {
+      fputs("No operation selected (use one of -[dgu] or -h for help).\n", stderr);
+      return;
+    }
 
     error_flag = false;
   }
@@ -189,31 +189,31 @@ digest_file(const std::string& filename)
   Result_t result = Reader.OpenRead(filename.c_str());
 
   while ( ASDCP_SUCCESS(result) )
+  {
+    ui32_t read_count = 0;
+    result = Reader.Read(Buf.Data(), Buf.Capacity(), &read_count);
+
+    if ( result == RESULT_ENDOFFILE )
     {
-      ui32_t read_count = 0;
-      result = Reader.Read(Buf.Data(), Buf.Capacity(), &read_count);
-
-      if ( result == RESULT_ENDOFFILE )
-	{
-	  result = RESULT_OK;
-	  break;
-	}
-
-      if ( ASDCP_SUCCESS(result) )
-	SHA1_Update(&Ctx, Buf.Data(), read_count);
+      result = RESULT_OK;
+      break;
     }
+
+    if ( ASDCP_SUCCESS(result) )
+      SHA1_Update(&Ctx, Buf.Data(), read_count);
+  }
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      const ui32_t sha_len = 20;
-      byte_t bin_buf[sha_len];
-      char sha_buf[64];
-      SHA1_Final(bin_buf, &Ctx);
+  {
+    const ui32_t sha_len = 20;
+    byte_t bin_buf[sha_len];
+    char sha_buf[64];
+    SHA1_Final(bin_buf, &Ctx);
 
-      fprintf(stdout, "%s %s\n",
-	      base64encode(bin_buf, sha_len, sha_buf, 64),
-	      filename.c_str());
-    }
+    fprintf(stdout, "%s %s\n",
+            base64encode(bin_buf, sha_len, sha_buf, 64),
+            filename.c_str());
+  }
 
   return result;
 }
@@ -236,52 +236,52 @@ main(int argc, const char** argv)
     return 0;
 
   if ( Options.error_flag )
-    {
-      fprintf(stderr, "There was a problem. Type %s -h for help.\n",
-	      PROGRAM_NAME);
-      return 3;
-    }
+  {
+    fprintf(stderr, "There was a problem. Type %s -h for help.\n",
+            PROGRAM_NAME);
+    return 3;
+  }
 
   if ( Options.mode == MMT_GEN_KEY )
-    {
-      Kumu::FortunaRNG RNG;
-      byte_t bin_buf[ASDCP::KeyLen];
+  {
+    Kumu::FortunaRNG RNG;
+    byte_t bin_buf[ASDCP::KeyLen];
 
-      RNG.FillRandom(bin_buf, ASDCP::KeyLen);
-      printf("%s\n", Kumu::bin2hex(bin_buf, ASDCP::KeyLen, str_buf, 64));
-    }
+    RNG.FillRandom(bin_buf, ASDCP::KeyLen);
+    printf("%s\n", Kumu::bin2hex(bin_buf, ASDCP::KeyLen, str_buf, 64));
+  }
   else if ( Options.mode == MMT_GEN_ID )
-    {
-      UUID TmpID;
-      Kumu::GenRandomValue(TmpID);
-      printf("%s\n", TmpID.EncodeHex(str_buf, 64));
-    }
+  {
+    UUID TmpID;
+    Kumu::GenRandomValue(TmpID);
+    printf("%s\n", TmpID.EncodeHex(str_buf, 64));
+  }
   else if ( Options.mode == MMT_DIGEST )
-    {
-      PathList_t::iterator i;
+  {
+    PathList_t::iterator i;
 
-      for ( i = Options.filenames.begin();
-	    i != Options.filenames.end() && ASDCP_SUCCESS(result); ++i )
-	result = digest_file(*i);
-    }
+    for ( i = Options.filenames.begin();
+          i != Options.filenames.end() && ASDCP_SUCCESS(result); ++i )
+      result = digest_file(*i);
+  }
   else
-    {
-      fprintf(stderr, "Unhandled mode: %d.\n", Options.mode);
-      return 6;
-    }
+  {
+    fprintf(stderr, "Unhandled mode: %d.\n", Options.mode);
+    return 6;
+  }
 
   if ( ASDCP_FAILURE(result) )
+  {
+    fputs("Program stopped on error.\n", stderr);
+
+    if ( result != RESULT_FAIL )
     {
-      fputs("Program stopped on error.\n", stderr);
-
-      if ( result != RESULT_FAIL )
-	{
-	  fputs(result, stderr);
-	  fputc('\n', stderr);
-	}
-
-      return 1;
+      fputs(result, stderr);
+      fputc('\n', stderr);
     }
+
+    return 1;
+  }
 
   return 0;
 }

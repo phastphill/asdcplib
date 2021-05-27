@@ -59,7 +59,7 @@ ASDCP::UL::operator==(const UL& rhs) const
        m_Value[13] == rhs.m_Value[13] &&
        m_Value[14] == rhs.m_Value[14] &&
        m_Value[15] == rhs.m_Value[15]
-       )
+      )
     return true;
 
   return false;
@@ -84,8 +84,8 @@ ASDCP::UL::MatchIgnoreStream(const UL& rhs) const
        m_Value[12] == rhs.m_Value[12] &&
        m_Value[13] == rhs.m_Value[13] &&
        m_Value[14] == rhs.m_Value[14]
-       //       m_Value[15] == rhs.m_Value[15] // ignore stream number
-       )
+    //       m_Value[15] == rhs.m_Value[15] // ignore stream number
+      )
     return true;
 
   return false;
@@ -111,7 +111,7 @@ ASDCP::UL::MatchExact(const UL& rhs) const
        m_Value[13] == rhs.m_Value[13] &&
        m_Value[14] == rhs.m_Value[14] &&
        m_Value[15] == rhs.m_Value[15]
-       )
+      )
     return true;
 
   return false;
@@ -121,29 +121,29 @@ const char*
 ASDCP::UL::EncodeString(char* str_buf, ui32_t buf_len) const
 {
   if ( buf_len > 38 ) // room for dotted notation?
-    {
-      snprintf(str_buf, buf_len,
-	       "%02x%02x%02x%02x.%02x%02x%02x%02x.%02x%02x%02x%02x.%02x%02x%02x%02x",
-	       m_Value[0],  m_Value[1],  m_Value[2],  m_Value[3],
-	       m_Value[4],  m_Value[5],  m_Value[6],  m_Value[7],
-	       m_Value[8],  m_Value[9],  m_Value[10], m_Value[11],
-	       m_Value[12], m_Value[13], m_Value[14], m_Value[15]
-               );
+  {
+    snprintf(str_buf, buf_len,
+             "%02x%02x%02x%02x.%02x%02x%02x%02x.%02x%02x%02x%02x.%02x%02x%02x%02x",
+             m_Value[0],  m_Value[1],  m_Value[2],  m_Value[3],
+             m_Value[4],  m_Value[5],  m_Value[6],  m_Value[7],
+             m_Value[8],  m_Value[9],  m_Value[10], m_Value[11],
+             m_Value[12], m_Value[13], m_Value[14], m_Value[15]
+    );
 
-      return str_buf;
-    }
+    return str_buf;
+  }
   else if ( buf_len > 32 ) // room for compact?
-    {
-      snprintf(str_buf, buf_len,
-	       "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-	       m_Value[0],  m_Value[1],  m_Value[2],  m_Value[3],
-	       m_Value[4],  m_Value[5],  m_Value[6],  m_Value[7],
-	       m_Value[8],  m_Value[9],  m_Value[10], m_Value[11],
-	       m_Value[12], m_Value[13], m_Value[14], m_Value[15]
-               );
+  {
+    snprintf(str_buf, buf_len,
+             "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+             m_Value[0],  m_Value[1],  m_Value[2],  m_Value[3],
+             m_Value[4],  m_Value[5],  m_Value[6],  m_Value[7],
+             m_Value[8],  m_Value[9],  m_Value[10], m_Value[11],
+             m_Value[12], m_Value[13], m_Value[14], m_Value[15]
+    );
 
-      return str_buf;
-    }
+    return str_buf;
+  }
 
   return 0;
 }
@@ -173,7 +173,7 @@ ASDCP::UMID::MakeUMID(int Type, const UUID& AssetID)
 
   // Instance Number
   m_Value[13] = m_Value[14] = m_Value[15] = 0;
-  
+
   memcpy(&m_Value[16], AssetID.Value(), AssetID.Size());
   m_HasValue = true;
 }
@@ -190,36 +190,36 @@ ASDCP::UMID::EncodeString(char* str_buf, ui32_t buf_len) const
   assert(str_buf);
 
   snprintf(str_buf, buf_len, "[%02x%02x%02x%02x.%02x%02x%02x%02x.%02x%02x%02x%02x],%02x,%02x,%02x,%02x,",
-	   m_Value[0],  m_Value[1],  m_Value[2],  m_Value[3],
-	   m_Value[4],  m_Value[5],  m_Value[6],  m_Value[7],
-	   m_Value[8],  m_Value[9],  m_Value[10], m_Value[11],
-	   m_Value[12], m_Value[13], m_Value[14], m_Value[15]
-	   );
+           m_Value[0],  m_Value[1],  m_Value[2],  m_Value[3],
+           m_Value[4],  m_Value[5],  m_Value[6],  m_Value[7],
+           m_Value[8],  m_Value[9],  m_Value[10], m_Value[11],
+           m_Value[12], m_Value[13], m_Value[14], m_Value[15]
+  );
 
   ui32_t offset = strlen(str_buf);
 
   if ( ( m_Value[8] & 0x80 ) == 0 )
-    {
-      // half-swapped UL, use [bbaa9988.ddcc.ffee.00010203.04050607]
-      snprintf(str_buf + offset, buf_len - offset,
-	       "[%02x%02x%02x%02x.%02x%02x%02x%02x.%02x%02x%02x%02x.%02x%02x%02x%02x]",
-               m_Value[24], m_Value[25], m_Value[26], m_Value[27],
-	       m_Value[28], m_Value[29], m_Value[30], m_Value[31],
-               m_Value[16], m_Value[17], m_Value[18], m_Value[19],
-	       m_Value[20], m_Value[21], m_Value[22], m_Value[23]
-               );
-    }
+  {
+    // half-swapped UL, use [bbaa9988.ddcc.ffee.00010203.04050607]
+    snprintf(str_buf + offset, buf_len - offset,
+             "[%02x%02x%02x%02x.%02x%02x%02x%02x.%02x%02x%02x%02x.%02x%02x%02x%02x]",
+             m_Value[24], m_Value[25], m_Value[26], m_Value[27],
+             m_Value[28], m_Value[29], m_Value[30], m_Value[31],
+             m_Value[16], m_Value[17], m_Value[18], m_Value[19],
+             m_Value[20], m_Value[21], m_Value[22], m_Value[23]
+    );
+  }
   else
-    {
-      // UUID, use {00112233-4455-6677-8899-aabbccddeeff}
-      snprintf(str_buf + offset, buf_len - offset,
-	       "{%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x}",
-               m_Value[16], m_Value[17], m_Value[18], m_Value[19],
-	       m_Value[20], m_Value[21], m_Value[22], m_Value[23],
-               m_Value[24], m_Value[25], m_Value[26], m_Value[27],
-	       m_Value[28], m_Value[29], m_Value[30], m_Value[31]
-               );
-    }
+  {
+    // UUID, use {00112233-4455-6677-8899-aabbccddeeff}
+    snprintf(str_buf + offset, buf_len - offset,
+             "{%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x}",
+             m_Value[16], m_Value[17], m_Value[18], m_Value[19],
+             m_Value[20], m_Value[21], m_Value[22], m_Value[23],
+             m_Value[24], m_Value[25], m_Value[26], m_Value[27],
+             m_Value[28], m_Value[29], m_Value[30], m_Value[31]
+    );
+  }
 
   return str_buf;
 }
@@ -231,9 +231,9 @@ ASDCP::UMID::EncodeString(char* str_buf, ui32_t buf_len) const
 ASDCP::MXF::UTF16String::UTF16String(const char* sz)
 {
   if ( sz != 0 && *sz != 0 )
-    {
-      this->assign(sz);
-    }
+  {
+    this->assign(sz);
+  }
 }
 
 ASDCP::MXF::UTF16String::UTF16String(const std::string& str)
@@ -250,7 +250,7 @@ ASDCP::MXF::UTF16String::operator=(const char* sz)
 
   else
     this->assign(sz);
-  
+
   return *this;
 }
 
@@ -285,19 +285,19 @@ ASDCP::MXF::UTF16String::Unarchive(Kumu::MemIOReader* Reader)
   memset(&ps, 0, sizeof(mbstate_t));
 
   for ( ui32_t i = 0; i < length; i++ )
+  {
+    int count = wcrtomb(mb_buf, KM_i16_BE(p[i]), &ps);
+
+    if ( count == -1 )
     {
-      int count = wcrtomb(mb_buf, KM_i16_BE(p[i]), &ps);
-
-      if ( count == -1 )
-	{
-	  DefaultLogSink().Error("Unable to decode wide character 0x%04hx\n", p[i]);
-	  return false;
-	}
-
-      assert(count <= MB_LEN_MAX);
-      mb_buf[count] = 0;
-      this->append(mb_buf);
+      DefaultLogSink().Error("Unable to decode wide character 0x%04hx\n", p[i]);
+      return false;
     }
+
+    assert(count <= MB_LEN_MAX);
+    mb_buf[count] = 0;
+    this->append(mb_buf);
+  }
 
   Reader->SkipOffset(length*2);
   return true;
@@ -308,10 +308,10 @@ bool
 ASDCP::MXF::UTF16String::Archive(Kumu::MemIOWriter* Writer) const
 {
   if ( size() > IdentBufferLen )
-    {
-      DefaultLogSink().Error("String length exceeds maximum %u bytes\n", IdentBufferLen);
-      return false;
-    }
+  {
+    DefaultLogSink().Error("String length exceeds maximum %u bytes\n", IdentBufferLen);
+    return false;
+  }
 
   const char* mbp = c_str();
   wchar_t wcp;
@@ -323,30 +323,30 @@ ASDCP::MXF::UTF16String::Archive(Kumu::MemIOWriter* Writer) const
   memset(&ps, 0, sizeof(mbstate_t));
 
   while ( i < length )
+  {
+    int count = mbrtowc(&wcp, mbp+i, remainder, &ps);
+
+    if ( count == -1 )
     {
-      int count = mbrtowc(&wcp, mbp+i, remainder, &ps);
-
-      if ( count == -1 )
-	{
-	  DefaultLogSink().Error("Error decoding multi-byte sequence starting at offset %u\n", i);
-	  return false;
-	}
-      else if ( count  == 0 )
-	{
-	  break;
-	}
-
-      bool result = Writer->WriteUi16BE((ui16_t)wcp);
-
-      if ( result == false )
-	{
-	  DefaultLogSink().Error("No more space in memory IO writer\n");
-	  return false;
-	}
-
-      i += count;
-      remainder -= count;
+      DefaultLogSink().Error("Error decoding multi-byte sequence starting at offset %u\n", i);
+      return false;
     }
+    else if ( count  == 0 )
+    {
+      break;
+    }
+
+    bool result = Writer->WriteUi16BE((ui16_t)wcp);
+
+    if ( result == false )
+    {
+      DefaultLogSink().Error("No more space in memory IO writer\n");
+      return false;
+    }
+
+    i += count;
+    remainder -= count;
+  }
 
   return true;
 }
@@ -358,9 +358,9 @@ ASDCP::MXF::UTF16String::Archive(Kumu::MemIOWriter* Writer) const
 ASDCP::MXF::ISO8String::ISO8String(const char* sz)
 {
   if ( sz != 0 && *sz != 0 )
-    {
-      this->assign(sz);
-    }
+  {
+    this->assign(sz);
+  }
 }
 
 ASDCP::MXF::ISO8String::ISO8String(const std::string& str)
@@ -378,7 +378,7 @@ ASDCP::MXF::ISO8String::operator=(const char* sz)
 
   else
     this->assign(sz);
-  
+
   return *this;
 }
 
@@ -413,10 +413,10 @@ bool
 ASDCP::MXF::ISO8String::Archive(Kumu::MemIOWriter* Writer) const
 {
   if ( size() > IdentBufferLen )
-    {
-      DefaultLogSink().Error("String length exceeds maximum %u bytes\n", IdentBufferLen);
-      return false;
-    }
+  {
+    DefaultLogSink().Error("String length exceeds maximum %u bytes\n", IdentBufferLen);
+    return false;
+  }
 
   return Writer->WriteRaw((const byte_t*)c_str(), size());
 }
@@ -425,28 +425,28 @@ ASDCP::MXF::ISO8String::Archive(Kumu::MemIOWriter* Writer) const
 //
 
 ASDCP::MXF::TLVReader::TLVReader(const byte_t* p, ui32_t c, IPrimerLookup* PrimerLookup) :
-  MemIOReader(p, c), m_Lookup(PrimerLookup)
+    MemIOReader(p, c), m_Lookup(PrimerLookup)
 {
   Result_t result = RESULT_OK;
 
   while ( Remainder() > 0 && ASDCP_SUCCESS(result) )
-    {
-      TagValue Tag;
-      ui16_t pkt_len = 0;
+  {
+    TagValue Tag;
+    ui16_t pkt_len = 0;
 
-      if ( MemIOReader::ReadUi8(&Tag.a) )
-	if ( MemIOReader::ReadUi8(&Tag.b) )
-	  if ( MemIOReader::ReadUi16BE(&pkt_len) )
-	    {
-	      m_ElementMap.insert(TagMap::value_type(Tag, ItemInfo(m_size, pkt_len)));
-	      if ( SkipOffset(pkt_len) )
-		continue;;
-	    }
+    if ( MemIOReader::ReadUi8(&Tag.a) )
+      if ( MemIOReader::ReadUi8(&Tag.b) )
+        if ( MemIOReader::ReadUi16BE(&pkt_len) )
+        {
+          m_ElementMap.insert(TagMap::value_type(Tag, ItemInfo(m_size, pkt_len)));
+          if ( SkipOffset(pkt_len) )
+            continue;;
+        }
 
-      DefaultLogSink().Error("Malformed Set\n");
-      m_ElementMap.clear();
-      result = RESULT_KLV_CODING(__LINE__, __FILE__);
-    }
+    DefaultLogSink().Error("Malformed Set\n");
+    m_ElementMap.clear();
+    result = RESULT_KLV_CODING(__LINE__, __FILE__);
+  }
 }
 
 //
@@ -454,33 +454,33 @@ bool
 ASDCP::MXF::TLVReader::FindTL(const MDDEntry& Entry)
 {
   if ( m_Lookup == 0 )
-    {
-      DefaultLogSink().Error("No Lookup service\n");
-      return false;
-    }
-  
+  {
+    DefaultLogSink().Error("No Lookup service\n");
+    return false;
+  }
+
   TagValue TmpTag;
 
   if ( m_Lookup->TagForKey(Entry.ul, TmpTag) != RESULT_OK )
+  {
+    if ( Entry.tag.a == 0 )
     {
-      if ( Entry.tag.a == 0 )
-	{
-	  //	  DefaultLogSink().Debug("No such UL in this TL list: %s (%02x %02x)\n",
-	  //				 Entry.name, Entry.tag.a, Entry.tag.b);
-	  return false;
-	}
-
-      TmpTag = Entry.tag;
+      //	  DefaultLogSink().Debug("No such UL in this TL list: %s (%02x %02x)\n",
+      //				 Entry.name, Entry.tag.a, Entry.tag.b);
+      return false;
     }
+
+    TmpTag = Entry.tag;
+  }
 
   TagMap::iterator e_i = m_ElementMap.find(TmpTag);
 
   if ( e_i != m_ElementMap.end() )
-    {
-      m_size = (*e_i).second.first;
-      m_capacity = m_size + (*e_i).second.second;
-      return true;
-    }
+  {
+    m_size = (*e_i).second.first;
+    m_capacity = m_size + (*e_i).second.second;
+    return true;
+  }
 
   //  DefaultLogSink().Debug("Not Found (%02x %02x): %s\n", TmpTag.a, TmpTag.b, Entry.name);
   return false;
@@ -493,13 +493,13 @@ ASDCP::MXF::TLVReader::ReadObject(const MDDEntry& Entry, Kumu::IArchive* Object)
   ASDCP_TEST_NULL(Object);
 
   if ( FindTL(Entry) )
+  {
+    if ( m_size < m_capacity ) // don't try to unarchive an empty item
     {
-      if ( m_size < m_capacity ) // don't try to unarchive an empty item
-	{
-	  // TODO: carry on if uachive fails
-	  return Object->Unarchive(this) ? RESULT_OK : RESULT_FALSE(__LINE__, __FILE__);
-	}
+      // TODO: carry on if uachive fails
+      return Object->Unarchive(this) ? RESULT_OK : RESULT_FALSE(__LINE__, __FILE__);
     }
+  }
 
   return RESULT_FALSE;
 }
@@ -556,7 +556,7 @@ ASDCP::MXF::TLVReader::ReadUi64(const MDDEntry& Entry, ui64_t* value)
 //
 
 ASDCP::MXF::TLVWriter::TLVWriter(byte_t* p, ui32_t c, IPrimerLookup* PrimerLookup) :
-  MemIOWriter(p, c), m_Lookup(PrimerLookup)
+    MemIOWriter(p, c), m_Lookup(PrimerLookup)
 {
   assert(c > 3);
 }
@@ -566,18 +566,18 @@ ASDCP::Result_t
 ASDCP::MXF::TLVWriter::WriteTag(const MDDEntry& Entry)
 {
   if ( m_Lookup == 0 )
-    {
-      DefaultLogSink().Error("No Primer object available.\n");
-      return RESULT_FAIL;
-    }
+  {
+    DefaultLogSink().Error("No Primer object available.\n");
+    return RESULT_FAIL;
+  }
 
   TagValue TmpTag;
 
   if ( m_Lookup->InsertTag(Entry, TmpTag) != RESULT_OK )
-    {
-      DefaultLogSink().Error("No tag for entry %s\n", Entry.name);
-      return RESULT_FAIL;
-    }
+  {
+    DefaultLogSink().Error("No tag for entry %s\n", Entry.name);
+    return RESULT_FAIL;
+  }
 
   if ( ! MemIOWriter::WriteUi8(TmpTag.a) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
   if ( ! MemIOWriter::WriteUi8(TmpTag.b) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
@@ -596,17 +596,17 @@ ASDCP::MXF::TLVWriter::WriteObject(const MDDEntry& Entry, Kumu::IArchive* Object
   Result_t result = WriteTag(Entry);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      // write a temp length
-      byte_t* l_p = CurrentData();
+  {
+    // write a temp length
+    byte_t* l_p = CurrentData();
 
-      if ( ! MemIOWriter::WriteUi16BE(0) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
+    if ( ! MemIOWriter::WriteUi16BE(0) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
 
-      ui32_t before = Length();
-      if ( ! Object->Archive(this) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
-      if ( (Length() - before) > 0xffffL ) return RESULT_KLV_CODING(__LINE__, __FILE__);
-      Kumu::i2p<ui16_t>(KM_i16_BE(Length() - before), l_p);
-    }
+    ui32_t before = Length();
+    if ( ! Object->Archive(this) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
+    if ( (Length() - before) > 0xffffL ) return RESULT_KLV_CODING(__LINE__, __FILE__);
+    Kumu::i2p<ui16_t>(KM_i16_BE(Length() - before), l_p);
+  }
 
   return result;
 }
@@ -619,11 +619,11 @@ ASDCP::MXF::TLVWriter::WriteUi8(const MDDEntry& Entry, ui8_t* value)
   Result_t result = WriteTag(Entry);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      if ( ! MemIOWriter::WriteUi16BE(sizeof(ui8_t)) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
-      if ( ! MemIOWriter::WriteUi8(*value) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
-    }
-  
+  {
+    if ( ! MemIOWriter::WriteUi16BE(sizeof(ui8_t)) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
+    if ( ! MemIOWriter::WriteUi8(*value) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
+  }
+
   return result;
 }
 
@@ -635,10 +635,10 @@ ASDCP::MXF::TLVWriter::WriteUi16(const MDDEntry& Entry, ui16_t* value)
   Result_t result = WriteTag(Entry);
 
   if ( KM_SUCCESS(result) )
-    {
-      if ( ! MemIOWriter::WriteUi16BE(sizeof(ui16_t)) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
-      if ( ! MemIOWriter::WriteUi16BE(*value) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
-    }
+  {
+    if ( ! MemIOWriter::WriteUi16BE(sizeof(ui16_t)) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
+    if ( ! MemIOWriter::WriteUi16BE(*value) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
+  }
 
   return result;
 }
@@ -651,10 +651,10 @@ ASDCP::MXF::TLVWriter::WriteUi32(const MDDEntry& Entry, ui32_t* value)
   Result_t result = WriteTag(Entry);
 
   if ( KM_SUCCESS(result) )
-    {
-      if ( ! MemIOWriter::WriteUi16BE(sizeof(ui32_t)) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
-      if ( ! MemIOWriter::WriteUi32BE(*value) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
-    }
+  {
+    if ( ! MemIOWriter::WriteUi16BE(sizeof(ui32_t)) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
+    if ( ! MemIOWriter::WriteUi32BE(*value) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
+  }
 
   return result;
 }
@@ -667,10 +667,10 @@ ASDCP::MXF::TLVWriter::WriteUi64(const MDDEntry& Entry, ui64_t* value)
   Result_t result = WriteTag(Entry);
 
   if ( KM_SUCCESS(result) )
-    {
-      if ( ! MemIOWriter::WriteUi16BE(sizeof(ui64_t)) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
-      if ( ! MemIOWriter::WriteUi64BE(*value) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
-    }
+  {
+    if ( ! MemIOWriter::WriteUi16BE(sizeof(ui64_t)) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
+    if ( ! MemIOWriter::WriteUi64BE(*value) ) return RESULT_KLV_CODING(__LINE__, __FILE__);
+  }
 
   return result;
 }
@@ -698,12 +698,12 @@ static char
 get_char_for_code(byte_t c)
 {
   for ( int i = 0; ASDCP::MXF::RGBALayoutTable[i].code != 0; ++i )
+  {
+    if ( ASDCP::MXF::RGBALayoutTable[i].code == c )
     {
-      if ( ASDCP::MXF::RGBALayoutTable[i].code == c )
-	{
-	  return ASDCP::MXF::RGBALayoutTable[i].symbol;
-	}
+      return ASDCP::MXF::RGBALayoutTable[i].symbol;
     }
+  }
 
   return '_';
 }
@@ -716,16 +716,16 @@ ASDCP::MXF::RGBALayout::EncodeString(char* buf, ui32_t buf_len) const
   char tmp_buf[64];
 
   for ( int i = 0; i < RGBAValueLength && m_value[i] != 0; i += 2 )
+  {
+    snprintf(tmp_buf, 64, "%c(%d)", get_char_for_code(m_value[i]), m_value[i+1]);
+
+    if ( ! tmp_str.empty() )
     {
-      snprintf(tmp_buf, 64, "%c(%d)", get_char_for_code(m_value[i]), m_value[i+1]);
-
-      if ( ! tmp_str.empty() )
-	{
-	  tmp_str += " ";
-	}
-
-      tmp_str += tmp_buf;
+      tmp_str += " ";
     }
+
+    tmp_str += tmp_buf;
+  }
 
   assert(tmp_str.size() < buf_len);
   strncpy(buf, tmp_str.c_str(), tmp_str.size());
@@ -779,14 +779,14 @@ ASDCP::MXF::Raw::EncodeString(char* str_buf, ui32_t buf_len) const
 bool
 ASDCP::MXF::J2KExtendedCapabilitiesType::Archive(Kumu::MemIOWriter* Writer) const {
   if ( ! Writer->WriteUi32BE(Pcap) )
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
-    if ( ! Ccap.Archive(Writer) )
-    {
-        return false;
-    }
+  if ( ! Ccap.Archive(Writer) )
+  {
+    return false;
+  }
 
   return true;
 }
@@ -795,14 +795,14 @@ ASDCP::MXF::J2KExtendedCapabilitiesType::Archive(Kumu::MemIOWriter* Writer) cons
 bool
 ASDCP::MXF::J2KExtendedCapabilitiesType::Unarchive(Kumu::MemIOReader* Reader) {
   if ( ! Reader->ReadUi32BE(&Pcap) )
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
- if ( ! Ccap.Unarchive(Reader) )
-    {
-        return false;
-    }
+  if ( ! Ccap.Unarchive(Reader) )
+  {
+    return false;
+  }
 
   return true;
 }
@@ -814,18 +814,18 @@ ASDCP::MXF::J2KExtendedCapabilitiesType::EncodeString(char* str_buf, ui32_t buf_
   const int str_len = ( sizeof(ui16_t) + 1 ) * JP2K::MaxCapabilities;
 
   if ( Pcap != 0 && buf_len > str_len )
+  {
+    for ( int i = 0; i < Ccap.size(); ++i )
     {
-      for ( int i = 0; i < Ccap.size(); ++i )
-        {
-	  snprintf(str_buf+(i*3), 4, "%02hx.", Ccap[i].value);
-        }
+      snprintf(str_buf+(i*3), 4, "%02hx.", Ccap[i].value);
+    }
 
-      str_buf[str_len-1] = 0;
-    }
+    str_buf[str_len-1] = 0;
+  }
   else
-    {
-      str_buf[0] = 0;
-    }
+  {
+    str_buf[0] = 0;
+  }
 
   return str_buf;
 }

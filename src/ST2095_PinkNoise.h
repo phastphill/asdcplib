@@ -90,7 +90,7 @@ namespace ASDCP
   public:
 
     PinkFilter(const i32_t SampleRate, const float HpFc, const float LpFc);
-    
+
     // Using a white noise sample as input, produce a pink noise sample
     // having properties as defined by SMPTE ST 2095-1:2015.
     float GetNextSample(const float white);

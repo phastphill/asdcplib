@@ -59,32 +59,32 @@ namespace ASDCP
     // functor for deleting
     struct delete_input
     {
-        void operator()(PCMDataProviderInterface* i)
-        {
-            delete i;
-        }
+      void operator()(PCMDataProviderInterface* i)
+      {
+        delete i;
+      }
     };
 
     ASDCP_NO_COPY_CONSTRUCT(AtmosSyncChannelMixer);
 
-    protected:
-      PCM::AudioDescriptor m_ADesc;
-      ui32_t m_ChannelCount;
-      ui32_t m_FramesRead;
+  protected:
+    PCM::AudioDescriptor m_ADesc;
+    ui32_t m_ChannelCount;
+    ui32_t m_FramesRead;
 
-    public:
-      AtmosSyncChannelMixer(const byte_t * trackUUID);
-      virtual ~AtmosSyncChannelMixer();
+  public:
+    AtmosSyncChannelMixer(const byte_t * trackUUID);
+    virtual ~AtmosSyncChannelMixer();
 
-      const ui32_t& ChannelCount() const { return m_ChannelCount; }
+    const ui32_t& ChannelCount() const { return m_ChannelCount; }
 
-      Result_t OpenRead(ui32_t argc, const char** argv, const Rational& PictureRate);
-      Result_t OpenRead(const Kumu::PathList_t& argv, const Rational& PictureRate);
-      Result_t AppendSilenceChannels(const ui32_t& channel_count);
-      Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
-      Result_t Reset();
-      Result_t ReadFrame(PCM::FrameBuffer& OutFB);
-    };
+    Result_t OpenRead(ui32_t argc, const char** argv, const Rational& PictureRate);
+    Result_t OpenRead(const Kumu::PathList_t& argv, const Rational& PictureRate);
+    Result_t AppendSilenceChannels(const ui32_t& channel_count);
+    Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
+    Result_t Reset();
+    Result_t ReadFrame(PCM::FrameBuffer& OutFB);
+  };
 } // namespace ASDCP
 
 #endif // _ATMOSSYNCCHANNEL_MIXER_H_

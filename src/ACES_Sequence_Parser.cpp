@@ -190,35 +190,35 @@ AS_02::Result_t AS_02::ACES::SequenceParser::h__SequenceParser::OpenTargetFrameS
 
   for (i = target_frame_file_list.begin(); i != target_frame_file_list.end(); i++)
   {
-      std::string abs_filename = Kumu::PathMakeAbsolute(*i);
-        Kumu::FileReader reader;
-        result = reader.OpenRead(abs_filename);
+    std::string abs_filename = Kumu::PathMakeAbsolute(*i);
+    Kumu::FileReader reader;
+    result = reader.OpenRead(abs_filename);
 
-        if ( KM_SUCCESS(result) )
-        {
-          result = reader.Read(read_buffer, 16);
-          reader.Close();
-        }
-        if ( KM_SUCCESS(result) )
-        {
-      // is it PNG or TIFF?
-        MIMEType_t media_type = MT_UNDEF;
-        if ( memcmp(read_buffer, PNGMagic, sizeof(PNGMagic)) == 0) media_type = MT_PNG;
-        if ( memcmp(read_buffer, TIFFMagicLE, sizeof(TIFFMagicLE)) == 0) media_type = MT_TIFF;
-        if ( memcmp(read_buffer, TIFFMagicBE, sizeof(TIFFMagicBE)) == 0) media_type = MT_TIFF;
-        if (media_type != MT_UNDEF)
-        {
-          AS_02::ACES::AncillaryResourceDescriptor resource_descriptor;
-          Kumu::UUID asset_id;
-          result = CreateTargetFrameAssetId(asset_id, abs_filename);
-          memcpy(&resource_descriptor.ResourceID, asset_id.Value(), Kumu::UUID_Length);
-          resource_descriptor.Type = media_type;
-          resource_descriptor.filePath = *i;
-          if ( KM_SUCCESS(result) ) m_ResourceList_t.push_back(resource_descriptor);
-
-        }
+    if ( KM_SUCCESS(result) )
+    {
+      result = reader.Read(read_buffer, 16);
+      reader.Close();
     }
-   }
+    if ( KM_SUCCESS(result) )
+    {
+      // is it PNG or TIFF?
+      MIMEType_t media_type = MT_UNDEF;
+      if ( memcmp(read_buffer, PNGMagic, sizeof(PNGMagic)) == 0) media_type = MT_PNG;
+      if ( memcmp(read_buffer, TIFFMagicLE, sizeof(TIFFMagicLE)) == 0) media_type = MT_TIFF;
+      if ( memcmp(read_buffer, TIFFMagicBE, sizeof(TIFFMagicBE)) == 0) media_type = MT_TIFF;
+      if (media_type != MT_UNDEF)
+      {
+        AS_02::ACES::AncillaryResourceDescriptor resource_descriptor;
+        Kumu::UUID asset_id;
+        result = CreateTargetFrameAssetId(asset_id, abs_filename);
+        memcpy(&resource_descriptor.ResourceID, asset_id.Value(), Kumu::UUID_Length);
+        resource_descriptor.Type = media_type;
+        resource_descriptor.filePath = *i;
+        if ( KM_SUCCESS(result) ) m_ResourceList_t.push_back(resource_descriptor);
+
+      }
+    }
+  }
   return result;
 }
 
@@ -335,7 +335,7 @@ AS_02::Result_t AS_02::ACES::SequenceParser::ReadFrame(FrameBuffer &FB) const
 AS_02::Result_t AS_02::ACES::SequenceParser::ReadAncillaryResource(const std::string &filename, FrameBuffer &FB) const
 {
   if ( m_Parser.empty() )
-  return RESULT_INIT;
+    return RESULT_INIT;
   Kumu::FileReader reader;
   Result_t result = Kumu::RESULT_OK;
   result = reader.OpenRead(filename);

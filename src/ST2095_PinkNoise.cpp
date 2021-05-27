@@ -48,9 +48,9 @@ ASDCP::LinearCongruentialGenerator::LinearCongruentialGenerator(const ui32_t sam
   ui32_t samples_per_period = 524288;
 
   if ( sample_rate > 48000 )
-    {
-      samples_per_period = 1048576;
-    }
+  {
+    samples_per_period = 1048576;
+  }
 
   m_RandMax = samples_per_period - 1;
   m_ScaleFactor = 2.0 / float(m_RandMax);
@@ -153,13 +153,13 @@ ASDCP::PinkFilter::GetNextSample(const float white)
 
   // Limit peaks to +/-C_max_amp
   if ( pink > C_max_amp )
-    {
-      pink = C_max_amp;
-    }
+  {
+    pink = C_max_amp;
+  }
   else if ( pink < -C_max_amp )
-    {
-      pink = -C_max_amp;
-    }
+  {
+    pink = -C_max_amp;
+  }
 
   return pink;
 }
@@ -172,12 +172,12 @@ ASDCP::ScalePackSample(float sample, byte_t* p, ui32_t word_size)
   Kumu::i2p<i32_t>(KM_i32_LE(sample * C_max_ampl_32), tmp_buf);
 
   switch ( word_size )
-    {
+  {
     case 4: *p++ = tmp_buf[0];
     case 3: *p++ = tmp_buf[1];
     case 2: *p++ = tmp_buf[2];
     case 1: *p++ = tmp_buf[3];
-    }
+  }
 }
 //
 // end ST2095_PinkNoise.cpp

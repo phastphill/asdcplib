@@ -64,14 +64,14 @@ ASDCP::DecodeRational(const char* str_rational, Rational& rational)
 
   const char* p = str_rational;
   while ( *p && isdigit(*p) )
-    {
-      ++p;
-    }
+  {
+    ++p;
+  }
 
   if ( p[0] == 0 || p[1] == 0 )
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 
   ++p;
   rational.Denominator = strtol(p, 0, 10);
@@ -84,8 +84,8 @@ ASDCP::DecodeRational(const char* str_rational, Rational& rational)
 // frame buffer base class implementation
 
 ASDCP::FrameBuffer::FrameBuffer() :
-  m_Data(0), m_Capacity(0), m_OwnMem(false), m_Size(0),
-  m_FrameNumber(0), m_SourceLength(0), m_PlaintextOffset(0)
+    m_Data(0), m_Capacity(0), m_OwnMem(false), m_Size(0),
+    m_FrameNumber(0), m_SourceLength(0), m_PlaintextOffset(0)
 {
 }
 
@@ -107,15 +107,15 @@ ASDCP::FrameBuffer::SetData(byte_t* buf_addr, ui32_t buf_size)
   // drop the reference and place the object in the initialized-
   // but-no-buffer-allocated state
   if ( buf_addr == 0 )
-    {
-      if ( buf_size > 0 || m_OwnMem )
-	return RESULT_PTR;
+  {
+    if ( buf_size > 0 || m_OwnMem )
+      return RESULT_PTR;
 
-      m_OwnMem = false;
-      m_Capacity = m_Size = 0;
-      m_Data = 0;
-      return RESULT_OK;
-    }
+    m_OwnMem = false;
+    m_Capacity = m_Size = 0;
+    m_Data = 0;
+    return RESULT_OK;
+  }
 
   if ( m_OwnMem && m_Data != 0 )
     free(m_Data);
@@ -138,22 +138,22 @@ ASDCP::FrameBuffer::Capacity(ui32_t cap_size)
     return RESULT_CAPEXTMEM; // cannot resize external memory
 
   if ( m_Capacity < cap_size )
+  {
+    if ( m_Data != 0 )
     {
-      if ( m_Data != 0 )
-	{
-	  assert(m_OwnMem);
-	  free(m_Data);
-	}
-
-      m_Data = (byte_t*)malloc(cap_size);
-
-      if ( m_Data == 0 )
-	return RESULT_ALLOC;
-
-      m_Capacity = cap_size;
-      m_OwnMem = true;
-      m_Size = 0;
+      assert(m_OwnMem);
+      free(m_Data);
     }
+
+    m_Data = (byte_t*)malloc(cap_size);
+
+    if ( m_Data == 0 )
+      return RESULT_ALLOC;
+
+    m_Capacity = cap_size;
+    m_OwnMem = true;
+    m_Size = 0;
+  }
 
   return RESULT_OK;
 }

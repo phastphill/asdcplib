@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    KM_error.h
-    \version $Id$
-    \brief   error reporting support
-  */
+/*! \file    KM_error.h
+  \version $Id$
+  \brief   error reporting support
+*/
 
 
 
@@ -46,47 +46,47 @@ namespace Kumu
   // are reserved for Kumu.
 
   class Result_t
-    {
-      int value;
-      std::string label, symbol, message;
-      Result_t();
+  {
+    int value;
+    std::string label, symbol, message;
+    Result_t();
 
-    public:
-      // Return registered Result_t for the given "value" code.
-      static const Result_t& Find(int value);
+  public:
+    // Return registered Result_t for the given "value" code.
+    static const Result_t& Find(int value);
 
-      // Unregister the Result_t matching the given "value" code. Returns
-      // RESULT_FALSE if "value" does not match a registered Result_t.
-      // Returns RESULT_FAIL if ( value < -99 || value > 99 ) (Kumu core
-      // codes may not be deleted).
-      static Result_t Delete(int value);
+    // Unregister the Result_t matching the given "value" code. Returns
+    // RESULT_FALSE if "value" does not match a registered Result_t.
+    // Returns RESULT_FAIL if ( value < -99 || value > 99 ) (Kumu core
+    // codes may not be deleted).
+    static Result_t Delete(int value);
 
-      // Iteration through registered result codes, not thread safe.
-      // Get accepts contiguous values from 0 to End() - 1.
-      static unsigned int End();
-      static const Result_t& Get(unsigned int);
+    // Iteration through registered result codes, not thread safe.
+    // Get accepts contiguous values from 0 to End() - 1.
+    static unsigned int End();
+    static const Result_t& Get(unsigned int);
 
-      Result_t(int v, const std::string& s, const std::string& l);
-      Result_t(const Result_t& rhs);
-      const Result_t& operator=(const Result_t& rhs);
-      ~Result_t();
+    Result_t(int v, const std::string& s, const std::string& l);
+    Result_t(const Result_t& rhs);
+    const Result_t& operator=(const Result_t& rhs);
+    ~Result_t();
 
-      const Result_t operator()(const std::string& message) const;
-      const Result_t operator()(const int& line, const char* filename) const;
-      const Result_t operator()(const std::string& message, const int& line, const char* filename) const;
+    const Result_t operator()(const std::string& message) const;
+    const Result_t operator()(const int& line, const char* filename) const;
+    const Result_t operator()(const std::string& message, const int& line, const char* filename) const;
 
-      inline bool        operator==(const Result_t& rhs) const { return value == rhs.value; }
-      inline bool        operator!=(const Result_t& rhs) const { return value != rhs.value; }
-      inline bool        Success() const { return ! ( value < 0 ); }
-      inline bool        Failure() const { return ( value < 0 ); }
+    inline bool        operator==(const Result_t& rhs) const { return value == rhs.value; }
+    inline bool        operator!=(const Result_t& rhs) const { return value != rhs.value; }
+    inline bool        Success() const { return ! ( value < 0 ); }
+    inline bool        Failure() const { return ( value < 0 ); }
 
-      inline int         Value() const { return value; }
-      inline operator    int() const { return value; }
-      inline const char* Label() const { return label.c_str(); }
-      inline operator    const char*() const { return label.c_str(); }
-      inline const char* Symbol() const { return symbol.c_str(); }
-      inline const char* Message() const { return message.c_str(); }
-    };
+    inline int         Value() const { return value; }
+    inline operator    int() const { return value; }
+    inline const char* Label() const { return label.c_str(); }
+    inline operator    const char*() const { return label.c_str(); }
+    inline const char* Symbol() const { return symbol.c_str(); }
+    inline const char* Message() const { return message.c_str(); }
+  };
 
   KM_DECLARE_RESULT(FALSE,       1,   "Successful but not true.");
   KM_DECLARE_RESULT(OK,          0,   "Success.");
@@ -113,7 +113,7 @@ namespace Kumu
   KM_DECLARE_RESULT(DIR_CREATE, -21,  "Unable to create directory.");
   KM_DECLARE_RESULT(NOT_EMPTY,  -22,  "Unable to delete non-empty directory.");
   // 23-100 are reserved
- 
+
 } // namespace Kumu
 
 //--------------------------------------------------------------------------------
@@ -164,7 +164,7 @@ namespace Kumu
   class DTrace_t
   {
     DTrace_t();
-    
+
   protected:
     const char* m_Label;
     Result_t*   m_Watch;

@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file  KM_memio.h
-    \version $Id$
-    \brief   abstraction for byte-oriented conversion of integers and objects
-  */
+/*! \file  KM_memio.h
+  \version $Id$
+  \brief   abstraction for byte-oriented conversion of integers and objects
+*/
 
 #ifndef _KM_MEMIO_H_
 #define _KM_MEMIO_H_

@@ -52,7 +52,7 @@ MIME2str(TimedText::MIMEType_t m)
 
   else if( m == TimedText::MT_OPENTYPE )
     return "application/x-font-opentype";
-  
+
   return "application/octet-stream";
 }
 
@@ -71,10 +71,10 @@ ASDCP::TimedText::operator << (std::ostream& strm, const TimedTextDescriptor& TD
 
   TimedText::ResourceList_t::const_iterator ri;
   for ( ri = TDesc.ResourceList.begin() ; ri != TDesc.ResourceList.end(); ri++ )
-    {
-      TmpID.Set((*ri).ResourceID);
-      strm << "    " << TmpID.EncodeHex(buf, 64) << ": " << MIME2str((*ri).Type) << std::endl;
-    }
+  {
+    TmpID.Set((*ri).ResourceID);
+    strm << "    " << TmpID.EncodeHex(buf, 64) << ": " << MIME2str((*ri).Type) << std::endl;
+  }
 
   return strm;
 }
@@ -97,12 +97,12 @@ ASDCP::TimedText::DescriptorDump(ASDCP::TimedText::TimedTextDescriptor const& TD
 
   TimedText::ResourceList_t::const_iterator ri;
   for ( ri = TDesc.ResourceList.begin() ; ri != TDesc.ResourceList.end(); ri++ )
-    {
-      TmpID.Set((*ri).ResourceID);
-      fprintf(stream, "    %s: %s\n",
-	      TmpID.EncodeHex(buf, 64), 
-	      MIME2str((*ri).Type));
-    }
+  {
+    TmpID.Set((*ri).ResourceID);
+    fprintf(stream, "    %s: %s\n",
+            TmpID.EncodeHex(buf, 64),
+            MIME2str((*ri).Type));
+  }
 }
 
 //
@@ -132,7 +132,7 @@ class ASDCP::TimedText::MXFReader::h__Reader : public ASDCP::h__ASDCPReader
   ASDCP_NO_COPY_CONSTRUCT(h__Reader);
 
 public:
-  TimedTextDescriptor m_TDesc;    
+  TimedTextDescriptor m_TDesc;
 
   h__Reader(const Dictionary& d) : ASDCP::h__ASDCPReader(d), m_EssenceDescriptor(0) {
     memset(&m_TDesc.AssetID, 0, UUIDlen);
@@ -167,36 +167,36 @@ ASDCP::TimedText::MXFReader::h__Reader::MD_to_TimedText_TDesc(TimedText::TimedTe
   Result_t result = RESULT_OK;
 
   for ( ; sdi != TDescObj->SubDescriptors.end() && KM_SUCCESS(result); sdi++ )
+  {
+    InterchangeObject* tmp_iobj = 0;
+    result = m_HeaderPart.GetMDObjectByID(*sdi, &tmp_iobj);
+    DescObject = static_cast<TimedTextResourceSubDescriptor*>(tmp_iobj);
+
+    if ( KM_SUCCESS(result) )
     {
-      InterchangeObject* tmp_iobj = 0;
-      result = m_HeaderPart.GetMDObjectByID(*sdi, &tmp_iobj);
-      DescObject = static_cast<TimedTextResourceSubDescriptor*>(tmp_iobj);
+      TimedTextResourceDescriptor TmpResource;
+      memcpy(TmpResource.ResourceID, DescObject->AncillaryResourceID.Value(), UUIDlen);
 
-      if ( KM_SUCCESS(result) )
-	{
-	  TimedTextResourceDescriptor TmpResource;
-	  memcpy(TmpResource.ResourceID, DescObject->AncillaryResourceID.Value(), UUIDlen);
+      if ( DescObject->MIMEMediaType.find("application/x-font-opentype") != std::string::npos
+           || DescObject->MIMEMediaType.find("application/x-opentype") != std::string::npos
+           || DescObject->MIMEMediaType.find("font/opentype") != std::string::npos )
+        TmpResource.Type = MT_OPENTYPE;
 
-	  if ( DescObject->MIMEMediaType.find("application/x-font-opentype") != std::string::npos
-	       || DescObject->MIMEMediaType.find("application/x-opentype") != std::string::npos
-	       || DescObject->MIMEMediaType.find("font/opentype") != std::string::npos )
-	    TmpResource.Type = MT_OPENTYPE;
+      else if ( DescObject->MIMEMediaType.find("image/png") != std::string::npos )
+        TmpResource.Type = MT_PNG;
 
-	  else if ( DescObject->MIMEMediaType.find("image/png") != std::string::npos )
-	    TmpResource.Type = MT_PNG;
-
-	  else
-	    TmpResource.Type = MT_BIN;
-
-	  TDesc.ResourceList.push_back(TmpResource);
-	  m_ResourceMap.insert(ResourceMap_t::value_type(DescObject->AncillaryResourceID, *sdi));
-	}
       else
-	{
-	  DefaultLogSink().Error("Broken sub-descriptor link\n");
-	  return RESULT_FORMAT;
-	}
+        TmpResource.Type = MT_BIN;
+
+      TDesc.ResourceList.push_back(TmpResource);
+      m_ResourceMap.insert(ResourceMap_t::value_type(DescObject->AncillaryResourceID, *sdi));
     }
+    else
+    {
+      DefaultLogSink().Error("Broken sub-descriptor link\n");
+      return RESULT_FORMAT;
+    }
+  }
 
   return result;
 }
@@ -206,19 +206,19 @@ ASDCP::Result_t
 ASDCP::TimedText::MXFReader::h__Reader::OpenRead(const std::string& filename)
 {
   Result_t result = OpenMXFRead(filename);
-  
-  if( ASDCP_SUCCESS(result) )
-    {
-      if ( m_EssenceDescriptor == 0 )
-	{
-	  InterchangeObject* tmp_iobj = 0;
-	  result = m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(TimedTextDescriptor), &tmp_iobj);
-	  m_EssenceDescriptor = static_cast<MXF::TimedTextDescriptor*>(tmp_iobj);
-	}
 
-      if( ASDCP_SUCCESS(result) )
-	result = MD_to_TimedText_TDesc(m_TDesc);
+  if( ASDCP_SUCCESS(result) )
+  {
+    if ( m_EssenceDescriptor == 0 )
+    {
+      InterchangeObject* tmp_iobj = 0;
+      result = m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(TimedTextDescriptor), &tmp_iobj);
+      m_EssenceDescriptor = static_cast<MXF::TimedTextDescriptor*>(tmp_iobj);
     }
+
+    if( ASDCP_SUCCESS(result) )
+      result = MD_to_TimedText_TDesc(m_TDesc);
+  }
 
   return result;
 }
@@ -226,7 +226,7 @@ ASDCP::TimedText::MXFReader::h__Reader::OpenRead(const std::string& filename)
 //
 ASDCP::Result_t
 ASDCP::TimedText::MXFReader::h__Reader::ReadTimedTextResource(FrameBuffer& FrameBuf,
-							      AESDecContext* Ctx, HMACContext* HMAC)
+                                                              AESDecContext* Ctx, HMACContext* HMAC)
 {
   if ( ! m_File.IsOpen() )
     return RESULT_INIT;
@@ -234,30 +234,30 @@ ASDCP::TimedText::MXFReader::h__Reader::ReadTimedTextResource(FrameBuffer& Frame
   assert(m_Dict);
   Result_t result = ReadEKLVFrame(0, FrameBuf, m_Dict->ul(MDD_TimedTextEssence), Ctx, HMAC);
 
- if( ASDCP_SUCCESS(result) )
-   {
-     FrameBuf.AssetID(m_TDesc.AssetID);
-     FrameBuf.MIMEType("text/xml");
-   }
+  if( ASDCP_SUCCESS(result) )
+  {
+    FrameBuf.AssetID(m_TDesc.AssetID);
+    FrameBuf.MIMEType("text/xml");
+  }
 
- return result;
+  return result;
 }
 
 //
 ASDCP::Result_t
 ASDCP::TimedText::MXFReader::h__Reader::ReadAncillaryResource(const byte_t* uuid, FrameBuffer& frame_buf,
-							      AESDecContext* Ctx, HMACContext* HMAC)
+                                                              AESDecContext* Ctx, HMACContext* HMAC)
 {
   KM_TEST_NULL_L(uuid);
   UUID RID(uuid);
 
   ResourceMap_t::const_iterator ri = m_ResourceMap.find(RID);
   if ( ri == m_ResourceMap.end() )
-    {
-      char buf[64];
-      DefaultLogSink().Error("No such resource: %s\n", RID.EncodeHex(buf, 64));
-      return RESULT_RANGE;
-    }
+  {
+    char buf[64];
+    DefaultLogSink().Error("No such resource: %s\n", RID.EncodeHex(buf, 64));
+    return RESULT_RANGE;
+  }
 
   // get the subdescriptor
   InterchangeObject* tmp_iobj = 0;
@@ -265,16 +265,16 @@ ASDCP::TimedText::MXFReader::h__Reader::ReadAncillaryResource(const byte_t* uuid
   TimedTextResourceSubDescriptor* desc_object = dynamic_cast<TimedTextResourceSubDescriptor*>(tmp_iobj);
 
   if ( KM_SUCCESS(result) )
-    {
-      assert(desc_object);
-      result = ReadGenericStreamPartitionPayload(desc_object->EssenceStreamID, frame_buf, Ctx, HMAC);
-    }
+  {
+    assert(desc_object);
+    result = ReadGenericStreamPartitionPayload(desc_object->EssenceStreamID, frame_buf, Ctx, HMAC);
+  }
 
   if ( KM_SUCCESS(result) )
-    {
-      frame_buf.AssetID(uuid);
-      frame_buf.MIMEType(desc_object->MIMEMediaType);
-    }
+  {
+    frame_buf.AssetID(uuid);
+    frame_buf.MIMEType(desc_object->MIMEMediaType);
+  }
 
   return result;
 }
@@ -299,10 +299,10 @@ ASDCP::MXF::OP1aHeader&
 ASDCP::TimedText::MXFReader::OP1aHeader()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_OP1aHeader);
-      return *g_OP1aHeader;
-    }
+  {
+    assert(g_OP1aHeader);
+    return *g_OP1aHeader;
+  }
 
   return m_Reader->m_HeaderPart;
 }
@@ -314,10 +314,10 @@ ASDCP::MXF::OPAtomIndexFooter&
 ASDCP::TimedText::MXFReader::OPAtomIndexFooter()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_OPAtomIndexFooter);
-      return *g_OPAtomIndexFooter;
-    }
+  {
+    assert(g_OPAtomIndexFooter);
+    return *g_OPAtomIndexFooter;
+  }
 
   return m_Reader->m_IndexAccess;
 }
@@ -329,10 +329,10 @@ ASDCP::MXF::RIP&
 ASDCP::TimedText::MXFReader::RIP()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_RIP);
-      return *g_RIP;
-    }
+  {
+    assert(g_RIP);
+    return *g_RIP;
+  }
 
   return m_Reader->m_RIP;
 }
@@ -351,10 +351,10 @@ ASDCP::Result_t
 ASDCP::TimedText::MXFReader::FillTimedTextDescriptor(TimedText::TimedTextDescriptor& TDesc) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      TDesc = m_Reader->m_TDesc;
-      return RESULT_OK;
-    }
+  {
+    TDesc = m_Reader->m_TDesc;
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -365,10 +365,10 @@ ASDCP::Result_t
 ASDCP::TimedText::MXFReader::FillWriterInfo(WriterInfo& Info) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      Info = m_Reader->m_Info;
-      return RESULT_OK;
-    }
+  {
+    Info = m_Reader->m_Info;
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -390,7 +390,7 @@ ASDCP::TimedText::MXFReader::ReadTimedTextResource(std::string& s, AESDecContext
 //
 ASDCP::Result_t
 ASDCP::TimedText::MXFReader::ReadTimedTextResource(FrameBuffer& FrameBuf,
-						   AESDecContext* Ctx, HMACContext* HMAC) const
+                                                   AESDecContext* Ctx, HMACContext* HMAC) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
     return m_Reader->ReadTimedTextResource(FrameBuf, Ctx, HMAC);
@@ -401,7 +401,7 @@ ASDCP::TimedText::MXFReader::ReadTimedTextResource(FrameBuffer& FrameBuf,
 //
 ASDCP::Result_t
 ASDCP::TimedText::MXFReader::ReadAncillaryResource(const byte_t* uuid, FrameBuffer& FrameBuf,
-						   AESDecContext* Ctx, HMACContext* HMAC) const
+                                                   AESDecContext* Ctx, HMACContext* HMAC) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
     return m_Reader->ReadAncillaryResource(uuid, FrameBuf, Ctx, HMAC);
@@ -432,10 +432,10 @@ ASDCP::Result_t
 ASDCP::TimedText::MXFReader::Close() const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      m_Reader->Close();
-      return RESULT_OK;
-    }
+  {
+    m_Reader->Close();
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -495,11 +495,11 @@ ASDCP::TimedText::MXFWriter::h__Writer::OpenWrite(const std::string& filename, u
   Result_t result = m_File.OpenWrite(filename);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      m_HeaderSize = HeaderSize;
-      m_EssenceDescriptor = new MXF::TimedTextDescriptor(m_Dict);
-      result = m_State.Goto_INIT();
-    }
+  {
+    m_HeaderSize = HeaderSize;
+    m_EssenceDescriptor = new MXF::TimedTextDescriptor(m_Dict);
+    result = m_State.Goto_INIT();
+  }
 
   return result;
 }
@@ -516,54 +516,54 @@ ASDCP::TimedText::MXFWriter::h__Writer::SetSourceStream(ASDCP::TimedText::TimedT
   Result_t result = TimedText_TDesc_to_MD(m_TDesc);
 
   for ( ri = m_TDesc.ResourceList.begin() ; ri != m_TDesc.ResourceList.end() && ASDCP_SUCCESS(result); ri++ )
-    {
-      TimedTextResourceSubDescriptor* resourceSubdescriptor = new TimedTextResourceSubDescriptor(m_Dict);
-      GenRandomValue(resourceSubdescriptor->InstanceUID);
-      resourceSubdescriptor->AncillaryResourceID.Set((*ri).ResourceID);
-      resourceSubdescriptor->MIMEMediaType = MIME2str((*ri).Type);
-      resourceSubdescriptor->EssenceStreamID = m_EssenceStreamID++;
-      m_EssenceSubDescriptorList.push_back((FileDescriptor*)resourceSubdescriptor);
-      m_EssenceDescriptor->SubDescriptors.push_back(resourceSubdescriptor->InstanceUID);
+  {
+    TimedTextResourceSubDescriptor* resourceSubdescriptor = new TimedTextResourceSubDescriptor(m_Dict);
+    GenRandomValue(resourceSubdescriptor->InstanceUID);
+    resourceSubdescriptor->AncillaryResourceID.Set((*ri).ResourceID);
+    resourceSubdescriptor->MIMEMediaType = MIME2str((*ri).Type);
+    resourceSubdescriptor->EssenceStreamID = m_EssenceStreamID++;
+    m_EssenceSubDescriptorList.push_back((FileDescriptor*)resourceSubdescriptor);
+    m_EssenceDescriptor->SubDescriptors.push_back(resourceSubdescriptor->InstanceUID);
 
-      // 72 == sizeof K, L, instanceuid, uuid + sizeof int32 + tag/len * 4
-      m_HeaderSize += ( resourceSubdescriptor->MIMEMediaType.ArchiveLength() * 2 /*ArchiveLength is broken*/ ) + 72;
-    }
+    // 72 == sizeof K, L, instanceuid, uuid + sizeof int32 + tag/len * 4
+    m_HeaderSize += ( resourceSubdescriptor->MIMEMediaType.ArchiveLength() * 2 /*ArchiveLength is broken*/ ) + 72;
+  }
 
   m_EssenceStreamID = 10;
   assert(m_Dict);
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    InitHeader(MXFVersion_2004);
+
+    // First RIP Entry
+    if ( m_Info.LabelSetType == LS_MXF_SMPTE )  // ERK
     {
-      InitHeader(MXFVersion_2004);
-
-      // First RIP Entry
-      if ( m_Info.LabelSetType == LS_MXF_SMPTE )  // ERK
-	{
-	  m_RIP.PairArray.push_back(RIP::PartitionPair(0, 0)); // 3-part, no essence in header
-	}
-      else
-	{
-	  DefaultLogSink().Error("Unable to write Interop timed-text MXF file.  Use SMPTE DCP options instead.\n");
-	  return RESULT_FORMAT;
-	}
-
-      // timecode rate and essence rate are the same
-      AddSourceClip(m_TDesc.EditRate, m_TDesc.EditRate, derive_timecode_rate_from_edit_rate(m_TDesc.EditRate),
-		    TIMED_TEXT_DEF_LABEL, m_EssenceUL, UL(m_Dict->ul(MDD_DataDataDef)), TIMED_TEXT_PACKAGE_LABEL);
-
-      AddEssenceDescriptor(UL(m_Dict->ul(MDD_TimedTextWrappingClip)));
-      result = m_HeaderPart.WriteToFile(m_File, m_HeaderSize);
-      
-      if ( KM_SUCCESS(result) )
-	result = CreateBodyPart(m_TDesc.EditRate);
+      m_RIP.PairArray.push_back(RIP::PartitionPair(0, 0)); // 3-part, no essence in header
     }
+    else
+    {
+      DefaultLogSink().Error("Unable to write Interop timed-text MXF file.  Use SMPTE DCP options instead.\n");
+      return RESULT_FORMAT;
+    }
+
+    // timecode rate and essence rate are the same
+    AddSourceClip(m_TDesc.EditRate, m_TDesc.EditRate, derive_timecode_rate_from_edit_rate(m_TDesc.EditRate),
+                  TIMED_TEXT_DEF_LABEL, m_EssenceUL, UL(m_Dict->ul(MDD_DataDataDef)), TIMED_TEXT_PACKAGE_LABEL);
+
+    AddEssenceDescriptor(UL(m_Dict->ul(MDD_TimedTextWrappingClip)));
+    result = m_HeaderPart.WriteToFile(m_File, m_HeaderSize);
+
+    if ( KM_SUCCESS(result) )
+      result = CreateBodyPart(m_TDesc.EditRate);
+  }
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      memcpy(m_EssenceUL, m_Dict->ul(MDD_TimedTextEssence), SMPTE_UL_LENGTH);
-      m_EssenceUL[SMPTE_UL_LENGTH-1] = 1; // first (and only) essence container
-      result = m_State.Goto_READY();
-    }
+  {
+    memcpy(m_EssenceUL, m_Dict->ul(MDD_TimedTextEssence), SMPTE_UL_LENGTH);
+    m_EssenceUL[SMPTE_UL_LENGTH-1] = 1; // first (and only) essence container
+    result = m_State.Goto_READY();
+  }
 
   return result;
 }
@@ -571,30 +571,30 @@ ASDCP::TimedText::MXFWriter::h__Writer::SetSourceStream(ASDCP::TimedText::TimedT
 //
 ASDCP::Result_t
 ASDCP::TimedText::MXFWriter::h__Writer::WriteTimedTextResource(const std::string& XMLDoc,
-							       ASDCP::AESEncContext* Ctx, ASDCP::HMACContext* HMAC)
+                                                               ASDCP::AESEncContext* Ctx, ASDCP::HMACContext* HMAC)
 {
   Result_t result = m_State.Goto_RUNNING();
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    // TODO: make sure it's XML
+
+    ui32_t str_size = XMLDoc.size();
+    FrameBuffer FrameBuf(str_size);
+
+    memcpy(FrameBuf.Data(), XMLDoc.c_str(), str_size);
+    FrameBuf.Size(str_size);
+
+    IndexTableSegment::IndexEntry Entry;
+    Entry.StreamOffset = m_StreamOffset;
+    result = WriteEKLVPacket(FrameBuf, m_EssenceUL, MXF_BER_LENGTH, Ctx, HMAC);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      // TODO: make sure it's XML
-
-      ui32_t str_size = XMLDoc.size();
-      FrameBuffer FrameBuf(str_size);
-      
-      memcpy(FrameBuf.Data(), XMLDoc.c_str(), str_size);
-      FrameBuf.Size(str_size);
-
-      IndexTableSegment::IndexEntry Entry;
-      Entry.StreamOffset = m_StreamOffset;
-      result = WriteEKLVPacket(FrameBuf, m_EssenceUL, MXF_BER_LENGTH, Ctx, HMAC);
-
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  m_FooterPart.PushIndexEntry(Entry);
-	  m_FramesWritten++;
-	}
+      m_FooterPart.PushIndexEntry(Entry);
+      m_FramesWritten++;
     }
+  }
 
   return result;
 }
@@ -603,7 +603,7 @@ ASDCP::TimedText::MXFWriter::h__Writer::WriteTimedTextResource(const std::string
 //
 ASDCP::Result_t
 ASDCP::TimedText::MXFWriter::h__Writer::WriteAncillaryResource(const ASDCP::TimedText::FrameBuffer& FrameBuf,
-							       ASDCP::AESEncContext* Ctx, ASDCP::HMACContext* HMAC)
+                                                               ASDCP::AESEncContext* Ctx, ASDCP::HMACContext* HMAC)
 {
   if ( ! m_State.Test_RUNNING() )
     return RESULT_STATE;
@@ -663,10 +663,10 @@ ASDCP::MXF::OP1aHeader&
 ASDCP::TimedText::MXFWriter::OP1aHeader()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_OP1aHeader);
-      return *g_OP1aHeader;
-    }
+  {
+    assert(g_OP1aHeader);
+    return *g_OP1aHeader;
+  }
 
   return m_Writer->m_HeaderPart;
 }
@@ -678,10 +678,10 @@ ASDCP::MXF::OPAtomIndexFooter&
 ASDCP::TimedText::MXFWriter::OPAtomIndexFooter()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_OPAtomIndexFooter);
-      return *g_OPAtomIndexFooter;
-    }
+  {
+    assert(g_OPAtomIndexFooter);
+    return *g_OPAtomIndexFooter;
+  }
 
   return m_Writer->m_FooterPart;
 }
@@ -693,10 +693,10 @@ ASDCP::MXF::RIP&
 ASDCP::TimedText::MXFWriter::RIP()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_RIP);
-      return *g_RIP;
-    }
+  {
+    assert(g_RIP);
+    return *g_RIP;
+  }
 
   return m_Writer->m_RIP;
 }
@@ -705,17 +705,17 @@ ASDCP::TimedText::MXFWriter::RIP()
 // the operation cannot be completed.
 ASDCP::Result_t
 ASDCP::TimedText::MXFWriter::OpenWrite(const std::string& filename, const WriterInfo& Info,
-				       const TimedTextDescriptor& TDesc, ui32_t HeaderSize)
+                                       const TimedTextDescriptor& TDesc, ui32_t HeaderSize)
 {
   if ( Info.LabelSetType != LS_MXF_SMPTE )
-    {
-      DefaultLogSink().Error("Timed Text support requires LS_MXF_SMPTE\n");
-      return RESULT_FORMAT;
-    }
+  {
+    DefaultLogSink().Error("Timed Text support requires LS_MXF_SMPTE\n");
+    return RESULT_FORMAT;
+  }
 
   m_Writer = new h__Writer(DefaultSMPTEDict());
   m_Writer->m_Info = Info;
-  
+
   Result_t result = m_Writer->OpenWrite(filename, HeaderSize);
 
   if ( ASDCP_SUCCESS(result) )

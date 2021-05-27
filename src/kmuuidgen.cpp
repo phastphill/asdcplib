@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    kmuuidgen.cpp
-    \version $Id$
-    \brief   UUID generation utility
-  */
+/*! \file    kmuuidgen.cpp
+  \version $Id$
+  \brief   UUID generation utility
+*/
 
 #include "AS_DCP.h"
 #include <KM_util.h>
@@ -56,7 +56,7 @@ Copyright (c) 2003-2009 John Hurst\n\n\
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, Kumu::Version(), PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, Kumu::Version(), PROGRAM_NAME, PROGRAM_NAME);
 }
 
 //
@@ -92,45 +92,45 @@ public:
   bool   help_flag;       // true if the help display option was selected
   bool   verbose_flag;    // true if the verbose flag was selected
 
- //
+  //
   CommandOptions(int argc, const char** argv) :
-    error_flag(true), no_newline_flag(false), c_array_flag(false), version_flag(false),
-    help_flag(false), verbose_flag(false)
+      error_flag(true), no_newline_flag(false), c_array_flag(false), version_flag(false),
+      help_flag(false), verbose_flag(false)
   {
     for ( int i = 1; i < argc; i++ )
+    {
+
+      if ( (strcmp( argv[i], "-help") == 0) )
       {
-
-	 if ( (strcmp( argv[i], "-help") == 0) )
-	   {
-	     help_flag = true;
-	     continue;
-	   }
-     
-	if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
-	  {
-	    switch ( argv[i][1] )
-	      {
-	      case 'c': c_array_flag = true; break;
-	      case 'n': no_newline_flag = true; break;
-	      case 'h': help_flag = true; break;
-	      case 'v': verbose_flag = true; break;
-	      case 'V': version_flag = true; break;
-
-	      default:
-		fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-		return;
-	      }
-	  }
-	else
-	  {
-	    fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-	    return;
-	  }
+        help_flag = true;
+        continue;
       }
+
+      if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
+      {
+        switch ( argv[i][1] )
+        {
+          case 'c': c_array_flag = true; break;
+          case 'n': no_newline_flag = true; break;
+          case 'h': help_flag = true; break;
+          case 'v': verbose_flag = true; break;
+          case 'V': version_flag = true; break;
+
+          default:
+            fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+            return;
+        }
+      }
+      else
+      {
+        fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+        return;
+      }
+    }
 
     if ( help_flag || version_flag )
       return;
-    
+
     error_flag = false;
   }
 };
@@ -143,7 +143,7 @@ main(int argc, const char** argv)
 {
   CommandOptions Options(argc, argv);
 
-   if ( Options.version_flag )
+  if ( Options.version_flag )
     banner();
 
   if ( Options.help_flag )
@@ -153,35 +153,35 @@ main(int argc, const char** argv)
     return 0;
 
   if ( Options.error_flag )
-    {
-      fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
-      return 3;
-    }
+  {
+    fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
+    return 3;
+  }
 
   Kumu::UUID UUID;
   Kumu::GenRandomValue(UUID);
   char uuid_buf[40];
 
   if ( Options.c_array_flag )
-    {
-      const byte_t* p = UUID.Value();
+  {
+    const byte_t* p = UUID.Value();
 
-      printf("\
+    printf("\
 byte_t uuid_buf[16] = {\n\
   // %s\n ",
-	     UUID.EncodeHex(uuid_buf, 40));
-	  
-      for ( ui32_t i = 0; i < 16; i++ )
-	printf(" 0x%02x,", p[i]);
+           UUID.EncodeHex(uuid_buf, 40));
 
-      printf("\n");
-      printf("};\n");
-      return 0;
-    }
+    for ( ui32_t i = 0; i < 16; i++ )
+      printf(" 0x%02x,", p[i]);
+
+    printf("\n");
+    printf("};\n");
+    return 0;
+  }
   else
-    {
-      fputs(UUID.EncodeHex(uuid_buf, 40), stdout);
-    }
+  {
+    fputs(UUID.EncodeHex(uuid_buf, 40), stdout);
+  }
 
   if ( Options.no_newline_flag == 0 )
     printf("\n");

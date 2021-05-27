@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    KM_mutex.h
-    \version $Id$
-    \brief   platform portability
-  */
+/*! \file    KM_mutex.h
+  \version $Id$
+  \brief   platform portability
+*/
 
 #ifndef _KM_MUTEX_H_
 #define _KM_MUTEX_H_
@@ -54,31 +54,31 @@ namespace Kumu
     };
 #else // KM_WIN32
   class Mutex
-    {
-      pthread_mutex_t m_Mutex;
-      KM_NO_COPY_CONSTRUCT(Mutex);
-      
-    public:
-      inline Mutex()       { pthread_mutex_init(&m_Mutex, 0); }
-      inline ~Mutex()      { pthread_mutex_destroy(&m_Mutex); }
-      inline void Lock()   { pthread_mutex_lock(&m_Mutex); }
-      inline void Unlock() { pthread_mutex_unlock(&m_Mutex); }
-    };
+  {
+    pthread_mutex_t m_Mutex;
+    KM_NO_COPY_CONSTRUCT(Mutex);
+
+  public:
+    inline Mutex()       { pthread_mutex_init(&m_Mutex, 0); }
+    inline ~Mutex()      { pthread_mutex_destroy(&m_Mutex); }
+    inline void Lock()   { pthread_mutex_lock(&m_Mutex); }
+    inline void Unlock() { pthread_mutex_unlock(&m_Mutex); }
+  };
 #endif // KM_WIN32
 
   // automatic Mutex management within a block - 
   // the mutex is created by the constructor and
   // released by the destructor
   class AutoMutex
-    {
-      Mutex& m_Mutex;
-      AutoMutex();
-      KM_NO_COPY_CONSTRUCT(AutoMutex);
+  {
+    Mutex& m_Mutex;
+    AutoMutex();
+    KM_NO_COPY_CONSTRUCT(AutoMutex);
 
-    public:
-      AutoMutex(Mutex& Mtx) : m_Mutex(Mtx) { m_Mutex.Lock(); }
-      ~AutoMutex() { m_Mutex.Unlock(); }
-    };
+  public:
+    AutoMutex(Mutex& Mtx) : m_Mutex(Mtx) { m_Mutex.Lock(); }
+    ~AutoMutex() { m_Mutex.Unlock(); }
+  };
 
 } // namespace Kumu
 

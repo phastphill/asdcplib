@@ -104,12 +104,12 @@ namespace AS_02 {
        * otherwise the reader is reset and the file is left is an undermined state.
        */
       Result_t OpenWrite(
-        const std::string& filename,
-        const ASDCP::WriterInfo& Info,
-        const ASDCP::MXF::IABSoundfieldLabelSubDescriptor& sub,
-        const std::vector<ASDCP::UL>& conformsToSpecs,
-        const ASDCP::Rational& edit_rate,
-        const ASDCP::Rational& sampling_rate = ASDCP::SampleRate_48k
+          const std::string& filename,
+          const ASDCP::WriterInfo& Info,
+          const ASDCP::MXF::IABSoundfieldLabelSubDescriptor& sub,
+          const std::vector<ASDCP::UL>& conformsToSpecs,
+          const ASDCP::Rational& edit_rate,
+          const ASDCP::Rational& sampling_rate = ASDCP::SampleRate_48k
       );
 
       /**

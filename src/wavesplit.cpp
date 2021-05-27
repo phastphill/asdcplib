@@ -74,7 +74,7 @@ Copyright (c) 2005-2009 John Hurst\n\n\
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME, PROGRAM_NAME);
 }
 
 //
@@ -120,67 +120,67 @@ public:
   const char* filename;  // filename to be processed
 
   CommandOptions(int argc, const char** argv) :
-    error_flag(true), create_flag(false), info_flag(false),
-    version_flag(false), help_flag(false), start_frame(0),
-    duration(0xffffffff), file_root(0), filename(0)
+      error_flag(true), create_flag(false), info_flag(false),
+      version_flag(false), help_flag(false), start_frame(0),
+      duration(0xffffffff), file_root(0), filename(0)
   {
     for ( int i = 1; i < argc; i++ )
+    {
+      if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
       {
-	if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
-	  {
-	    switch ( argv[i][1] )
-	      {
-	      case 'c':
-		TEST_SET_MAJOR_MODE(create_flag);
-		TEST_EXTRA_ARG(i, 'c');
-		file_root = argv[i];
-		break;
+        switch ( argv[i][1] )
+        {
+          case 'c':
+          TEST_SET_MAJOR_MODE(create_flag);
+            TEST_EXTRA_ARG(i, 'c');
+            file_root = argv[i];
+            break;
 
-	      case 'd':
-		TEST_EXTRA_ARG(i, 'd');
-		duration = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
+          case 'd':
+            TEST_EXTRA_ARG(i, 'd');
+            duration = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
 
-	      case 'f':
-		TEST_EXTRA_ARG(i, 'f');
-		start_frame = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
+          case 'f':
+            TEST_EXTRA_ARG(i, 'f');
+            start_frame = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
 
-	      case 'h': help_flag = true; break;
-	      case 'i': TEST_SET_MAJOR_MODE(info_flag); break;
-	      case 'V': version_flag = true; break;
+          case 'h': help_flag = true; break;
+          case 'i': TEST_SET_MAJOR_MODE(info_flag); break;
+          case 'V': version_flag = true; break;
 
-	      default:
-		fprintf(stderr, "Unrecognized option: %c\n", argv[i][1]);
-		return;
-	      }
-	  }
-	else
-	  {
-	    if ( filename )
-	      {
-		fprintf(stderr, "Unexpected extra filename.\n");
-		return;
-	      }
-
-	    filename = argv[i];
-	  }
+          default:
+            fprintf(stderr, "Unrecognized option: %c\n", argv[i][1]);
+            return;
+        }
       }
+      else
+      {
+        if ( filename )
+        {
+          fprintf(stderr, "Unexpected extra filename.\n");
+          return;
+        }
+
+        filename = argv[i];
+      }
+    }
 
     if ( TEST_MAJOR_MODE() )
+    {
+      if ( filename == 0 )
       {
-	if ( filename == 0 )
-	  {
-	    fputs("Input filename required.\n", stderr);
-	    return;
-	  }
+        fputs("Input filename required.\n", stderr);
+        return;
       }
+    }
 
     if ( ! TEST_MAJOR_MODE() && ! help_flag && ! version_flag )
-      {
-	fputs("No operation selected (use one of -(ic) or -h for help).\n", stderr);
-	return;
-      }
+    {
+      fputs("No operation selected (use one of -(ic) or -h for help).\n", stderr);
+      return;
+    }
 
     error_flag = false;
   }
@@ -198,14 +198,14 @@ wav_file_info(CommandOptions& Options)
   Result_t result = Parser.OpenRead(Options.filename, PictureRate);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      Parser.FillAudioDescriptor(ADesc);
-      ADesc.EditRate = PictureRate;
-      fprintf(stderr, "48Khz PCM Audio, %s fps (%u spf)\n", "24",
-	      PCM::CalcSamplesPerFrame(ADesc));
-      fputs("AudioDescriptor:\n", stderr);
-      PCM::AudioDescriptorDump(ADesc);
-    }
+  {
+    Parser.FillAudioDescriptor(ADesc);
+    ADesc.EditRate = PictureRate;
+    fprintf(stderr, "48Khz PCM Audio, %s fps (%u spf)\n", "24",
+            PCM::CalcSamplesPerFrame(ADesc));
+    fputs("AudioDescriptor:\n", stderr);
+    PCM::AudioDescriptorDump(ADesc);
+  }
 
   return result;
 }
@@ -213,7 +213,7 @@ wav_file_info(CommandOptions& Options)
 //
 void
 split_buffer(ui32_t sample_size, PCM::FrameBuffer& FrameBuffer,
-	     PCM::FrameBuffer& L_FrameBuffer, PCM::FrameBuffer& R_FrameBuffer)
+             PCM::FrameBuffer& L_FrameBuffer, PCM::FrameBuffer& R_FrameBuffer)
 {
   assert((FrameBuffer.Size() % 2) == 0);
   byte_t* p = FrameBuffer.Data();
@@ -222,14 +222,14 @@ split_buffer(ui32_t sample_size, PCM::FrameBuffer& FrameBuffer,
   byte_t* rp = R_FrameBuffer.Data();
 
   for ( ; p < end_p; )
-    {
-      memcpy(lp, p, sample_size);
-      lp += sample_size;
-      p += sample_size;
-      memcpy(rp, p, sample_size);
-      rp += sample_size;
-      p += sample_size;
-    }
+  {
+    memcpy(lp, p, sample_size);
+    lp += sample_size;
+    p += sample_size;
+    memcpy(rp, p, sample_size);
+    rp += sample_size;
+    p += sample_size;
+  }
 
   L_FrameBuffer.Size(L_FrameBuffer.Capacity());
   R_FrameBuffer.Size(R_FrameBuffer.Capacity());
@@ -250,103 +250,103 @@ split_wav_file(CommandOptions& Options)
   Result_t result = Parser.OpenRead(Options.filename, PictureRate);
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    Parser.FillAudioDescriptor(ADesc);
+
+    ADesc.EditRate = PictureRate;
+    ui32_t fb_size = PCM::CalcFrameBufferSize(ADesc);
+    assert((fb_size % 2) == 0);
+    FrameBuffer.Capacity(fb_size);
+    L_FrameBuffer.Capacity(fb_size/2);
+    R_FrameBuffer.Capacity(fb_size/2);
+
+    if ( Options.verbose_flag )
     {
-      Parser.FillAudioDescriptor(ADesc);
-
-      ADesc.EditRate = PictureRate;
-      ui32_t fb_size = PCM::CalcFrameBufferSize(ADesc);
-      assert((fb_size % 2) == 0);
-      FrameBuffer.Capacity(fb_size);
-      L_FrameBuffer.Capacity(fb_size/2);
-      R_FrameBuffer.Capacity(fb_size/2);
-
-      if ( Options.verbose_flag )
-	{
-	  fprintf(stderr, "48Khz PCM Audio, %s fps (%u spf)\n", "24",
-		  PCM::CalcSamplesPerFrame(ADesc));
-	  fputs("AudioDescriptor:\n", stderr);
-	  PCM::AudioDescriptorDump(ADesc);
-	}
-
-      ADesc.ChannelCount = 1;
+      fprintf(stderr, "48Khz PCM Audio, %s fps (%u spf)\n", "24",
+              PCM::CalcSamplesPerFrame(ADesc));
+      fputs("AudioDescriptor:\n", stderr);
+      PCM::AudioDescriptorDump(ADesc);
     }
+
+    ADesc.ChannelCount = 1;
+  }
 
   // set up output files
   Kumu::FileWriter L_OutFile;
   Kumu::FileWriter R_OutFile;
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      char filename[256];
-      snprintf(filename, 256, "%s_l.wav", Options.file_root);
-      result = L_OutFile.OpenWrite(filename);
+  {
+    char filename[256];
+    snprintf(filename, 256, "%s_l.wav", Options.file_root);
+    result = L_OutFile.OpenWrite(filename);
 
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  snprintf(filename, 256, "%s_r.wav", Options.file_root);
-	  result = R_OutFile.OpenWrite(filename);
-	}
+    if ( ASDCP_SUCCESS(result) )
+    {
+      snprintf(filename, 256, "%s_r.wav", Options.file_root);
+      result = R_OutFile.OpenWrite(filename);
     }
+  }
 
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    Wav::SimpleWaveHeader WavHeader(ADesc);
+    result = WavHeader.WriteToFile(L_OutFile);
+
+    if ( ASDCP_SUCCESS(result) )
+      result = WavHeader.WriteToFile(R_OutFile);
+  }
+
+  if ( ASDCP_SUCCESS(result) )
+  {
+    ui32_t write_count = 0;
+    ui32_t duration = 0;
+
+    while ( ASDCP_SUCCESS(result) && (duration++ < Options.duration) )
     {
+      result = Parser.ReadFrame(FrameBuffer);
+
+      if ( FrameBuffer.Size() != FrameBuffer.Capacity() )
+      {
+        fprintf(stderr, "WARNING: Last frame read was short, PCM input is possibly not frame aligned.\n");
+        fprintf(stderr, "Expecting %u bytes, got %u.\n", FrameBuffer.Capacity(), FrameBuffer.Size());
+        result = RESULT_ENDOFFILE;
+        continue;
+      }
+
+      if ( Options.verbose_flag )
+        FrameBuffer.Dump(stderr);
+
+      if ( ASDCP_SUCCESS(result) )
+      {
+        split_buffer(PCM::CalcSampleSize(ADesc), FrameBuffer, L_FrameBuffer, R_FrameBuffer);
+        result = L_OutFile.Write(L_FrameBuffer.Data(), L_FrameBuffer.Size(), &write_count);
+
+        if ( ASDCP_SUCCESS(result) )
+          result = R_OutFile.Write(R_FrameBuffer.Data(), R_FrameBuffer.Size(), &write_count);
+      }
+    }
+
+    if ( result == RESULT_ENDOFFILE )
+      result = RESULT_OK;
+
+    if ( ASDCP_SUCCESS(result) )
+    {
+      ADesc.ContainerDuration = duration;
       Wav::SimpleWaveHeader WavHeader(ADesc);
-      result = WavHeader.WriteToFile(L_OutFile);
+      L_OutFile.Seek();
 
       if ( ASDCP_SUCCESS(result) )
-	result = WavHeader.WriteToFile(R_OutFile);
-    }
-
-  if ( ASDCP_SUCCESS(result) )
-    {
-      ui32_t write_count = 0;
-      ui32_t duration = 0;
-
-      while ( ASDCP_SUCCESS(result) && (duration++ < Options.duration) )
-	{
-	  result = Parser.ReadFrame(FrameBuffer);
-
-	  if ( FrameBuffer.Size() != FrameBuffer.Capacity() )
-	    {
-	      fprintf(stderr, "WARNING: Last frame read was short, PCM input is possibly not frame aligned.\n");
-	      fprintf(stderr, "Expecting %u bytes, got %u.\n", FrameBuffer.Capacity(), FrameBuffer.Size());
-	      result = RESULT_ENDOFFILE;
-	      continue;
-	    }
-
-	  if ( Options.verbose_flag )
-	    FrameBuffer.Dump(stderr);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      split_buffer(PCM::CalcSampleSize(ADesc), FrameBuffer, L_FrameBuffer, R_FrameBuffer);
-	      result = L_OutFile.Write(L_FrameBuffer.Data(), L_FrameBuffer.Size(), &write_count);
-
-	      if ( ASDCP_SUCCESS(result) )
-		result = R_OutFile.Write(R_FrameBuffer.Data(), R_FrameBuffer.Size(), &write_count);
-	    }
-	}
-
-      if ( result == RESULT_ENDOFFILE )
-	result = RESULT_OK;
+        result = R_OutFile.Seek();
 
       if ( ASDCP_SUCCESS(result) )
-	{
-	  ADesc.ContainerDuration = duration;
-	  Wav::SimpleWaveHeader WavHeader(ADesc);
-	  L_OutFile.Seek();
+        result = WavHeader.WriteToFile(L_OutFile);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    result = R_OutFile.Seek();
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = WavHeader.WriteToFile(L_OutFile);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = WavHeader.WriteToFile(R_OutFile);
-	}
+      if ( ASDCP_SUCCESS(result) )
+        result = WavHeader.WriteToFile(R_OutFile);
     }
+  }
 
   return RESULT_OK;
 }
@@ -360,10 +360,10 @@ main(int argc, const char** argv)
   CommandOptions Options(argc, argv);
 
   if ( Options.help_flag )
-    {
-      usage();
-      return 0;
-    }
+  {
+    usage();
+    return 0;
+  }
 
   if ( Options.error_flag )
     return 3;
@@ -378,17 +378,17 @@ main(int argc, const char** argv)
     result = split_wav_file(Options);
 
   if ( result != RESULT_OK )
+  {
+    fputs("Program stopped on error.\n", stderr);
+
+    if ( result != RESULT_FAIL )
     {
-      fputs("Program stopped on error.\n", stderr);
-
-      if ( result != RESULT_FAIL )
-	{
-	  fputs(result, stderr);
-	  fputc('\n', stderr);
-	}
-
-      return 1;
+      fputs(result, stderr);
+      fputc('\n', stderr);
     }
+
+    return 1;
+  }
 
   return 0;
 }

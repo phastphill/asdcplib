@@ -68,7 +68,7 @@ const ui32_t FRAME_BUFFER_SIZE = 4 * Kumu::Megabyte;
 
 static const char* PROGRAM_NAME = "asdcp-test";  // program name for messages
 const ui32_t MAX_IN_FILES = 16;             // maximum number of input files handled by
-                                            //   the command option parser
+//   the command option parser
 
 // local program identification info written to file headers
 class MyInfo : public WriterInfo
@@ -76,14 +76,14 @@ class MyInfo : public WriterInfo
 public:
   MyInfo()
   {
-      static byte_t default_ProductUUID_Data[UUIDlen] =
-      { 0x7d, 0x83, 0x6e, 0x16, 0x37, 0xc7, 0x4c, 0x22,
-	0xb2, 0xe0, 0x46, 0xa7, 0x17, 0xe8, 0x4f, 0x42 };
-      
-      memcpy(ProductUUID, default_ProductUUID_Data, UUIDlen);
-      CompanyName = "WidgetCo";
-      ProductName = "asdcp-test";
-      ProductVersion = ASDCP::Version();
+    static byte_t default_ProductUUID_Data[UUIDlen] =
+        { 0x7d, 0x83, 0x6e, 0x16, 0x37, 0xc7, 0x4c, 0x22,
+          0xb2, 0xe0, 0x46, 0xa7, 0x17, 0xe8, 0x4f, 0x42 };
+
+    memcpy(ProductUUID, default_ProductUUID_Data, UUIDlen);
+    CompanyName = "WidgetCo";
+    ProductName = "asdcp-test";
+    ProductVersion = ASDCP::Version();
   }
 } s_MyInfo;
 
@@ -107,7 +107,7 @@ Copyright (c) 2003-2015 John Hurst\n\n\
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME);
+          PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME);
 }
 
 //
@@ -133,8 +133,8 @@ USAGE: %s -c <output-file> [-3] [-a <uuid>] [-b <buffer-size>]\n\
        %s -x <file-prefix> [-3] [-b <buffer-size>] [-d <duration>]\n\
        [-f <starting-frame>] [-m] [-p <frame-rate>] [-R] [-s <num>] [-S|-1]\n\
        [-v] [-W] [-w] <input-file>\n\n",
-	  PROGRAM_NAME, PROGRAM_NAME, PROGRAM_NAME, PROGRAM_NAME,
-	  PROGRAM_NAME, PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, PROGRAM_NAME, PROGRAM_NAME, PROGRAM_NAME,
+          PROGRAM_NAME, PROGRAM_NAME, PROGRAM_NAME);
 
   fprintf(stream, "\
 Major modes:\n\
@@ -231,7 +231,7 @@ decode_channel_fmt(const std::string& label_name)
 
   else if ( label_name == "6.1" )
     return PCM::CF_CFG_2;
-  
+
   else if ( label_name == "7.1" )
     return PCM::CF_CFG_3;
 
@@ -337,203 +337,203 @@ public:
 
   //
   CommandOptions(int argc, const char** argv) :
-    mode(MMT_NONE), error_flag(true), key_flag(false), key_id_flag(false), asset_id_flag(false),
-    encrypt_header_flag(true), write_hmac(true), read_hmac(false), split_wav(false), mono_wav(false),
-    verbose_flag(false), fb_dump_size(0), showindex_flag(false), showheader_flag(false),
-    no_write_flag(false), version_flag(false), help_flag(false), stereo_image_flag(false),
-    number_width(6), start_frame(0),
-    duration(0xffffffff), duration_flag(false), do_repeat(false), use_smpte_labels(false), j2c_pedantic(true),
-    picture_rate(24), fb_size(FRAME_BUFFER_SIZE), file_count(0), file_root(0), out_file(0),
-    channel_fmt(PCM::CF_NONE)
+      mode(MMT_NONE), error_flag(true), key_flag(false), key_id_flag(false), asset_id_flag(false),
+      encrypt_header_flag(true), write_hmac(true), read_hmac(false), split_wav(false), mono_wav(false),
+      verbose_flag(false), fb_dump_size(0), showindex_flag(false), showheader_flag(false),
+      no_write_flag(false), version_flag(false), help_flag(false), stereo_image_flag(false),
+      number_width(6), start_frame(0),
+      duration(0xffffffff), duration_flag(false), do_repeat(false), use_smpte_labels(false), j2c_pedantic(true),
+      picture_rate(24), fb_size(FRAME_BUFFER_SIZE), file_count(0), file_root(0), out_file(0),
+      channel_fmt(PCM::CF_NONE)
   {
     memset(key_value, 0, KeyLen);
     memset(key_id_value, 0, UUIDlen);
 
     for ( int i = 1; i < argc; i++ )
+    {
+
+      if ( (strcmp( argv[i], "-help") == 0) )
+      {
+        help_flag = true;
+        continue;
+      }
+
+      if ( argv[i][0] == '-'
+           && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) )
+           && argv[i][2] == 0 )
+      {
+        switch ( argv[i][1] )
+        {
+          case '1': mono_wav = true; break;
+          case '2': split_wav = true; break;
+          case '3': stereo_image_flag = true; break;
+
+          case 'a':
+            asset_id_flag = true;
+            TEST_EXTRA_ARG(i, 'a');
+            {
+              ui32_t length;
+              Kumu::hex2bin(argv[i], asset_id_value, UUIDlen, &length);
+
+              if ( length != UUIDlen )
+              {
+                fprintf(stderr, "Unexpected asset ID length: %u, expecting %u characters.\n", length, UUIDlen);
+                return;
+              }
+            }
+            break;
+
+          case 'b':
+            TEST_EXTRA_ARG(i, 'b');
+            fb_size = Kumu::xabs(strtol(argv[i], 0, 10));
+
+            if ( verbose_flag )
+              fprintf(stderr, "Frame Buffer size: %u bytes.\n", fb_size);
+
+            break;
+
+          case 'c':
+            TEST_EXTRA_ARG(i, 'c');
+            mode = MMT_CREATE;
+            out_file = argv[i];
+            break;
+
+          case 'd':
+            TEST_EXTRA_ARG(i, 'd');
+            duration_flag = true;
+            duration = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'E': encrypt_header_flag = false; break;
+          case 'e': encrypt_header_flag = true; break;
+
+          case 'f':
+            TEST_EXTRA_ARG(i, 'f');
+            start_frame = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'G': mode = MMT_GOP_START; break;
+          case 'g': mode = MMT_GEN_KEY; break;
+          case 'H': showheader_flag = true; break;
+          case 'h': help_flag = true; break;
+          case 'i': mode = MMT_INFO;	break;
+
+          case 'j': key_id_flag = true;
+            TEST_EXTRA_ARG(i, 'j');
+            {
+              ui32_t length;
+              Kumu::hex2bin(argv[i], key_id_value, UUIDlen, &length);
+
+              if ( length != UUIDlen )
+              {
+                fprintf(stderr, "Unexpected key ID length: %u, expecting %u characters.\n", length, UUIDlen);
+                return;
+              }
+            }
+            break;
+
+          case 'k': key_flag = true;
+            TEST_EXTRA_ARG(i, 'k');
+            {
+              ui32_t length;
+              Kumu::hex2bin(argv[i], key_value, KeyLen, &length);
+
+              if ( length != KeyLen )
+              {
+                fprintf(stderr, "Unexpected key length: %u, expecting %u characters.\n", length, KeyLen);
+                return;
+              }
+            }
+            break;
+
+          case 'l':
+            TEST_EXTRA_ARG(i, 'l');
+            channel_fmt = decode_channel_fmt(argv[i]);
+            break;
+
+          case 'L': use_smpte_labels = true; break;
+          case 'M': write_hmac = false; break;
+          case 'm': read_hmac = true; break;
+          case 'n': showindex_flag = true; break;
+
+          case 'p':
+            TEST_EXTRA_ARG(i, 'p');
+            picture_rate = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'R': do_repeat = true; break;
+          case 'S': split_wav = true; break;
+
+          case 's':
+            TEST_EXTRA_ARG(i, 's');
+            fb_dump_size = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 't': mode = MMT_DIGEST; break;
+          case 'U':	mode = MMT_UL_LIST; break;
+          case 'u':	mode = MMT_GEN_ID; break;
+          case 'V': version_flag = true; break;
+          case 'v': verbose_flag = true; break;
+          case 'W': no_write_flag = true; break;
+
+          case 'w':
+            TEST_EXTRA_ARG(i, 'w');
+            number_width = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'x':
+            TEST_EXTRA_ARG(i, 'x');
+            mode = MMT_EXTRACT;
+            file_root = argv[i];
+            break;
+
+          case 'Z': j2c_pedantic = false; break;
+          case 'z': j2c_pedantic = true; break;
+
+          default:
+            fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+            return;
+        }
+      }
+      else
       {
 
-	if ( (strcmp( argv[i], "-help") == 0) )
-	  {
-	    help_flag = true;
-	    continue;
-	  }
-         
-	if ( argv[i][0] == '-'
-	     && ( isalpha(argv[i][1]) || isdigit(argv[i][1]) )
-	     && argv[i][2] == 0 )
-	  {
-	    switch ( argv[i][1] )
-	      {
-	      case '1': mono_wav = true; break;
-	      case '2': split_wav = true; break;
-	      case '3': stereo_image_flag = true; break;
+        if ( argv[i][0] != '-' )
+        {
+          filenames[file_count++] = argv[i];
+        }
+        else
+        {
+          fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
+          return;
+        }
 
-	      case 'a':
-		asset_id_flag = true;
-		TEST_EXTRA_ARG(i, 'a');
-		{
-		  ui32_t length;
-		  Kumu::hex2bin(argv[i], asset_id_value, UUIDlen, &length);
-
-		  if ( length != UUIDlen )
-		    {
-		      fprintf(stderr, "Unexpected asset ID length: %u, expecting %u characters.\n", length, UUIDlen);
-		      return;
-		    }
-		}
-		break;
-
-	      case 'b':
-		TEST_EXTRA_ARG(i, 'b');
-		fb_size = Kumu::xabs(strtol(argv[i], 0, 10));
-
-		if ( verbose_flag )
-		  fprintf(stderr, "Frame Buffer size: %u bytes.\n", fb_size);
-
-		break;
-
-	      case 'c':
-		TEST_EXTRA_ARG(i, 'c');
-		mode = MMT_CREATE;
-		out_file = argv[i];
-		break;
-
-	      case 'd':
-		TEST_EXTRA_ARG(i, 'd');
-		duration_flag = true;
-		duration = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'E': encrypt_header_flag = false; break;
-	      case 'e': encrypt_header_flag = true; break;
-
-	      case 'f':
-		TEST_EXTRA_ARG(i, 'f');
-		start_frame = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'G': mode = MMT_GOP_START; break;
-	      case 'g': mode = MMT_GEN_KEY; break;
-	      case 'H': showheader_flag = true; break;
-	      case 'h': help_flag = true; break;
-	      case 'i': mode = MMT_INFO;	break;
-
-	      case 'j': key_id_flag = true;
-		TEST_EXTRA_ARG(i, 'j');
-		{
-		  ui32_t length;
-		  Kumu::hex2bin(argv[i], key_id_value, UUIDlen, &length);
-
-		  if ( length != UUIDlen )
-		    {
-		      fprintf(stderr, "Unexpected key ID length: %u, expecting %u characters.\n", length, UUIDlen);
-		      return;
-		    }
-		}
-		break;
-
-	      case 'k': key_flag = true;
-		TEST_EXTRA_ARG(i, 'k');
-		{
-		  ui32_t length;
-		  Kumu::hex2bin(argv[i], key_value, KeyLen, &length);
-
-		  if ( length != KeyLen )
-		    {
-		      fprintf(stderr, "Unexpected key length: %u, expecting %u characters.\n", length, KeyLen);
-		      return;
-		    }
-		}
-		break;
-
-	      case 'l':
-		TEST_EXTRA_ARG(i, 'l');
-		channel_fmt = decode_channel_fmt(argv[i]);
-		break;
-
-	      case 'L': use_smpte_labels = true; break;
-	      case 'M': write_hmac = false; break;
-	      case 'm': read_hmac = true; break;
-	      case 'n': showindex_flag = true; break;
-
-	      case 'p':
-		TEST_EXTRA_ARG(i, 'p');
-		picture_rate = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'R': do_repeat = true; break;
-	      case 'S': split_wav = true; break;
-
-	      case 's':
-		TEST_EXTRA_ARG(i, 's');
-		fb_dump_size = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 't': mode = MMT_DIGEST; break;
-	      case 'U':	mode = MMT_UL_LIST; break;
-	      case 'u':	mode = MMT_GEN_ID; break;
-	      case 'V': version_flag = true; break;
-	      case 'v': verbose_flag = true; break;
-	      case 'W': no_write_flag = true; break;
-
-	      case 'w':
-		TEST_EXTRA_ARG(i, 'w');
-		number_width = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-
-	      case 'x':
-		TEST_EXTRA_ARG(i, 'x');
-		mode = MMT_EXTRACT;
-		file_root = argv[i];
-		break;
-
-	      case 'Z': j2c_pedantic = false; break;
-	      case 'z': j2c_pedantic = true; break;
-
-	      default:
-		fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-		return;
-	      }
-	  }
-	else
-	  {
-
-	    if ( argv[i][0] != '-' )
-	      {
-		filenames[file_count++] = argv[i];
-	      }
-	    else
-	      {
-		fprintf(stderr, "Unrecognized argument: %s\n", argv[i]);
-		return;
-	      }
-
-	    if ( file_count >= MAX_IN_FILES )
-	      {
-		fprintf(stderr, "Filename lists exceeds maximum list size: %u\n", MAX_IN_FILES);
-		return;
-	      }
-	  }
+        if ( file_count >= MAX_IN_FILES )
+        {
+          fprintf(stderr, "Filename lists exceeds maximum list size: %u\n", MAX_IN_FILES);
+          return;
+        }
       }
+    }
 
     if ( help_flag || version_flag )
       return;
-    
+
     if ( ( mode == MMT_INFO
-	   || mode == MMT_CREATE
-	   || mode == MMT_EXTRACT
-	   || mode == MMT_GOP_START
-	   || mode == MMT_DIGEST ) && file_count == 0 )
-      {
-	fputs("Option requires at least one filename argument.\n", stderr);
-	return;
-      }
+           || mode == MMT_CREATE
+           || mode == MMT_EXTRACT
+           || mode == MMT_GOP_START
+           || mode == MMT_DIGEST ) && file_count == 0 )
+    {
+      fputs("Option requires at least one filename argument.\n", stderr);
+      return;
+    }
 
     if ( mode == MMT_NONE && ! help_flag && ! version_flag )
-      {
-	fputs("No operation selected (use one of -[gGcitux] or -h for help).\n", stderr);
-	return;
-      }
+    {
+      fputs("No operation selected (use one of -[gGcitux] or -h for help).\n", stderr);
+      return;
+    }
 
     error_flag = false;
   }
@@ -562,99 +562,99 @@ write_MPEG2_file(CommandOptions& Options)
 
   // set up MXF writer
   if ( ASDCP_SUCCESS(result) )
-    {
-      Parser.FillVideoDescriptor(VDesc);
+  {
+    Parser.FillVideoDescriptor(VDesc);
 
-      if ( Options.verbose_flag )
-	{
-	  fputs("MPEG-2 Pictures\n", stderr);
-	  fputs("VideoDescriptor:\n", stderr);
-	  fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
-	  MPEG2::VideoDescriptorDump(VDesc);
-	}
+    if ( Options.verbose_flag )
+    {
+      fputs("MPEG-2 Pictures\n", stderr);
+      fputs("VideoDescriptor:\n", stderr);
+      fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
+      MPEG2::VideoDescriptorDump(VDesc);
     }
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+  {
+    WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
+    if ( Options.asset_id_flag )
+      memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+    else
+      Kumu::GenRandomUUID(Info.AssetUUID);
+
+    if ( Options.use_smpte_labels )
     {
-      WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
-      if ( Options.asset_id_flag )
-	memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+      Info.LabelSetType = LS_MXF_SMPTE;
+      fprintf(stderr, "ATTENTION! Writing SMPTE Universal Labels\n");
+    }
+
+    // configure encryption
+    if( Options.key_flag )
+    {
+      Kumu::GenRandomUUID(Info.ContextID);
+      Info.EncryptedEssence = true;
+
+      if ( Options.key_id_flag )
+        memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
       else
-	Kumu::GenRandomUUID(Info.AssetUUID);
+        RNG.FillRandom(Info.CryptographicKeyID, UUIDlen);
 
-      if ( Options.use_smpte_labels )
-	{
-	  Info.LabelSetType = LS_MXF_SMPTE;
-	  fprintf(stderr, "ATTENTION! Writing SMPTE Universal Labels\n");
-	}
-
-      // configure encryption
-      if( Options.key_flag )
-	{
-	  Kumu::GenRandomUUID(Info.ContextID);
-	  Info.EncryptedEssence = true;
-
-	  if ( Options.key_id_flag )
-	    memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
-	  else
-	    RNG.FillRandom(Info.CryptographicKeyID, UUIDlen);
-
-	  Context = new AESEncContext;
-	  result = Context->InitKey(Options.key_value);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-
-	  if ( ASDCP_SUCCESS(result) && Options.write_hmac )
-	    {
-	      Info.UsesHMAC = true;
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	}
+      Context = new AESEncContext;
+      result = Context->InitKey(Options.key_value);
 
       if ( ASDCP_SUCCESS(result) )
-	result = Writer.OpenWrite(Options.out_file, Info, VDesc);
+        result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+
+      if ( ASDCP_SUCCESS(result) && Options.write_hmac )
+      {
+        Info.UsesHMAC = true;
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
     }
+
+    if ( ASDCP_SUCCESS(result) )
+      result = Writer.OpenWrite(Options.out_file, Info, VDesc);
+  }
 
   if ( ASDCP_SUCCESS(result) )
     // loop through the frames
+  {
+    result = Parser.Reset();
+    ui32_t duration = 0;
+
+    while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
     {
-      result = Parser.Reset();
-      ui32_t duration = 0;
+      if ( ! Options.do_repeat || duration == 1 )
+      {
+        result = Parser.ReadFrame(FrameBuffer);
 
-      while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
-	{
-	  if ( ! Options.do_repeat || duration == 1 )
-	    {
-	      result = Parser.ReadFrame(FrameBuffer);
+        if ( ASDCP_SUCCESS(result) )
+        {
+          if ( Options.verbose_flag )
+            FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-	      if ( ASDCP_SUCCESS(result) )
-		{
-		  if ( Options.verbose_flag )
-		    FrameBuffer.Dump(stderr, Options.fb_dump_size);
-		  
-		  if ( Options.encrypt_header_flag )
-		    FrameBuffer.PlaintextOffset(0);
-		}
-	    }
+          if ( Options.encrypt_header_flag )
+            FrameBuffer.PlaintextOffset(0);
+        }
+      }
 
-	  if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
-	    {
-	      result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
+      if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+      {
+        result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
 
-	      // The Writer class will forward the last block of ciphertext
-	      // to the encryption context for use as the IV for the next
-	      // frame. If you want to use non-sequitur IV values, un-comment
-	      // the following  line of code.
-	      // if ( ASDCP_SUCCESS(result) && Options.key_flag )
-	      //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-	    }
-	}
-
-      if ( result == RESULT_ENDOFFILE )
-	result = RESULT_OK;
+        // The Writer class will forward the last block of ciphertext
+        // to the encryption context for use as the IV for the next
+        // frame. If you want to use non-sequitur IV values, un-comment
+        // the following  line of code.
+        // if ( ASDCP_SUCCESS(result) && Options.key_flag )
+        //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+      }
     }
+
+    if ( result == RESULT_ENDOFFILE )
+      result = RESULT_OK;
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
     result = Writer.Finalize();
@@ -679,64 +679,64 @@ read_MPEG2_file(CommandOptions& Options)
   Result_t result = Reader.OpenRead(Options.filenames[0]);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      MPEG2::VideoDescriptor VDesc;
-      Reader.FillVideoDescriptor(VDesc);
-      frame_count = VDesc.ContainerDuration;
+  {
+    MPEG2::VideoDescriptor VDesc;
+    Reader.FillVideoDescriptor(VDesc);
+    frame_count = VDesc.ContainerDuration;
 
-      if ( Options.verbose_flag )
-	{
-	  fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
-	  MPEG2::VideoDescriptorDump(VDesc);
-	}
+    if ( Options.verbose_flag )
+    {
+      fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
+      MPEG2::VideoDescriptorDump(VDesc);
     }
+  }
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      char filename[256];
-      snprintf(filename, 256, "%s.ves", Options.file_root);
-      result = OutFile.OpenWrite(filename);
-    }
+  {
+    char filename[256];
+    snprintf(filename, 256, "%s.ves", Options.file_root);
+    result = OutFile.OpenWrite(filename);
+  }
 
   if ( ASDCP_SUCCESS(result) && Options.key_flag )
+  {
+    Context = new AESDecContext;
+    result = Context->InitKey(Options.key_value);
+
+    if ( ASDCP_SUCCESS(result) && Options.read_hmac )
     {
-      Context = new AESDecContext;
-      result = Context->InitKey(Options.key_value);
+      WriterInfo Info;
+      Reader.FillWriterInfo(Info);
 
-      if ( ASDCP_SUCCESS(result) && Options.read_hmac )
-	{
-	  WriterInfo Info;
-	  Reader.FillWriterInfo(Info);
-
-	  if ( Info.UsesHMAC )
-	    {
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	  else
-	    {
-	      fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
-	    }
-	}
+      if ( Info.UsesHMAC )
+      {
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
+      else
+      {
+        fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
+      }
     }
+  }
 
   ui32_t last_frame = Options.start_frame + ( Options.duration ? Options.duration : frame_count);
   if ( last_frame > frame_count )
     last_frame = frame_count;
 
   for ( ui32_t i = Options.start_frame; ASDCP_SUCCESS(result) && i < last_frame; i++ )
+  {
+    result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
+      if ( Options.verbose_flag )
+        FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  if ( Options.verbose_flag )
-	    FrameBuffer.Dump(stderr, Options.fb_dump_size);
-
-	  ui32_t write_count = 0;
-	  result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
-	}
+      ui32_t write_count = 0;
+      result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
     }
+  }
 
   return result;
 }
@@ -755,37 +755,37 @@ gop_start_test(CommandOptions& Options)
   Result_t result = Reader.OpenRead(Options.filenames[0]);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      MPEG2::VideoDescriptor VDesc;
-      Reader.FillVideoDescriptor(VDesc);
-      frame_count = VDesc.ContainerDuration;
+  {
+    MPEG2::VideoDescriptor VDesc;
+    Reader.FillVideoDescriptor(VDesc);
+    frame_count = VDesc.ContainerDuration;
 
-      if ( Options.verbose_flag )
-	{
-	  fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
-	  MPEG2::VideoDescriptorDump(VDesc);
-	}
+    if ( Options.verbose_flag )
+    {
+      fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
+      MPEG2::VideoDescriptorDump(VDesc);
     }
+  }
 
   ui32_t last_frame = Options.start_frame + ( Options.duration ? Options.duration : frame_count);
   if ( last_frame > frame_count )
     last_frame = frame_count;
 
   for ( ui32_t i = Options.start_frame; ASDCP_SUCCESS(result) && i < last_frame; i++ )
+  {
+    result = Reader.ReadFrameGOPStart(i, FrameBuffer);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Reader.ReadFrameGOPStart(i, FrameBuffer);
+      if ( Options.verbose_flag )
+        FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  if ( Options.verbose_flag )
-	    FrameBuffer.Dump(stderr, Options.fb_dump_size);
+      if ( FrameBuffer.FrameType() != FRAME_I )
+        fprintf(stderr, "Expecting an I frame, got %c\n", FrameTypeChar(FrameBuffer.FrameType()));
 
-	  if ( FrameBuffer.FrameType() != FRAME_I )
-	    fprintf(stderr, "Expecting an I frame, got %c\n", FrameTypeChar(FrameBuffer.FrameType()));
-
-	  fprintf(stderr, "Requested frame %u, got %u\n", i, FrameBuffer.FrameNumber());
-	}
+      fprintf(stderr, "Requested frame %u, got %u\n", i, FrameBuffer.FrameNumber());
     }
+  }
 
   return result;
 }
@@ -809,10 +809,10 @@ write_JP2K_S_file(CommandOptions& Options)
   Kumu::FortunaRNG        RNG;
 
   if ( Options.file_count != 2 )
-    {
-      fprintf(stderr, "Two inputs are required for stereoscopic option.\n");
-      return RESULT_FAIL;
-    }
+  {
+    fprintf(stderr, "Two inputs are required for stereoscopic option.\n");
+    return RESULT_FAIL;
+  }
 
   // set up essence parser
   Result_t result = ParserLeft.OpenRead(Options.filenames[0], Options.j2c_pedantic);
@@ -822,102 +822,102 @@ write_JP2K_S_file(CommandOptions& Options)
 
   // set up MXF writer
   if ( ASDCP_SUCCESS(result) )
-    {
-      ParserLeft.FillPictureDescriptor(PDesc);
-      PDesc.EditRate = Options.PictureRate();
+  {
+    ParserLeft.FillPictureDescriptor(PDesc);
+    PDesc.EditRate = Options.PictureRate();
 
-      if ( Options.verbose_flag )
-	{
-	  fputs("JPEG 2000 stereoscopic pictures\nPictureDescriptor:\n", stderr);
-          fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
-	  JP2K::PictureDescriptorDump(PDesc);
-	}
+    if ( Options.verbose_flag )
+    {
+      fputs("JPEG 2000 stereoscopic pictures\nPictureDescriptor:\n", stderr);
+      fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
+      JP2K::PictureDescriptorDump(PDesc);
     }
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+  {
+    WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
+    if ( Options.asset_id_flag )
+      memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+    else
+      Kumu::GenRandomUUID(Info.AssetUUID);
+
+    if ( Options.use_smpte_labels )
     {
-      WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
-      if ( Options.asset_id_flag )
-	memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+      Info.LabelSetType = LS_MXF_SMPTE;
+      fprintf(stderr, "ATTENTION! Writing SMPTE Universal Labels\n");
+    }
+
+    // configure encryption
+    if( Options.key_flag )
+    {
+      Kumu::GenRandomUUID(Info.ContextID);
+      Info.EncryptedEssence = true;
+
+      if ( Options.key_id_flag )
+        memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
       else
-	Kumu::GenRandomUUID(Info.AssetUUID);
+        RNG.FillRandom(Info.CryptographicKeyID, UUIDlen);
 
-      if ( Options.use_smpte_labels )
-	{
-	  Info.LabelSetType = LS_MXF_SMPTE;
-	  fprintf(stderr, "ATTENTION! Writing SMPTE Universal Labels\n");
-	}
-
-      // configure encryption
-      if( Options.key_flag )
-	{
-	  Kumu::GenRandomUUID(Info.ContextID);
-	  Info.EncryptedEssence = true;
-
-	  if ( Options.key_id_flag )
-	    memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
-	  else
-	    RNG.FillRandom(Info.CryptographicKeyID, UUIDlen);
-
-	  Context = new AESEncContext;
-	  result = Context->InitKey(Options.key_value);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-
-	  if ( ASDCP_SUCCESS(result) && Options.write_hmac )
-	    {
-	      Info.UsesHMAC = true;
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	}
+      Context = new AESEncContext;
+      result = Context->InitKey(Options.key_value);
 
       if ( ASDCP_SUCCESS(result) )
-	result = Writer.OpenWrite(Options.out_file, Info, PDesc);
+        result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+
+      if ( ASDCP_SUCCESS(result) && Options.write_hmac )
+      {
+        Info.UsesHMAC = true;
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
     }
+
+    if ( ASDCP_SUCCESS(result) )
+      result = Writer.OpenWrite(Options.out_file, Info, PDesc);
+  }
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    ui32_t duration = 0;
+    result = ParserLeft.Reset();
+    if ( ASDCP_SUCCESS(result) ) result = ParserRight.Reset();
+
+    while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
     {
-      ui32_t duration = 0;
-      result = ParserLeft.Reset();
-      if ( ASDCP_SUCCESS(result) ) result = ParserRight.Reset();
+      result = ParserLeft.ReadFrame(FrameBuffer);
 
-      while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
-	{
-	  result = ParserLeft.ReadFrame(FrameBuffer);
+      if ( ASDCP_SUCCESS(result) )
+      {
+        if ( Options.verbose_flag )
+          FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      if ( Options.verbose_flag )
-		FrameBuffer.Dump(stderr, Options.fb_dump_size);
-		  
-	      if ( Options.encrypt_header_flag )
-		FrameBuffer.PlaintextOffset(0);
-	    }
+        if ( Options.encrypt_header_flag )
+          FrameBuffer.PlaintextOffset(0);
+      }
 
-	  if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
-	    result = Writer.WriteFrame(FrameBuffer, JP2K::SP_LEFT, Context, HMAC);
+      if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+        result = Writer.WriteFrame(FrameBuffer, JP2K::SP_LEFT, Context, HMAC);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    result = ParserRight.ReadFrame(FrameBuffer);
+      if ( ASDCP_SUCCESS(result) )
+        result = ParserRight.ReadFrame(FrameBuffer);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      if ( Options.verbose_flag )
-		FrameBuffer.Dump(stderr, Options.fb_dump_size);
-		  
-	      if ( Options.encrypt_header_flag )
-		FrameBuffer.PlaintextOffset(0);
-	    }
+      if ( ASDCP_SUCCESS(result) )
+      {
+        if ( Options.verbose_flag )
+          FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-	  if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
-	    result = Writer.WriteFrame(FrameBuffer, JP2K::SP_RIGHT, Context, HMAC);
-	}
+        if ( Options.encrypt_header_flag )
+          FrameBuffer.PlaintextOffset(0);
+      }
 
-      if ( result == RESULT_ENDOFFILE )
-	result = RESULT_OK;
+      if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+        result = Writer.WriteFrame(FrameBuffer, JP2K::SP_RIGHT, Context, HMAC);
     }
+
+    if ( result == RESULT_ENDOFFILE )
+      result = RESULT_OK;
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
     result = Writer.Finalize();
@@ -940,40 +940,40 @@ read_JP2K_S_file(CommandOptions& Options)
   Result_t result = Reader.OpenRead(Options.filenames[0]);
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    JP2K::PictureDescriptor PDesc;
+    Reader.FillPictureDescriptor(PDesc);
+
+    frame_count = PDesc.ContainerDuration;
+
+    if ( Options.verbose_flag )
     {
-      JP2K::PictureDescriptor PDesc;
-      Reader.FillPictureDescriptor(PDesc);
-
-      frame_count = PDesc.ContainerDuration;
-
-      if ( Options.verbose_flag )
-	{
-	  fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
-	  JP2K::PictureDescriptorDump(PDesc);
-	}
+      fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
+      JP2K::PictureDescriptorDump(PDesc);
     }
+  }
 
   if ( ASDCP_SUCCESS(result) && Options.key_flag )
+  {
+    Context = new AESDecContext;
+    result = Context->InitKey(Options.key_value);
+
+    if ( ASDCP_SUCCESS(result) && Options.read_hmac )
     {
-      Context = new AESDecContext;
-      result = Context->InitKey(Options.key_value);
+      WriterInfo Info;
+      Reader.FillWriterInfo(Info);
 
-      if ( ASDCP_SUCCESS(result) && Options.read_hmac )
-	{
-	  WriterInfo Info;
-	  Reader.FillWriterInfo(Info);
-
-	  if ( Info.UsesHMAC )
-	    {
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	  else
-	    {
-	      fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
-	    }
-	}
+      if ( Info.UsesHMAC )
+      {
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
+      else
+      {
+        fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
+      }
     }
+  }
 
   const int filename_max = 1024;
   char filename[filename_max];
@@ -986,37 +986,37 @@ read_JP2K_S_file(CommandOptions& Options)
   snprintf(right_format, 64, "%%s%%0%duR.j2c", Options.number_width);
 
   for ( ui32_t i = Options.start_frame; ASDCP_SUCCESS(result) && i < last_frame; i++ )
+  {
+    result = Reader.ReadFrame(i, JP2K::SP_LEFT, FrameBuffer, Context, HMAC);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Reader.ReadFrame(i, JP2K::SP_LEFT, FrameBuffer, Context, HMAC);
+      Kumu::FileWriter OutFile;
+      ui32_t write_count;
+      snprintf(filename, filename_max, left_format, Options.file_root, i);
+      result = OutFile.OpenWrite(filename);
 
       if ( ASDCP_SUCCESS(result) )
-	{
-	  Kumu::FileWriter OutFile;
-	  ui32_t write_count;
-	  snprintf(filename, filename_max, left_format, Options.file_root, i);
-	  result = OutFile.OpenWrite(filename);
+        result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
-
-	  if ( Options.verbose_flag )
-	    FrameBuffer.Dump(stderr, Options.fb_dump_size);
-	}
-
-      if ( ASDCP_SUCCESS(result) )
-	result = Reader.ReadFrame(i, JP2K::SP_RIGHT, FrameBuffer, Context, HMAC);
-
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  Kumu::FileWriter OutFile;
-	  ui32_t write_count;
-	  snprintf(filename, filename_max, right_format, Options.file_root, i);
-	  result = OutFile.OpenWrite(filename);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
-	}
+      if ( Options.verbose_flag )
+        FrameBuffer.Dump(stderr, Options.fb_dump_size);
     }
+
+    if ( ASDCP_SUCCESS(result) )
+      result = Reader.ReadFrame(i, JP2K::SP_RIGHT, FrameBuffer, Context, HMAC);
+
+    if ( ASDCP_SUCCESS(result) )
+    {
+      Kumu::FileWriter OutFile;
+      ui32_t write_count;
+      snprintf(filename, filename_max, right_format, Options.file_root, i);
+      result = OutFile.OpenWrite(filename);
+
+      if ( ASDCP_SUCCESS(result) )
+        result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
+    }
+  }
 
   return result;
 }
@@ -1043,99 +1043,99 @@ write_JP2K_file(CommandOptions& Options)
 
   // set up MXF writer
   if ( ASDCP_SUCCESS(result) )
-    {
-      Parser.FillPictureDescriptor(PDesc);
-      PDesc.EditRate = Options.PictureRate();
+  {
+    Parser.FillPictureDescriptor(PDesc);
+    PDesc.EditRate = Options.PictureRate();
 
-      if ( Options.verbose_flag )
-	{
-	  fprintf(stderr, "JPEG 2000 pictures\n");
-	  fputs("PictureDescriptor:\n", stderr);
-          fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
-	  JP2K::PictureDescriptorDump(PDesc);
-	}
+    if ( Options.verbose_flag )
+    {
+      fprintf(stderr, "JPEG 2000 pictures\n");
+      fputs("PictureDescriptor:\n", stderr);
+      fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
+      JP2K::PictureDescriptorDump(PDesc);
     }
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+  {
+    WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
+    if ( Options.asset_id_flag )
+      memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+    else
+      Kumu::GenRandomUUID(Info.AssetUUID);
+
+    if ( Options.use_smpte_labels )
     {
-      WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
-      if ( Options.asset_id_flag )
-	memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+      Info.LabelSetType = LS_MXF_SMPTE;
+      fprintf(stderr, "ATTENTION! Writing SMPTE Universal Labels\n");
+    }
+
+    // configure encryption
+    if( Options.key_flag )
+    {
+      Kumu::GenRandomUUID(Info.ContextID);
+      Info.EncryptedEssence = true;
+
+      if ( Options.key_id_flag )
+        memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
       else
-	Kumu::GenRandomUUID(Info.AssetUUID);
+        RNG.FillRandom(Info.CryptographicKeyID, UUIDlen);
 
-      if ( Options.use_smpte_labels )
-	{
-	  Info.LabelSetType = LS_MXF_SMPTE;
-	  fprintf(stderr, "ATTENTION! Writing SMPTE Universal Labels\n");
-	}
-
-      // configure encryption
-      if( Options.key_flag )
-	{
-	  Kumu::GenRandomUUID(Info.ContextID);
-	  Info.EncryptedEssence = true;
-
-	  if ( Options.key_id_flag )
-	    memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
-	  else
-	    RNG.FillRandom(Info.CryptographicKeyID, UUIDlen);
-
-	  Context = new AESEncContext;
-	  result = Context->InitKey(Options.key_value);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-
-	  if ( ASDCP_SUCCESS(result) && Options.write_hmac )
-	    {
-	      Info.UsesHMAC = true;
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	}
+      Context = new AESEncContext;
+      result = Context->InitKey(Options.key_value);
 
       if ( ASDCP_SUCCESS(result) )
-	result = Writer.OpenWrite(Options.out_file, Info, PDesc);
+        result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+
+      if ( ASDCP_SUCCESS(result) && Options.write_hmac )
+      {
+        Info.UsesHMAC = true;
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
     }
+
+    if ( ASDCP_SUCCESS(result) )
+      result = Writer.OpenWrite(Options.out_file, Info, PDesc);
+  }
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    ui32_t duration = 0;
+    result = Parser.Reset();
+
+    while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
     {
-      ui32_t duration = 0;
-      result = Parser.Reset();
+      if ( ! Options.do_repeat || duration == 1 )
+      {
+        result = Parser.ReadFrame(FrameBuffer);
 
-      while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
-	{
-	  if ( ! Options.do_repeat || duration == 1 )
-	    {
-	      result = Parser.ReadFrame(FrameBuffer);
+        if ( ASDCP_SUCCESS(result) )
+        {
+          if ( Options.verbose_flag )
+            FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-	      if ( ASDCP_SUCCESS(result) )
-		{
-		  if ( Options.verbose_flag )
-		    FrameBuffer.Dump(stderr, Options.fb_dump_size);
-		  
-		  if ( Options.encrypt_header_flag )
-		    FrameBuffer.PlaintextOffset(0);
-		}
-	    }
+          if ( Options.encrypt_header_flag )
+            FrameBuffer.PlaintextOffset(0);
+        }
+      }
 
-	  if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
-	    {
-	      result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
+      if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+      {
+        result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
 
-	      // The Writer class will forward the last block of ciphertext
-	      // to the encryption context for use as the IV for the next
-	      // frame. If you want to use non-sequitur IV values, un-comment
-	      // the following  line of code.
-	      // if ( ASDCP_SUCCESS(result) && Options.key_flag )
-	      //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-	    }
-	}
-
-      if ( result == RESULT_ENDOFFILE )
-	result = RESULT_OK;
+        // The Writer class will forward the last block of ciphertext
+        // to the encryption context for use as the IV for the next
+        // frame. If you want to use non-sequitur IV values, un-comment
+        // the following  line of code.
+        // if ( ASDCP_SUCCESS(result) && Options.key_flag )
+        //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+      }
     }
+
+    if ( result == RESULT_ENDOFFILE )
+      result = RESULT_OK;
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
     result = Writer.Finalize();
@@ -1159,40 +1159,40 @@ read_JP2K_file(CommandOptions& Options)
   Result_t result = Reader.OpenRead(Options.filenames[0]);
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    JP2K::PictureDescriptor PDesc;
+    Reader.FillPictureDescriptor(PDesc);
+
+    frame_count = PDesc.ContainerDuration;
+
+    if ( Options.verbose_flag )
     {
-      JP2K::PictureDescriptor PDesc;
-      Reader.FillPictureDescriptor(PDesc);
-
-      frame_count = PDesc.ContainerDuration;
-
-      if ( Options.verbose_flag )
-	{
-	  fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
-	  JP2K::PictureDescriptorDump(PDesc);
-	}
+      fprintf(stderr, "Frame Buffer size: %u\n", Options.fb_size);
+      JP2K::PictureDescriptorDump(PDesc);
     }
+  }
 
   if ( ASDCP_SUCCESS(result) && Options.key_flag )
+  {
+    Context = new AESDecContext;
+    result = Context->InitKey(Options.key_value);
+
+    if ( ASDCP_SUCCESS(result) && Options.read_hmac )
     {
-      Context = new AESDecContext;
-      result = Context->InitKey(Options.key_value);
+      WriterInfo Info;
+      Reader.FillWriterInfo(Info);
 
-      if ( ASDCP_SUCCESS(result) && Options.read_hmac )
-	{
-	  WriterInfo Info;
-	  Reader.FillWriterInfo(Info);
-
-	  if ( Info.UsesHMAC )
-	    {
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	  else
-	    {
-	      fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
-	    }
-	}
+      if ( Info.UsesHMAC )
+      {
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
+      else
+      {
+        fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
+      }
     }
+  }
 
   ui32_t last_frame = Options.start_frame + ( Options.duration ? Options.duration : frame_count);
   if ( last_frame > frame_count )
@@ -1202,24 +1202,24 @@ read_JP2K_file(CommandOptions& Options)
   snprintf(name_format,  64, "%%s%%0%du.j2c", Options.number_width);
 
   for ( ui32_t i = Options.start_frame; ASDCP_SUCCESS(result) && i < last_frame; i++ )
+  {
+    result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
+      Kumu::FileWriter OutFile;
+      char filename[256];
+      ui32_t write_count;
+      snprintf(filename, 256, name_format, Options.file_root, i);
+      result = OutFile.OpenWrite(filename);
 
       if ( ASDCP_SUCCESS(result) )
-	{
-	  Kumu::FileWriter OutFile;
-	  char filename[256];
-	  ui32_t write_count;
-	  snprintf(filename, 256, name_format, Options.file_root, i);
-	  result = OutFile.OpenWrite(filename);
+        result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    result = OutFile.Write(FrameBuffer.Data(), FrameBuffer.Size(), &write_count);
-
-	  if ( Options.verbose_flag )
-	    FrameBuffer.Dump(stderr, Options.fb_dump_size);
-	}
+      if ( Options.verbose_flag )
+        FrameBuffer.Dump(stderr, Options.fb_dump_size);
     }
+  }
 
   return result;
 }
@@ -1249,111 +1249,111 @@ write_PCM_file(CommandOptions& Options)
 
   // set up MXF writer
   if ( ASDCP_SUCCESS(result) )
+  {
+    Parser.FillAudioDescriptor(ADesc);
+
+    ADesc.EditRate = PictureRate;
+    FrameBuffer.Capacity(PCM::CalcFrameBufferSize(ADesc));
+    ADesc.ChannelFormat = Options.channel_fmt;
+
+    if ( Options.use_smpte_labels && ADesc.ChannelFormat == PCM::CF_NONE)
     {
-      Parser.FillAudioDescriptor(ADesc);
-
-      ADesc.EditRate = PictureRate;
-      FrameBuffer.Capacity(PCM::CalcFrameBufferSize(ADesc));
-      ADesc.ChannelFormat = Options.channel_fmt;
-
-      if ( Options.use_smpte_labels && ADesc.ChannelFormat == PCM::CF_NONE)
-	{
-	  fprintf(stderr, "ATTENTION! Writing SMPTE audio without ChannelAssignment property (see option -l)\n");
-	}
-
-      if ( Options.verbose_flag )
-	{
-	  fprintf(stderr, "%.1fkHz PCM Audio, %s fps (%u spf)\n",
-		  ADesc.AudioSamplingRate.Quotient() / 1000.0,
-		  Options.szPictureRate(),
-		  PCM::CalcSamplesPerFrame(ADesc));
-	  fputs("AudioDescriptor:\n", stderr);
-	  PCM::AudioDescriptorDump(ADesc);
-	}
+      fprintf(stderr, "ATTENTION! Writing SMPTE audio without ChannelAssignment property (see option -l)\n");
     }
+
+    if ( Options.verbose_flag )
+    {
+      fprintf(stderr, "%.1fkHz PCM Audio, %s fps (%u spf)\n",
+              ADesc.AudioSamplingRate.Quotient() / 1000.0,
+              Options.szPictureRate(),
+              PCM::CalcSamplesPerFrame(ADesc));
+      fputs("AudioDescriptor:\n", stderr);
+      PCM::AudioDescriptorDump(ADesc);
+    }
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+  {
+    WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
+    if ( Options.asset_id_flag )
+      memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+    else
+      Kumu::GenRandomUUID(Info.AssetUUID);
+
+    if ( Options.use_smpte_labels )
     {
-      WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
-      if ( Options.asset_id_flag )
-	memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+      Info.LabelSetType = LS_MXF_SMPTE;
+      fprintf(stderr, "ATTENTION! Writing SMPTE Universal Labels\n");
+    }
+
+    // configure encryption
+    if( Options.key_flag )
+    {
+      Kumu::GenRandomUUID(Info.ContextID);
+      Info.EncryptedEssence = true;
+
+      if ( Options.key_id_flag )
+        memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
       else
-	Kumu::GenRandomUUID(Info.AssetUUID);
+        RNG.FillRandom(Info.CryptographicKeyID, UUIDlen);
 
-      if ( Options.use_smpte_labels )
-	{
-	  Info.LabelSetType = LS_MXF_SMPTE;
-	  fprintf(stderr, "ATTENTION! Writing SMPTE Universal Labels\n");
-	}
-
-      // configure encryption
-      if( Options.key_flag )
-	{
-	  Kumu::GenRandomUUID(Info.ContextID);
-	  Info.EncryptedEssence = true;
-
-	  if ( Options.key_id_flag )
-	    memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
-	  else
-	    RNG.FillRandom(Info.CryptographicKeyID, UUIDlen);
-
-	  Context = new AESEncContext;
-	  result = Context->InitKey(Options.key_value);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-
-	  if ( ASDCP_SUCCESS(result) && Options.write_hmac )
-	    {
-	      Info.UsesHMAC = true;
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	}
+      Context = new AESEncContext;
+      result = Context->InitKey(Options.key_value);
 
       if ( ASDCP_SUCCESS(result) )
-	result = Writer.OpenWrite(Options.out_file, Info, ADesc);
+        result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+
+      if ( ASDCP_SUCCESS(result) && Options.write_hmac )
+      {
+        Info.UsesHMAC = true;
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
     }
+
+    if ( ASDCP_SUCCESS(result) )
+      result = Writer.OpenWrite(Options.out_file, Info, ADesc);
+  }
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    result = Parser.Reset();
+    ui32_t duration = 0;
+
+    while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
     {
-      result = Parser.Reset();
-      ui32_t duration = 0;
+      result = Parser.ReadFrame(FrameBuffer);
 
-      while ( ASDCP_SUCCESS(result) && duration++ < Options.duration )
-	{
-	  result = Parser.ReadFrame(FrameBuffer);
+      if ( ASDCP_SUCCESS(result) )
+      {
+        if ( FrameBuffer.Size() != FrameBuffer.Capacity() )
+        {
+          fprintf(stderr, "WARNING: Last frame read was short, PCM input is possibly not frame aligned.\n");
+          fprintf(stderr, "Expecting %u bytes, got %u.\n", FrameBuffer.Capacity(), FrameBuffer.Size());
+          result = RESULT_ENDOFFILE;
+          continue;
+        }
 
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      if ( FrameBuffer.Size() != FrameBuffer.Capacity() )
-		{
-		  fprintf(stderr, "WARNING: Last frame read was short, PCM input is possibly not frame aligned.\n");
-		  fprintf(stderr, "Expecting %u bytes, got %u.\n", FrameBuffer.Capacity(), FrameBuffer.Size());
-		  result = RESULT_ENDOFFILE;
-		  continue;
-		}
+        if ( Options.verbose_flag )
+          FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-	      if ( Options.verbose_flag )
-		FrameBuffer.Dump(stderr, Options.fb_dump_size);
+        if ( ! Options.no_write_flag )
+        {
+          result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
 
-	      if ( ! Options.no_write_flag )
-		{
-		  result = Writer.WriteFrame(FrameBuffer, Context, HMAC);
-
-		  // The Writer class will forward the last block of ciphertext
-		  // to the encryption context for use as the IV for the next
-		  // frame. If you want to use non-sequitur IV values, un-comment
-		  // the following  line of code.
-		  // if ( ASDCP_SUCCESS(result) && Options.key_flag )
-		  //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-		}
-	    }
-	}
-
-      if ( result == RESULT_ENDOFFILE )
-	result = RESULT_OK;
+          // The Writer class will forward the last block of ciphertext
+          // to the encryption context for use as the IV for the next
+          // frame. If you want to use non-sequitur IV values, un-comment
+          // the following  line of code.
+          // if ( ASDCP_SUCCESS(result) && Options.key_flag )
+          //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+        }
+      }
     }
+
+    if ( result == RESULT_ENDOFFILE )
+      result = RESULT_OK;
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
     result = Writer.Finalize();
@@ -1379,82 +1379,82 @@ read_PCM_file(CommandOptions& Options)
   Result_t result = Reader.OpenRead(Options.filenames[0]);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      Reader.FillAudioDescriptor(ADesc);
+  {
+    Reader.FillAudioDescriptor(ADesc);
 
-      if ( ADesc.EditRate != EditRate_23_98
-	   && ADesc.EditRate != EditRate_24
-	   && ADesc.EditRate != EditRate_25
-	   && ADesc.EditRate != EditRate_30
-	   && ADesc.EditRate != EditRate_48
-	   && ADesc.EditRate != EditRate_50
-	   && ADesc.EditRate != EditRate_60 )
-	ADesc.EditRate = Options.PictureRate();
+    if ( ADesc.EditRate != EditRate_23_98
+         && ADesc.EditRate != EditRate_24
+         && ADesc.EditRate != EditRate_25
+         && ADesc.EditRate != EditRate_30
+         && ADesc.EditRate != EditRate_48
+         && ADesc.EditRate != EditRate_50
+         && ADesc.EditRate != EditRate_60 )
+      ADesc.EditRate = Options.PictureRate();
 
-      FrameBuffer.Capacity(PCM::CalcFrameBufferSize(ADesc));
+    FrameBuffer.Capacity(PCM::CalcFrameBufferSize(ADesc));
 
-      if ( Options.verbose_flag )
-	PCM::AudioDescriptorDump(ADesc);
-    }
+    if ( Options.verbose_flag )
+      PCM::AudioDescriptorDump(ADesc);
+  }
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    last_frame = ADesc.ContainerDuration;
+
+    if ( Options.duration > 0 && Options.duration < last_frame )
+      last_frame = Options.duration;
+
+    if ( Options.start_frame > 0 )
     {
-      last_frame = ADesc.ContainerDuration;
+      if ( Options.start_frame > ADesc.ContainerDuration )
+      {
+        fprintf(stderr, "Start value greater than file duration.\n");
+        return RESULT_FAIL;
+      }
 
-      if ( Options.duration > 0 && Options.duration < last_frame )
-	last_frame = Options.duration;
-
-      if ( Options.start_frame > 0 )
-	{
-	  if ( Options.start_frame > ADesc.ContainerDuration )
-	    {
-	      fprintf(stderr, "Start value greater than file duration.\n");
-	      return RESULT_FAIL;
-	    }
-
-	  last_frame = Kumu::xmin(Options.start_frame + last_frame, ADesc.ContainerDuration);
-	}
-
-      ADesc.ContainerDuration = last_frame - Options.start_frame;
-      OutWave.OpenWrite(ADesc, Options.file_root,
-			( Options.split_wav ? WavFileWriter::ST_STEREO : 
-			  ( Options.mono_wav ? WavFileWriter::ST_MONO : WavFileWriter::ST_NONE ) ));
+      last_frame = Kumu::xmin(Options.start_frame + last_frame, ADesc.ContainerDuration);
     }
+
+    ADesc.ContainerDuration = last_frame - Options.start_frame;
+    OutWave.OpenWrite(ADesc, Options.file_root,
+                      ( Options.split_wav ? WavFileWriter::ST_STEREO :
+                        ( Options.mono_wav ? WavFileWriter::ST_MONO : WavFileWriter::ST_NONE ) ));
+  }
 
   if ( ASDCP_SUCCESS(result) && Options.key_flag )
+  {
+    Context = new AESDecContext;
+    result = Context->InitKey(Options.key_value);
+
+    if ( ASDCP_SUCCESS(result) && Options.read_hmac )
     {
-      Context = new AESDecContext;
-      result = Context->InitKey(Options.key_value);
+      WriterInfo Info;
+      Reader.FillWriterInfo(Info);
 
-      if ( ASDCP_SUCCESS(result) && Options.read_hmac )
-	{
-	  WriterInfo Info;
-	  Reader.FillWriterInfo(Info);
-
-	  if ( Info.UsesHMAC )
-	    {
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	  else
-	    {
-	      fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
-	    }
-	}
+      if ( Info.UsesHMAC )
+      {
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
+      else
+      {
+        fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
+      }
     }
+  }
 
   for ( ui32_t i = Options.start_frame; ASDCP_SUCCESS(result) && i < last_frame; i++ )
+  {
+    result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Reader.ReadFrame(i, FrameBuffer, Context, HMAC);
+      if ( Options.verbose_flag )
+        FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  if ( Options.verbose_flag )
-	    FrameBuffer.Dump(stderr, Options.fb_dump_size);
-
-	  result = OutWave.WriteFrame(FrameBuffer);
-	}
+      result = OutWave.WriteFrame(FrameBuffer);
     }
+  }
 
   return result;
 }
@@ -1484,59 +1484,59 @@ write_timed_text_file(CommandOptions& Options)
 
   // set up MXF writer
   if ( ASDCP_SUCCESS(result) )
-    {
-      Parser.FillTimedTextDescriptor(TDesc);
-      FrameBuffer.Capacity(Options.fb_size);
+  {
+    Parser.FillTimedTextDescriptor(TDesc);
+    FrameBuffer.Capacity(Options.fb_size);
 
-      if ( Options.verbose_flag )
-	{
-	  fputs("D-Cinema Timed-Text Descriptor:\n", stderr);
-	  TimedText::DescriptorDump(TDesc);
-	}
+    if ( Options.verbose_flag )
+    {
+      fputs("D-Cinema Timed-Text Descriptor:\n", stderr);
+      TimedText::DescriptorDump(TDesc);
     }
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
+  {
+    WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
+    if ( Options.asset_id_flag )
+      memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+    else
+      Kumu::GenRandomUUID(Info.AssetUUID);
+
+    if ( Options.use_smpte_labels )
     {
-      WriterInfo Info = s_MyInfo;  // fill in your favorite identifiers here
-      if ( Options.asset_id_flag )
-	memcpy(Info.AssetUUID, Options.asset_id_value, UUIDlen);
+      Info.LabelSetType = LS_MXF_SMPTE;
+      fprintf(stderr, "ATTENTION! Writing SMPTE Universal Labels\n");
+    }
+
+    // configure encryption
+    if( Options.key_flag )
+    {
+      Kumu::GenRandomUUID(Info.ContextID);
+      Info.EncryptedEssence = true;
+
+      if ( Options.key_id_flag )
+        memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
       else
-	Kumu::GenRandomUUID(Info.AssetUUID);
+        RNG.FillRandom(Info.CryptographicKeyID, UUIDlen);
 
-      if ( Options.use_smpte_labels )
-	{
-	  Info.LabelSetType = LS_MXF_SMPTE;
-	  fprintf(stderr, "ATTENTION! Writing SMPTE Universal Labels\n");
-	}
-
-      // configure encryption
-      if( Options.key_flag )
-	{
-	  Kumu::GenRandomUUID(Info.ContextID);
-	  Info.EncryptedEssence = true;
-
-	  if ( Options.key_id_flag )
-	    memcpy(Info.CryptographicKeyID, Options.key_id_value, UUIDlen);
-	  else
-	    RNG.FillRandom(Info.CryptographicKeyID, UUIDlen);
-
-	  Context = new AESEncContext;
-	  result = Context->InitKey(Options.key_value);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-
-	  if ( ASDCP_SUCCESS(result) && Options.write_hmac )
-	    {
-	      Info.UsesHMAC = true;
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	}
+      Context = new AESEncContext;
+      result = Context->InitKey(Options.key_value);
 
       if ( ASDCP_SUCCESS(result) )
-	result = Writer.OpenWrite(Options.out_file, Info, TDesc);
+        result = Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+
+      if ( ASDCP_SUCCESS(result) && Options.write_hmac )
+      {
+        Info.UsesHMAC = true;
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
     }
+
+    if ( ASDCP_SUCCESS(result) )
+      result = Writer.OpenWrite(Options.out_file, Info, TDesc);
+  }
 
   if ( ASDCP_FAILURE(result) )
     return result;
@@ -1550,30 +1550,30 @@ write_timed_text_file(CommandOptions& Options)
     result = Writer.WriteTimedTextResource(XMLDoc, Context, HMAC);
 
   for ( ri = TDesc.ResourceList.begin() ; ri != TDesc.ResourceList.end() && ASDCP_SUCCESS(result); ri++ )
+  {
+    result = Parser.ReadAncillaryResource((*ri).ResourceID, FrameBuffer);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Parser.ReadAncillaryResource((*ri).ResourceID, FrameBuffer);
+      if ( Options.verbose_flag )
+        FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  if ( Options.verbose_flag )
-	    FrameBuffer.Dump(stderr, Options.fb_dump_size);
+      if ( ! Options.no_write_flag )
+      {
+        result = Writer.WriteAncillaryResource(FrameBuffer, Context, HMAC);
 
-	  if ( ! Options.no_write_flag )
-	    {
-	      result = Writer.WriteAncillaryResource(FrameBuffer, Context, HMAC);
-	      
-	      // The Writer class will forward the last block of ciphertext
-	      // to the encryption context for use as the IV for the next
-	      // frame. If you want to use non-sequitur IV values, un-comment
-	      // the following  line of code.
-	      // if ( ASDCP_SUCCESS(result) && Options.key_flag )
-	      //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
-	    }
-	}
-
-      if ( result == RESULT_ENDOFFILE )
-	result = RESULT_OK;
+        // The Writer class will forward the last block of ciphertext
+        // to the encryption context for use as the IV for the next
+        // frame. If you want to use non-sequitur IV values, un-comment
+        // the following  line of code.
+        // if ( ASDCP_SUCCESS(result) && Options.key_flag )
+        //   Context->SetIVec(RNG.FillRandom(IV_buf, CBC_BLOCK_SIZE));
+      }
     }
+
+    if ( result == RESULT_ENDOFFILE )
+      result = RESULT_OK;
+  }
 
   if ( ASDCP_SUCCESS(result) && ! Options.no_write_flag )
     result = Writer.Finalize();
@@ -1598,35 +1598,35 @@ read_timed_text_file(CommandOptions& Options)
   Result_t result = Reader.OpenRead(Options.filenames[0]);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      Reader.FillTimedTextDescriptor(TDesc);
-      FrameBuffer.Capacity(Options.fb_size);
+  {
+    Reader.FillTimedTextDescriptor(TDesc);
+    FrameBuffer.Capacity(Options.fb_size);
 
-      if ( Options.verbose_flag )
-	TimedText::DescriptorDump(TDesc);
-    }
+    if ( Options.verbose_flag )
+      TimedText::DescriptorDump(TDesc);
+  }
 
   if ( ASDCP_SUCCESS(result) && Options.key_flag )
+  {
+    Context = new AESDecContext;
+    result = Context->InitKey(Options.key_value);
+
+    if ( ASDCP_SUCCESS(result) && Options.read_hmac )
     {
-      Context = new AESDecContext;
-      result = Context->InitKey(Options.key_value);
+      WriterInfo Info;
+      Reader.FillWriterInfo(Info);
 
-      if ( ASDCP_SUCCESS(result) && Options.read_hmac )
-	{
-	  WriterInfo Info;
-	  Reader.FillWriterInfo(Info);
-
-	  if ( Info.UsesHMAC )
-	    {
-	      HMAC = new HMACContext;
-	      result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
-	    }
-	  else
-	    {
-	      fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
-	    }
-	}
+      if ( Info.UsesHMAC )
+      {
+        HMAC = new HMACContext;
+        result = HMAC->InitKey(Options.key_value, Info.LabelSetType);
+      }
+      else
+      {
+        fputs("File does not contain HMAC values, ignoring -m option.\n", stderr);
+      }
     }
+  }
 
   if ( ASDCP_FAILURE(result) )
     return result;
@@ -1640,32 +1640,32 @@ read_timed_text_file(CommandOptions& Options)
   result = Reader.ReadTimedTextResource(XMLDoc, Context, HMAC);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      Kumu::FileWriter Writer;
-      result = Writer.OpenWrite(Options.file_root);
+  {
+    Kumu::FileWriter Writer;
+    result = Writer.OpenWrite(Options.file_root);
 
-      if ( ASDCP_SUCCESS(result) )
-	result = Writer.Write(reinterpret_cast<const byte_t*>(XMLDoc.c_str()), XMLDoc.size(), &write_count);
-    }
+    if ( ASDCP_SUCCESS(result) )
+      result = Writer.Write(reinterpret_cast<const byte_t*>(XMLDoc.c_str()), XMLDoc.size(), &write_count);
+  }
 
   for ( ri = TDesc.ResourceList.begin() ; ri != TDesc.ResourceList.end() && ASDCP_SUCCESS(result); ri++ )
+  {
+    result = Reader.ReadAncillaryResource(ri->ResourceID, FrameBuffer, Context, HMAC);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Reader.ReadAncillaryResource(ri->ResourceID, FrameBuffer, Context, HMAC);
+      Kumu::FileWriter Writer;
+      result = Writer.OpenWrite(Kumu::PathJoin(out_path, Kumu::UUID(ri->ResourceID).EncodeHex(buf, 64)).c_str());
 
       if ( ASDCP_SUCCESS(result) )
-	{
-	  Kumu::FileWriter Writer;
-	  result = Writer.OpenWrite(Kumu::PathJoin(out_path, Kumu::UUID(ri->ResourceID).EncodeHex(buf, 64)).c_str());
+      {
+        if ( Options.verbose_flag )
+          FrameBuffer.Dump(stderr, Options.fb_dump_size);
 
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      if ( Options.verbose_flag )
-		FrameBuffer.Dump(stderr, Options.fb_dump_size);
-
-	      result = Writer.Write(FrameBuffer.RoData(), FrameBuffer.Size(), &write_count);
-	    }
-	}
+        result = Writer.Write(FrameBuffer.RoData(), FrameBuffer.Size(), &write_count);
+      }
     }
+  }
 
   return result;
 }
@@ -1680,7 +1680,7 @@ read_timed_text_file(CommandOptions& Options)
 
 class MyVideoDescriptor : public MPEG2::VideoDescriptor
 {
- public:
+public:
   void FillDescriptor(MPEG2::MXFReader& Reader) {
     Reader.FillVideoDescriptor(*this);
   }
@@ -1692,7 +1692,7 @@ class MyVideoDescriptor : public MPEG2::VideoDescriptor
 
 class MyPictureDescriptor : public JP2K::PictureDescriptor
 {
- public:
+public:
   void FillDescriptor(JP2K::MXFReader& Reader) {
     Reader.FillPictureDescriptor(*this);
   }
@@ -1704,7 +1704,7 @@ class MyPictureDescriptor : public JP2K::PictureDescriptor
 
 class MyStereoPictureDescriptor : public JP2K::PictureDescriptor
 {
- public:
+public:
   void FillDescriptor(JP2K::MXFSReader& Reader) {
     Reader.FillPictureDescriptor(*this);
   }
@@ -1716,7 +1716,7 @@ class MyStereoPictureDescriptor : public JP2K::PictureDescriptor
 
 class MyAudioDescriptor : public PCM::AudioDescriptor
 {
- public:
+public:
   void FillDescriptor(PCM::MXFReader& Reader) {
     Reader.FillAudioDescriptor(*this);
   }
@@ -1728,7 +1728,7 @@ class MyAudioDescriptor : public PCM::AudioDescriptor
 
 class MyTextDescriptor : public TimedText::TimedTextDescriptor
 {
- public:
+public:
   void FillDescriptor(TimedText::MXFReader& Reader) {
     Reader.FillTimedTextDescriptor(*this);
   }
@@ -1753,33 +1753,33 @@ public:
     Result_t result = RESULT_OK;
 
     if ( Options.verbose_flag || Options.showheader_flag )
+    {
+      ReaderT     Reader;
+      result = Reader.OpenRead(Options.filenames[0]);
+
+      if ( ASDCP_SUCCESS(result) )
       {
-	ReaderT     Reader;
-	result = Reader.OpenRead(Options.filenames[0]);
+        fprintf(stdout, "File essence type is %s.\n", type_string);
 
-	if ( ASDCP_SUCCESS(result) )
-	  {
-	    fprintf(stdout, "File essence type is %s.\n", type_string);
+        if ( Options.showheader_flag )
+          Reader.DumpHeaderMetadata(stream);
 
-	    if ( Options.showheader_flag )
-	      Reader.DumpHeaderMetadata(stream);
+        WriterInfo WI;
+        Reader.FillWriterInfo(WI);
+        WriterInfoDump(WI, stream);
 
-	    WriterInfo WI;
-	    Reader.FillWriterInfo(WI);
-	    WriterInfoDump(WI, stream);
+        DescriptorT Desc;
+        Desc.FillDescriptor(Reader);
+        Desc.Dump(stream);
 
-	    DescriptorT Desc;
-	    Desc.FillDescriptor(Reader);
-	    Desc.Dump(stream);
-
-	    if ( Options.showindex_flag )
-	      Reader.DumpIndex(stream);
-	  }
-	else if ( result == RESULT_FORMAT && Options.showheader_flag )
-	  {
-	    Reader.DumpHeaderMetadata(stream);
-	  }
+        if ( Options.showindex_flag )
+          Reader.DumpIndex(stream);
       }
+      else if ( result == RESULT_FORMAT && Options.showheader_flag )
+      {
+        Reader.DumpHeaderMetadata(stream);
+      }
+    }
 
     return result;
   }
@@ -1797,85 +1797,85 @@ show_file_info(CommandOptions& Options)
     return result;
 
   if ( EssenceType == ESS_MPEG2_VES )
-    {
-      result = FileInfoWrapper<ASDCP::MPEG2::MXFReader, MyVideoDescriptor>::file_info(Options, "MPEG2 video");
-    }
+  {
+    result = FileInfoWrapper<ASDCP::MPEG2::MXFReader, MyVideoDescriptor>::file_info(Options, "MPEG2 video");
+  }
   else if ( EssenceType == ESS_PCM_24b_48k || EssenceType == ESS_PCM_24b_96k )
-    {
-      result = FileInfoWrapper<ASDCP::PCM::MXFReader, MyAudioDescriptor>::file_info(Options, "PCM audio");
+  {
+    result = FileInfoWrapper<ASDCP::PCM::MXFReader, MyAudioDescriptor>::file_info(Options, "PCM audio");
 
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  const Dictionary* Dict = &DefaultCompositeDict();
-	  PCM::MXFReader Reader;
-	  MXF::OP1aHeader Header(Dict);
-	  MXF::WaveAudioDescriptor *descriptor = 0;
-
-	  result = Reader.OpenRead(Options.filenames[0]);
-
-	  if ( ASDCP_SUCCESS(result) )
-	    result = Reader.OP1aHeader().GetMDObjectByType(Dict->ul(MDD_WaveAudioDescriptor), reinterpret_cast<MXF::InterchangeObject**>(&descriptor));
-
-	  if ( ASDCP_SUCCESS(result) )
-	    {
-	      char buf[64];
-	      fprintf(stdout, " ChannelAssignment: %s\n", descriptor->ChannelAssignment.const_get().EncodeString(buf, 64));
-	    }
-	}
-    }
-  else if ( EssenceType == ESS_JPEG_2000 )
+    if ( ASDCP_SUCCESS(result) )
     {
-      if ( Options.stereo_image_flag )
-	{
-	  result = FileInfoWrapper<ASDCP::JP2K::MXFSReader,
-				   MyStereoPictureDescriptor>::file_info(Options, "JPEG 2000 stereoscopic pictures");
-	}
-      else
-	{
-	  result = FileInfoWrapper<ASDCP::JP2K::MXFReader,
-				   MyPictureDescriptor>::file_info(Options, "JPEG 2000 pictures");
-	}
-    }
-  else if ( EssenceType == ESS_JPEG_2000_S )
-    {
-      result = FileInfoWrapper<ASDCP::JP2K::MXFSReader,
-			       MyStereoPictureDescriptor>::file_info(Options, "JPEG 2000 stereoscopic pictures");
-    }
-  else if ( EssenceType == ESS_TIMED_TEXT )
-    {
-      result = FileInfoWrapper<ASDCP::TimedText::MXFReader, MyTextDescriptor>::file_info(Options, "Timed Text");
-    }
-  else
-    {
-      fprintf(stderr, "File is not AS-DCP: %s\n", Options.filenames[0]);
-      Kumu::FileReader   Reader;
       const Dictionary* Dict = &DefaultCompositeDict();
-      MXF::OP1aHeader TestHeader(Dict);
+      PCM::MXFReader Reader;
+      MXF::OP1aHeader Header(Dict);
+      MXF::WaveAudioDescriptor *descriptor = 0;
 
       result = Reader.OpenRead(Options.filenames[0]);
 
       if ( ASDCP_SUCCESS(result) )
-	result = TestHeader.InitFromFile(Reader); // test UL and OP
+        result = Reader.OP1aHeader().GetMDObjectByType(Dict->ul(MDD_WaveAudioDescriptor), reinterpret_cast<MXF::InterchangeObject**>(&descriptor));
 
       if ( ASDCP_SUCCESS(result) )
-	{
-	  TestHeader.Partition::Dump(stdout);
-
-	  if ( MXF::Identification* ID = TestHeader.GetIdentification() )
-	    ID->Dump(stdout);
-	  else
-	    fputs("File contains no Identification object.\n", stdout);
-
-	  if ( MXF::SourcePackage* SP = TestHeader.GetSourcePackage() )
-	    SP->Dump(stdout);
-	  else
-	    fputs("File contains no SourcePackage object.\n", stdout);
-	}
-      else
-	{
-	  fputs("File is not MXF.\n", stdout);
-	}
+      {
+        char buf[64];
+        fprintf(stdout, " ChannelAssignment: %s\n", descriptor->ChannelAssignment.const_get().EncodeString(buf, 64));
+      }
     }
+  }
+  else if ( EssenceType == ESS_JPEG_2000 )
+  {
+    if ( Options.stereo_image_flag )
+    {
+      result = FileInfoWrapper<ASDCP::JP2K::MXFSReader,
+          MyStereoPictureDescriptor>::file_info(Options, "JPEG 2000 stereoscopic pictures");
+    }
+    else
+    {
+      result = FileInfoWrapper<ASDCP::JP2K::MXFReader,
+          MyPictureDescriptor>::file_info(Options, "JPEG 2000 pictures");
+    }
+  }
+  else if ( EssenceType == ESS_JPEG_2000_S )
+  {
+    result = FileInfoWrapper<ASDCP::JP2K::MXFSReader,
+        MyStereoPictureDescriptor>::file_info(Options, "JPEG 2000 stereoscopic pictures");
+  }
+  else if ( EssenceType == ESS_TIMED_TEXT )
+  {
+    result = FileInfoWrapper<ASDCP::TimedText::MXFReader, MyTextDescriptor>::file_info(Options, "Timed Text");
+  }
+  else
+  {
+    fprintf(stderr, "File is not AS-DCP: %s\n", Options.filenames[0]);
+    Kumu::FileReader   Reader;
+    const Dictionary* Dict = &DefaultCompositeDict();
+    MXF::OP1aHeader TestHeader(Dict);
+
+    result = Reader.OpenRead(Options.filenames[0]);
+
+    if ( ASDCP_SUCCESS(result) )
+      result = TestHeader.InitFromFile(Reader); // test UL and OP
+
+    if ( ASDCP_SUCCESS(result) )
+    {
+      TestHeader.Partition::Dump(stdout);
+
+      if ( MXF::Identification* ID = TestHeader.GetIdentification() )
+        ID->Dump(stdout);
+      else
+        fputs("File contains no Identification object.\n", stdout);
+
+      if ( MXF::SourcePackage* SP = TestHeader.GetSourcePackage() )
+        SP->Dump(stdout);
+      else
+        fputs("File contains no SourcePackage object.\n", stdout);
+    }
+    else
+    {
+      fputs("File is not MXF.\n", stdout);
+    }
+  }
 
   return result;
 }
@@ -1896,29 +1896,29 @@ digest_file(const char* filename)
   Result_t result = Reader.OpenRead(filename);
 
   while ( ASDCP_SUCCESS(result) )
+  {
+    ui32_t read_count = 0;
+    result = Reader.Read(Buf.Data(), Buf.Capacity(), &read_count);
+
+    if ( result == RESULT_ENDOFFILE )
     {
-      ui32_t read_count = 0;
-      result = Reader.Read(Buf.Data(), Buf.Capacity(), &read_count);
-
-      if ( result == RESULT_ENDOFFILE )
-	{
-	  result = RESULT_OK;
-	  break;
-	}
-
-      if ( ASDCP_SUCCESS(result) )
-	SHA1_Update(&Ctx, Buf.Data(), read_count);
+      result = RESULT_OK;
+      break;
     }
+
+    if ( ASDCP_SUCCESS(result) )
+      SHA1_Update(&Ctx, Buf.Data(), read_count);
+  }
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      const ui32_t sha_len = 20;
-      byte_t bin_buf[sha_len];
-      char sha_buf[64];
-      SHA1_Final(bin_buf, &Ctx);
+  {
+    const ui32_t sha_len = 20;
+    byte_t bin_buf[sha_len];
+    char sha_buf[64];
+    SHA1_Final(bin_buf, &Ctx);
 
-      fprintf(stdout, "%s %s\n", base64encode(bin_buf, sha_len, sha_buf, 64), filename);
-    }
+    fprintf(stdout, "%s %s\n", base64encode(bin_buf, sha_len, sha_buf, 64), filename);
+  }
 
   return result;
 }
@@ -1941,156 +1941,156 @@ main(int argc, const char** argv)
     return 0;
 
   if ( Options.error_flag )
-    {
-      fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
-      return 3;
-    }
+  {
+    fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
+    return 3;
+  }
 
   if ( Options.mode == MMT_INFO )
+  {
+    result = show_file_info(Options);
+
+    for ( int i = 1; ASDCP_SUCCESS(result) && i < Options.file_count; ++i )
     {
+      Options.filenames[0] = Options.filenames[i]; // oh-so hackish
       result = show_file_info(Options);
-
-      for ( int i = 1; ASDCP_SUCCESS(result) && i < Options.file_count; ++i )
-	{
-	  Options.filenames[0] = Options.filenames[i]; // oh-so hackish
-	  result = show_file_info(Options);
-	}
     }
+  }
   else if ( Options.mode == MMT_GOP_START )
-    {
-      result = gop_start_test(Options);
-    }
+  {
+    result = gop_start_test(Options);
+  }
   else if ( Options.mode == MMT_GEN_KEY )
-    {
-      Kumu::FortunaRNG RNG;
-      byte_t bin_buf[KeyLen];
+  {
+    Kumu::FortunaRNG RNG;
+    byte_t bin_buf[KeyLen];
 
-      RNG.FillRandom(bin_buf, KeyLen);
-      printf("%s\n", Kumu::bin2hex(bin_buf, KeyLen, str_buf, 64));
-    }
+    RNG.FillRandom(bin_buf, KeyLen);
+    printf("%s\n", Kumu::bin2hex(bin_buf, KeyLen, str_buf, 64));
+  }
   else if ( Options.mode == MMT_GEN_ID )
-    {
-      UUID TmpID;
-      Kumu::GenRandomValue(TmpID);
-      printf("%s\n", TmpID.EncodeHex(str_buf, 64));
-    }
+  {
+    UUID TmpID;
+    Kumu::GenRandomValue(TmpID);
+    printf("%s\n", TmpID.EncodeHex(str_buf, 64));
+  }
   else if ( Options.mode == MMT_DIGEST )
-    {
-      for ( ui32_t i = 0; i < Options.file_count && ASDCP_SUCCESS(result); i++ )
-	result = digest_file(Options.filenames[i]);
-    }
+  {
+    for ( ui32_t i = 0; i < Options.file_count && ASDCP_SUCCESS(result); i++ )
+      result = digest_file(Options.filenames[i]);
+  }
   else if ( Options.mode == MMT_UL_LIST )
-    {
-      if ( Options.use_smpte_labels )
-	DefaultSMPTEDict().Dump(stdout);
-      else
-	DefaultInteropDict().Dump(stdout);
-    }
+  {
+    if ( Options.use_smpte_labels )
+      DefaultSMPTEDict().Dump(stdout);
+    else
+      DefaultInteropDict().Dump(stdout);
+  }
   else if ( Options.mode == MMT_EXTRACT )
+  {
+    EssenceType_t EssenceType;
+    result = ASDCP::EssenceType(Options.filenames[0], EssenceType);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      EssenceType_t EssenceType;
-      result = ASDCP::EssenceType(Options.filenames[0], EssenceType);
+      switch ( EssenceType )
+      {
+        case ESS_MPEG2_VES:
+          result = read_MPEG2_file(Options);
+          break;
 
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  switch ( EssenceType )
-	    {
-	    case ESS_MPEG2_VES:
-	      result = read_MPEG2_file(Options);
-	      break;
+        case ESS_JPEG_2000:
+          if ( Options.stereo_image_flag )
+            result = read_JP2K_S_file(Options);
+          else
+            result = read_JP2K_file(Options);
+          break;
 
-	    case ESS_JPEG_2000:
-	      if ( Options.stereo_image_flag )
-		result = read_JP2K_S_file(Options);
-	      else
-		result = read_JP2K_file(Options);
-	      break;
+        case ESS_JPEG_2000_S:
+          result = read_JP2K_S_file(Options);
+          break;
 
-	    case ESS_JPEG_2000_S:
-	      result = read_JP2K_S_file(Options);
-	      break;
+        case ESS_PCM_24b_48k:
+        case ESS_PCM_24b_96k:
+          result = read_PCM_file(Options);
+          break;
 
-	    case ESS_PCM_24b_48k:
-	    case ESS_PCM_24b_96k:
-	      result = read_PCM_file(Options);
-	      break;
+        case ESS_TIMED_TEXT:
+          result = read_timed_text_file(Options);
+          break;
 
-	    case ESS_TIMED_TEXT:
-	      result = read_timed_text_file(Options);
-	      break;
-
-	    default:
-	      fprintf(stderr, "%s: Unknown file type, not ASDCP essence.\n", Options.filenames[0]);
-	      return 5;
-	    }
-	}
+        default:
+          fprintf(stderr, "%s: Unknown file type, not ASDCP essence.\n", Options.filenames[0]);
+          return 5;
+      }
     }
+  }
   else if ( Options.mode == MMT_CREATE )
+  {
+    if ( Options.do_repeat && ! Options.duration_flag )
     {
-      if ( Options.do_repeat && ! Options.duration_flag )
-	{
-	  fputs("Option -R requires -d <duration>\n", stderr);
-	  return RESULT_FAIL;
-	}
-
-      EssenceType_t EssenceType;
-      result = ASDCP::RawEssenceType(Options.filenames[0], EssenceType);
-
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  switch ( EssenceType )
-	    {
-	    case ESS_MPEG2_VES:
-	      result = write_MPEG2_file(Options);
-	      break;
-
-	    case ESS_JPEG_2000:
-	      if ( Options.stereo_image_flag )
-		result = write_JP2K_S_file(Options);
-
-	      else
-		result = write_JP2K_file(Options);
-
-	      break;
-
-	    case ESS_PCM_24b_48k:
-	    case ESS_PCM_24b_96k:
-	      result = write_PCM_file(Options);
-	      break;
-
-	    case ESS_TIMED_TEXT:
-	      result = write_timed_text_file(Options);
-	      break;
-
-	    default:
-	      fprintf(stderr, "%s: Unknown file type, not ASDCP-compatible essence.\n",
-		      Options.filenames[0]);
-	      return 5;
-	    }
-	}
+      fputs("Option -R requires -d <duration>\n", stderr);
+      return RESULT_FAIL;
     }
+
+    EssenceType_t EssenceType;
+    result = ASDCP::RawEssenceType(Options.filenames[0], EssenceType);
+
+    if ( ASDCP_SUCCESS(result) )
+    {
+      switch ( EssenceType )
+      {
+        case ESS_MPEG2_VES:
+          result = write_MPEG2_file(Options);
+          break;
+
+        case ESS_JPEG_2000:
+          if ( Options.stereo_image_flag )
+            result = write_JP2K_S_file(Options);
+
+          else
+            result = write_JP2K_file(Options);
+
+          break;
+
+        case ESS_PCM_24b_48k:
+        case ESS_PCM_24b_96k:
+          result = write_PCM_file(Options);
+          break;
+
+        case ESS_TIMED_TEXT:
+          result = write_timed_text_file(Options);
+          break;
+
+        default:
+          fprintf(stderr, "%s: Unknown file type, not ASDCP-compatible essence.\n",
+                  Options.filenames[0]);
+          return 5;
+      }
+    }
+  }
   else
-    {
-      fprintf(stderr, "Unhandled mode: %d.\n", Options.mode);
-      return 6;
-    }
+  {
+    fprintf(stderr, "Unhandled mode: %d.\n", Options.mode);
+    return 6;
+  }
 
   if ( ASDCP_FAILURE(result) )
+  {
+    fputs("Program stopped on error.\n", stderr);
+
+    if ( result == RESULT_SFORMAT )
     {
-      fputs("Program stopped on error.\n", stderr);
-
-      if ( result == RESULT_SFORMAT )
-	{
-	  fputs("Use option '-3' to force stereoscopic mode.\n", stderr);
-	}
-      else if ( result != RESULT_FAIL )
-	{
-	  fputs(result, stderr);
-	  fputc('\n', stderr);
-	}
-
-      return 1;
+      fputs("Use option '-3' to force stereoscopic mode.\n", stderr);
     }
+    else if ( result != RESULT_FAIL )
+    {
+      fputs(result, stderr);
+      fputc('\n', stderr);
+    }
+
+    return 1;
+  }
 
   return 0;
 }

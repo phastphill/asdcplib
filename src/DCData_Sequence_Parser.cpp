@@ -43,58 +43,58 @@ using ASDCP::Result_t;
 //------------------------------------------------------------------------------------------
 namespace ASDCP
 {
-namespace DCData
-{
-class FileList;
-} // namespace DCData
+  namespace DCData
+  {
+    class FileList;
+  } // namespace DCData
 } // namespace ASDCP
 
 
 class ASDCP::DCData::FileList : public std::list<std::string>
 {
-    std::string m_DirName;
+  std::string m_DirName;
 
-  public:
-    FileList() {}
-    ~FileList() {}
+public:
+  FileList() {}
+  ~FileList() {}
 
-    const FileList& operator=(const std::list<std::string>& pathlist) {
-        std::list<std::string>::const_iterator i;
-        for ( i = pathlist.begin(); i != pathlist.end(); i++ )
-            push_back(*i);
-        return *this;
-    }
+  const FileList& operator=(const std::list<std::string>& pathlist) {
+    std::list<std::string>::const_iterator i;
+    for ( i = pathlist.begin(); i != pathlist.end(); i++ )
+      push_back(*i);
+    return *this;
+  }
 
-    //
-    Result_t InitFromDirectory(const std::string& path)
+  //
+  Result_t InitFromDirectory(const std::string& path)
+  {
+    char next_file[Kumu::MaxFilePath];
+    Kumu::DirScanner Scanner;
+
+    Result_t result = Scanner.Open(path);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-        char next_file[Kumu::MaxFilePath];
-        Kumu::DirScanner Scanner;
+      m_DirName = path;
 
-        Result_t result = Scanner.Open(path);
+      while ( ASDCP_SUCCESS(Scanner.GetNext(next_file)) )
+      {
+        if ( next_file[0] == '.' ) // no hidden files or internal links
+          continue;
 
-        if ( ASDCP_SUCCESS(result) )
-        {
-            m_DirName = path;
+        std::string Str(m_DirName);
+        Str += "/";
+        Str += next_file;
 
-            while ( ASDCP_SUCCESS(Scanner.GetNext(next_file)) )
-            {
-                if ( next_file[0] == '.' ) // no hidden files or internal links
-                    continue;
+        if ( ! Kumu::PathIsDirectory(Str) )
+          push_back(Str);
+      }
 
-                std::string Str(m_DirName);
-                Str += "/";
-                Str += next_file;
-
-                if ( ! Kumu::PathIsDirectory(Str) )
-                    push_back(Str);
-            }
-
-            sort();
-        }
-
-        return result;
+      sort();
     }
+
+    return result;
+  }
 };
 
 //------------------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ class ASDCP::DCData::SequenceParser::h__SequenceParser
 
   ASDCP_NO_COPY_CONSTRUCT(h__SequenceParser);
 
- public:
+public:
   DCDataDescriptor  m_DDesc;
 
   h__SequenceParser() : m_FramesRead(0)
@@ -205,8 +205,8 @@ ASDCP::DCData::SequenceParser::h__SequenceParser::ReadFrame(FrameBuffer& FB)
 
   if ( ASDCP_SUCCESS(result) )
   {
-      FB.FrameNumber(m_FramesRead++);
-      m_CurrentFile++;
+    FB.FrameNumber(m_FramesRead++);
+    m_CurrentFile++;
   }
 
   return result;

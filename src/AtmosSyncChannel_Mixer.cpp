@@ -68,10 +68,10 @@ ASDCP::AtmosSyncChannelMixer::OpenRead(ui32_t argc, const char** argv, const Rat
   PathList_t TmpFileList;
 
   for ( ui32_t i = 0; i < argc; ++i )
-    {
-      ASDCP_TEST_NULL_STR(argv[i]);
-      TmpFileList.push_back(argv[i]);
-    }
+  {
+    ASDCP_TEST_NULL_STR(argv[i]);
+    TmpFileList.push_back(argv[i]);
+  }
 
   return OpenRead(TmpFileList, PictureRate);
 }
@@ -95,21 +95,21 @@ ASDCP::AtmosSyncChannelMixer::OpenRead(const Kumu::PathList_t& argv, const Ratio
       result = Dir.GetNext(name_buf);
 
     while ( KM_SUCCESS(result) )
-	{
-	  if ( name_buf[0] != '.' ) // no hidden files
+    {
+      if ( name_buf[0] != '.' ) // no hidden files
       {
         std::string tmp_path = argv.front() + "/" + name_buf;
         file_list.push_back(tmp_path);
       }
 
-	  result = Dir.GetNext(name_buf);
-	}
+      result = Dir.GetNext(name_buf);
+    }
 
     if ( result == RESULT_ENDOFFILE )
-	{
-	  result = RESULT_OK;
-	  file_list.sort();
-	}
+    {
+      result = RESULT_OK;
+      file_list.sort();
+    }
   }
   else
   {
@@ -260,36 +260,36 @@ Result_t
 ASDCP::AtmosSyncChannelMixer::AppendSilenceChannels(const ui32_t& channel_count)
 {
   if ( m_ADesc.QuantizationBits == 0 )
-    {
-      DefaultLogSink().Error("Mixer object contains no channels, call OpenRead() first.\n");
-      return RESULT_PARAM;
-    }
+  {
+    DefaultLogSink().Error("Mixer object contains no channels, call OpenRead() first.\n");
+    return RESULT_PARAM;
+  }
 
   Result_t result = RESULT_OK;
   PCM::AudioDescriptor tmpDesc;
 
   if ( channel_count > 0 )
+  {
+    Kumu::mem_ptr<SilenceDataProvider> I =
+        new SilenceDataProvider(channel_count,
+                                m_ADesc.QuantizationBits,
+                                m_ADesc.AudioSamplingRate.Numerator,
+                                m_ADesc.EditRate);
+
+    result = I->FillAudioDescriptor(tmpDesc);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      Kumu::mem_ptr<SilenceDataProvider> I =
-	new SilenceDataProvider(channel_count,
-				m_ADesc.QuantizationBits,
-				m_ADesc.AudioSamplingRate.Numerator,
-				m_ADesc.EditRate);
+      m_ADesc.BlockAlign += tmpDesc.BlockAlign;
+      m_ChannelCount += tmpDesc.ChannelCount;
+      m_ADesc.ChannelCount = m_ChannelCount;
+      m_ADesc.AvgBps = (ui32_t)(ceil(m_ADesc.AudioSamplingRate.Quotient()) * m_ADesc.BlockAlign);
 
-      result = I->FillAudioDescriptor(tmpDesc);
-
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  m_ADesc.BlockAlign += tmpDesc.BlockAlign;
-	  m_ChannelCount += tmpDesc.ChannelCount;
-	  m_ADesc.ChannelCount = m_ChannelCount;
-	  m_ADesc.AvgBps = (ui32_t)(ceil(m_ADesc.AudioSamplingRate.Quotient()) * m_ADesc.BlockAlign);
-
-	  m_outputs.push_back(std::make_pair(channel_count, I.get()));
-	  m_inputs.push_back(I);
-	  I.release();
-	}
+      m_outputs.push_back(std::make_pair(channel_count, I.get()));
+      m_inputs.push_back(I);
+      I.release();
     }
+  }
 
   return result;
 }
@@ -342,14 +342,14 @@ ASDCP::AtmosSyncChannelMixer::ReadFrame(PCM::FrameBuffer& OutFB)
     OutputList::iterator lastOutput = m_outputs.end();
 
     while ( Out_p < End_p && ASDCP_SUCCESS(result) )
-	{
-        iter = m_outputs.begin();
-        while ( iter != lastOutput && ASDCP_SUCCESS(result) )
-        {
-            result = ((*iter).second)->PutSample((*iter).first, Out_p, &bytesWritten);
-            Out_p += bytesWritten;
-            ++iter;
-        }
+    {
+      iter = m_outputs.begin();
+      while ( iter != lastOutput && ASDCP_SUCCESS(result) )
+      {
+        result = ((*iter).second)->PutSample((*iter).first, Out_p, &bytesWritten);
+        Out_p += bytesWritten;
+        ++iter;
+      }
     }
 
     if ( ASDCP_SUCCESS(result) )

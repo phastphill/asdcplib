@@ -40,10 +40,10 @@ int
 main(int argc, const char** argv)
 {
   if ( argc != 5 )
-    {
-      fprintf(stderr, "USAGE: fips-186-test <rounds> <b> <XKey-hex> <X-hex>\n");
-      return 2;
-    }
+  {
+    fprintf(stderr, "USAGE: fips-186-test <rounds> <b> <XKey-hex> <X-hex>\n");
+    return 2;
+  }
 
   ui32_t const X_buf_len = 1024;
   byte_t XKey_buf[X_buf_len];
@@ -55,22 +55,22 @@ main(int argc, const char** argv)
   ui32_t B = strtol(argv[2], &end, 10) / 8;
 
   if ( hex2bin(argv[3], XKey_buf, X_buf_len, &char_count) != 0 )
-    {
-      fprintf(stderr, "Error parsing <XKey-hex> value\n");
-      return 3;
-    }
+  {
+    fprintf(stderr, "Error parsing <XKey-hex> value\n");
+    return 3;
+  }
 
   if ( char_count != B )
-    {
-      fprintf(stderr, "Incorrect length for <XKey-hex> value (expecting %d decoded bytes)\n", B);
-      return 3;
-    }
+  {
+    fprintf(stderr, "Incorrect length for <XKey-hex> value (expecting %d decoded bytes)\n", B);
+    return 3;
+  }
 
   if ( hex2bin(argv[4], X_test_buf, X_buf_len, &char_count) != 0 )
-    {
-      fprintf(stderr, "Error parsing <X-hex> value\n");
-      return 3;
-    }
+  {
+    fprintf(stderr, "Error parsing <X-hex> value\n");
+    return 3;
+  }
 
   ui32_t const meg = 1024*1024;
   ui32_t out_size = char_count;
@@ -82,11 +82,11 @@ main(int argc, const char** argv)
   byte_t* test_key = &X_buf[fill_size - out_size];
 
   if ( memcmp(test_key, X_test_buf, char_count) != 0 )
-    {
-      fprintf(stderr, "Test vector value does not match:\n");
-      hexdump(test_key, char_count);
-      return 4;
-    }
+  {
+    fprintf(stderr, "Test vector value does not match:\n");
+    hexdump(test_key, char_count);
+    return 4;
+  }
 
   return 0;
 }

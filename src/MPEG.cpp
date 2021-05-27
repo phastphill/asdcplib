@@ -47,23 +47,23 @@ ASDCP::MPEG2::FindVESStartCode(const byte_t* buf, ui32_t buf_len, StartCode_t* s
   const byte_t* end_p = buf + buf_len;
 
   for ( ; p < end_p; p++ )
+  {
+    if ( *p == 0 )
+      zero_i++;
+
+    else if ( *p == 1 && zero_i > 1 )
     {
-      if ( *p == 0 )
-	zero_i++;
+      // 2 or more 0 bytes followed by a 1, start code is next
+      if ( ++p == end_p )
+        return RESULT_FAIL;
 
-      else if ( *p == 1 && zero_i > 1 )
-	{
-	  // 2 or more 0 bytes followed by a 1, start code is next
-	  if ( ++p == end_p )
-	    return RESULT_FAIL;
-
-	  *new_pos = p - 3;
-	  *sc = (StartCode_t)*p;
-	  return RESULT_OK;
-	}
-      else
-	zero_i = 0;
+      *new_pos = p - 3;
+      *sc = (StartCode_t)*p;
+      return RESULT_OK;
     }
+    else
+      zero_i = 0;
+  }
 
   *new_pos = buf + buf_len;
   return  RESULT_FAIL;
@@ -77,12 +77,12 @@ ASDCP::Rational
 ASDCP::MPEG2::Accessor::Sequence::AspectRatio()
 {
   switch ( m_p[3] & 0xf0 )
-    {
+  {
     case 0x10: return Rational(1,1);
     case 0x20: return Rational(4,3);
     case 0x30: return Rational(16,9);
     case 0x40: return Rational(221,100);
-    }
+  }
 
   DefaultLogSink().Error("Unknown AspectRatio value: %02x\n", m_p[3]);
   return Rational(0,0);
@@ -91,9 +91,9 @@ ASDCP::MPEG2::Accessor::Sequence::AspectRatio()
 //------------------------------------------------------------------------------------------
 
 enum State_t {
-    ST_IDLE,
-    ST_START_HEADER,
-    ST_IN_HEADER,
+  ST_IDLE,
+  ST_START_HEADER,
+  ST_IN_HEADER,
 };
 
 
@@ -117,7 +117,7 @@ public:
 
 
 ASDCP::MPEG2::VESParser::VESParser() :
-  m_Delegate(0), m_HBufLen(0), m_ZeroCount(0)
+    m_Delegate(0), m_HBufLen(0), m_ZeroCount(0)
 {
   m_State = new h__StreamState;
 }
@@ -158,133 +158,133 @@ ASDCP::MPEG2::VESParser::Parse(const byte_t* buf, ui32_t buf_len)
   // search for MPEG2 headers
   // copy interesting data to a buffer and pass to delegate for processing
   for ( register const byte_t* p = buf; p < end_p; p++ )
+  {
+    if ( m_State->Test_IN_HEADER() )
     {
-      if ( m_State->Test_IN_HEADER() )
-	{
-	  assert(run_len==0);
-	  m_HBuf[m_HBufLen++] = *p;
-	  assert(m_HBufLen < VESHeaderBufSize);
-	}
-      else
-	{
-	  run_len++;
-	}
-
-      if ( m_State->Test_START_HEADER() ) // *p is a start code
-	{
-	  if ( m_HBufLen == 0) // not already collecting a header
-	    {
-	      m_HBuf[0] = m_HBuf[1] = 0; m_HBuf[2] = 1; m_HBuf[3] = *p;
-
-	      // is this one we want?
-	      if ( *p == PIC_START || *p == SEQ_START || *p == EXT_START || *p == GOP_START )
-		{
-		  m_HBufLen = 4;
-		  m_State->Goto_IN_HEADER();
-
-		  switch ( run_len )
-		    {
-		    case 1: // we suppressed writing 001 when exiting from the last call
-		    case 4: // we have exactly 001x
-		      break;
-		    case 2: // we have 1x
-		    case 3: // we have 01x
-		      m_Delegate->Data(this, run_pos, (run_len == 2 ? -2 : -1));
-		      break;
-
-		    default:
-		      m_Delegate->Data(this, run_pos, run_len - 4);
-		    }
-
-		  run_len = 0;
-		}
-	      else
-		{
-		  m_State->Goto_IDLE();
-
-		  if ( run_len == 1 ) // did we suppress writing 001 when exiting from the last call?
-		    {
-		      m_Delegate->Data(this, m_HBuf, 4);
-		      run_len = 0;
-		    }
-		}
-	    }
-	  else // currently collecting a header, requires a flush before handling
-	    {
-	      m_HBufLen -= 3; // remove the current partial start code
-
-	      // let the delegate handle the header
-	      switch( m_HBuf[3] )
-		{
-		case PIC_START:   result = m_Delegate->Picture(this, m_HBuf, m_HBufLen);   break;	  
-		case EXT_START:   result = m_Delegate->Extension(this, m_HBuf, m_HBufLen); break;
-		case SEQ_START:   result = m_Delegate->Sequence(this, m_HBuf, m_HBufLen);  break;
-		case GOP_START:   result = m_Delegate->GOP(this, m_HBuf, m_HBufLen);       break;
-
-		default:
-		  DefaultLogSink().Error("Unexpected start code: %02x at byte %u\n",
-					 m_HBuf[3], (ui32_t)(p - buf));
-		  result = RESULT_RAW_FORMAT;
-		}
-
-	      // Parser handlers return RESULT_FALSE to teriminate without error
-	      if ( result != RESULT_OK )
-		{
-		  m_State->Goto_IDLE();
-		  return result;
-		}
-	      
-	      m_HBuf[0] = m_HBuf[1] = 0; m_HBuf[2] = 1; m_HBuf[3] = *p; // 001x
-	      run_len = 0;
-
-	      // is this a header we want?
-	      if ( *p == PIC_START || *p == SEQ_START || *p == EXT_START || *p == GOP_START )
-		{
-		  m_HBufLen = 4;
-		  m_State->Goto_IN_HEADER();
-		}
-	      else
-		{
-		  m_HBufLen = 0;
-		  m_State->Goto_IDLE();
-
-		  if ( *p >= FIRST_SLICE && *p <= LAST_SLICE )
-		    {
-		      result = m_Delegate->Slice(this, *p);
-
-		      if ( result != RESULT_OK )
-			return result;
-		    }
-
-		  m_Delegate->Data(this, m_HBuf, 4);
-		  run_pos = p+1;
-		}
-	    }
-	}
-      else if ( *p == 0 )
-	{
-	  m_ZeroCount++;
-	}
-      else
-	{
-	  if ( *p == 1 && m_ZeroCount > 1 )
-	    m_State->Goto_START_HEADER();
-
-	  m_ZeroCount = 0;
-	}
+      assert(run_len==0);
+      m_HBuf[m_HBufLen++] = *p;
+      assert(m_HBufLen < VESHeaderBufSize);
     }
+    else
+    {
+      run_len++;
+    }
+
+    if ( m_State->Test_START_HEADER() ) // *p is a start code
+    {
+      if ( m_HBufLen == 0) // not already collecting a header
+      {
+        m_HBuf[0] = m_HBuf[1] = 0; m_HBuf[2] = 1; m_HBuf[3] = *p;
+
+        // is this one we want?
+        if ( *p == PIC_START || *p == SEQ_START || *p == EXT_START || *p == GOP_START )
+        {
+          m_HBufLen = 4;
+          m_State->Goto_IN_HEADER();
+
+          switch ( run_len )
+          {
+            case 1: // we suppressed writing 001 when exiting from the last call
+            case 4: // we have exactly 001x
+              break;
+            case 2: // we have 1x
+            case 3: // we have 01x
+              m_Delegate->Data(this, run_pos, (run_len == 2 ? -2 : -1));
+              break;
+
+            default:
+              m_Delegate->Data(this, run_pos, run_len - 4);
+          }
+
+          run_len = 0;
+        }
+        else
+        {
+          m_State->Goto_IDLE();
+
+          if ( run_len == 1 ) // did we suppress writing 001 when exiting from the last call?
+          {
+            m_Delegate->Data(this, m_HBuf, 4);
+            run_len = 0;
+          }
+        }
+      }
+      else // currently collecting a header, requires a flush before handling
+      {
+        m_HBufLen -= 3; // remove the current partial start code
+
+        // let the delegate handle the header
+        switch( m_HBuf[3] )
+        {
+          case PIC_START:   result = m_Delegate->Picture(this, m_HBuf, m_HBufLen);   break;
+          case EXT_START:   result = m_Delegate->Extension(this, m_HBuf, m_HBufLen); break;
+          case SEQ_START:   result = m_Delegate->Sequence(this, m_HBuf, m_HBufLen);  break;
+          case GOP_START:   result = m_Delegate->GOP(this, m_HBuf, m_HBufLen);       break;
+
+          default:
+            DefaultLogSink().Error("Unexpected start code: %02x at byte %u\n",
+                                   m_HBuf[3], (ui32_t)(p - buf));
+            result = RESULT_RAW_FORMAT;
+        }
+
+        // Parser handlers return RESULT_FALSE to teriminate without error
+        if ( result != RESULT_OK )
+        {
+          m_State->Goto_IDLE();
+          return result;
+        }
+
+        m_HBuf[0] = m_HBuf[1] = 0; m_HBuf[2] = 1; m_HBuf[3] = *p; // 001x
+        run_len = 0;
+
+        // is this a header we want?
+        if ( *p == PIC_START || *p == SEQ_START || *p == EXT_START || *p == GOP_START )
+        {
+          m_HBufLen = 4;
+          m_State->Goto_IN_HEADER();
+        }
+        else
+        {
+          m_HBufLen = 0;
+          m_State->Goto_IDLE();
+
+          if ( *p >= FIRST_SLICE && *p <= LAST_SLICE )
+          {
+            result = m_Delegate->Slice(this, *p);
+
+            if ( result != RESULT_OK )
+              return result;
+          }
+
+          m_Delegate->Data(this, m_HBuf, 4);
+          run_pos = p+1;
+        }
+      }
+    }
+    else if ( *p == 0 )
+    {
+      m_ZeroCount++;
+    }
+    else
+    {
+      if ( *p == 1 && m_ZeroCount > 1 )
+        m_State->Goto_START_HEADER();
+
+      m_ZeroCount = 0;
+    }
+  }
 
   if ( run_len > 0 )
+  {
+    if ( m_State->Test_START_HEADER() && run_len != 0 )
     {
-      if ( m_State->Test_START_HEADER() && run_len != 0 )
-	{
-	  assert(run_len > 2);
-	  run_len -= 3;
-	}
-
-      // flush the current run
-      m_Delegate->Data(this, run_pos, run_len);
+      assert(run_len > 2);
+      run_len -= 3;
     }
+
+    // flush the current run
+    m_Delegate->Data(this, run_pos, run_len);
+  }
 
   return RESULT_OK;
 }

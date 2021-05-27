@@ -24,7 +24,7 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/ 
+*/
 
 /*! \file    AS_02_PHDR.h
   \version $Id$
@@ -41,20 +41,20 @@ namespace AS_02
 {
 
   namespace PHDR
-  { 
+  {
     //
     class FrameBuffer : public ASDCP::JP2K::FrameBuffer
-      {
-      public:
-	std::string OpaqueMetadata;
+    {
+    public:
+      std::string OpaqueMetadata;
 
-	FrameBuffer() {}
-	FrameBuffer(ui32_t size) { Capacity(size); }
-	virtual ~FrameBuffer() {}
+      FrameBuffer() {}
+      FrameBuffer(ui32_t size) { Capacity(size); }
+      virtual ~FrameBuffer() {}
 
-	// Print debugging information to stream (stderr default)
-	void Dump(FILE* = 0, ui32_t dump_bytes = 0) const;
-      };
+      // Print debugging information to stream (stderr default)
+      void Dump(FILE* = 0, ui32_t dump_bytes = 0) const;
+    };
 
     // An object which reads a sequence of files containing
     // JPEG 2000 P-HDR pictures and metadata.
@@ -108,7 +108,7 @@ namespace AS_02
       class h__Writer;
       ASDCP::mem_ptr<h__Writer> m_Writer;
       ASDCP_NO_COPY_CONSTRUCT(MXFWriter);
-      
+
     public:
       MXFWriter();
       virtual ~MXFWriter();
@@ -122,10 +122,10 @@ namespace AS_02
       // the operation cannot be completed or if nonsensical data is discovered
       // in the essence descriptor.
       Result_t OpenWrite(const std::string& filename, const ASDCP::WriterInfo&,
-			 ASDCP::MXF::FileDescriptor* essence_descriptor,
-			 ASDCP::MXF::InterchangeObject_list_t& essence_sub_descriptor_list,
-			 const ASDCP::Rational& edit_rate, const ui32_t& header_size = 16384,
-			 const IndexStrategy_t& strategy = IS_FOLLOW, const ui32_t& partition_space = 10);
+                         ASDCP::MXF::FileDescriptor* essence_descriptor,
+                         ASDCP::MXF::InterchangeObject_list_t& essence_sub_descriptor_list,
+                         const ASDCP::Rational& edit_rate, const ui32_t& header_size = 16384,
+                         const IndexStrategy_t& strategy = IS_FOLLOW, const ui32_t& partition_space = 10);
 
       // Writes a frame of essence to the MXF file. If the optional AESEncContext
       // argument is present, the essence is encrypted prior to writing.
@@ -179,7 +179,7 @@ namespace AS_02
       void     DumpHeaderMetadata(FILE* = 0) const;
       void     DumpIndex(FILE* = 0) const;
     };
-    
+
   } // end namespace PHDR
 
 } // end namespace AS_02

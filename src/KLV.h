@@ -54,27 +54,27 @@ namespace ASDCP
   const ui32_t IdentBufferLen = 128;
   const ui32_t IntBufferLen = 64;
 
-inline const char* i64sz(i64_t i, char* buf)
-{ 
-  assert(buf);
+  inline const char* i64sz(i64_t i, char* buf)
+  {
+    assert(buf);
 #ifdef WIN32
-  snprintf(buf, IntBufferLen, "%I64d", i);
+    snprintf(buf, IntBufferLen, "%I64d", i);
 #else
-  snprintf(buf, IntBufferLen, "%lld", i);
+    snprintf(buf, IntBufferLen, "%lld", i);
 #endif
-  return buf;
-}
+    return buf;
+  }
 
-inline const char* ui64sz(ui64_t i, char* buf)
-{ 
-  assert(buf);
+  inline const char* ui64sz(ui64_t i, char* buf)
+  {
+    assert(buf);
 #ifdef WIN32
-  snprintf(buf, IntBufferLen, "%I64u", i);
+    snprintf(buf, IntBufferLen, "%I64u", i);
 #else
-  snprintf(buf, IntBufferLen, "%llu", i);
+    snprintf(buf, IntBufferLen, "%llu", i);
 #endif
-  return buf;
-}
+    return buf;
+  }
 
   struct TagValue
   {
@@ -98,32 +98,32 @@ inline const char* ui64sz(ui64_t i, char* buf)
 
   // Universal Label
   class UL : public Kumu::Identifier<SMPTE_UL_LENGTH>
-    {
-    public:
-      UL() {}
-      UL(const UL& rhs) : Kumu::Identifier<SMPTE_UL_LENGTH>(rhs) {}
-      UL(const byte_t* value) : Kumu::Identifier<SMPTE_UL_LENGTH>(value) {}
-      virtual ~UL() {}
+  {
+  public:
+    UL() {}
+    UL(const UL& rhs) : Kumu::Identifier<SMPTE_UL_LENGTH>(rhs) {}
+    UL(const byte_t* value) : Kumu::Identifier<SMPTE_UL_LENGTH>(value) {}
+    virtual ~UL() {}
 
-      const char* EncodeString(char* str_buf, ui32_t buf_len) const;
-      bool operator==(const UL& rhs) const;
-      bool MatchIgnoreStream(const UL& rhs) const;
-      bool MatchExact(const UL& rhs) const;
-    };
+    const char* EncodeString(char* str_buf, ui32_t buf_len) const;
+    bool operator==(const UL& rhs) const;
+    bool MatchIgnoreStream(const UL& rhs) const;
+    bool MatchExact(const UL& rhs) const;
+  };
 
   // UMID
   class UMID : public Kumu::Identifier<SMPTE_UMID_LENGTH>
-    {
-    public:
-      UMID() {}
-      UMID(const UMID& rhs) : Kumu::Identifier<SMPTE_UMID_LENGTH>(rhs) {}
-      UMID(const byte_t* value) : Kumu::Identifier<SMPTE_UMID_LENGTH>(value) {}
-      virtual ~UMID() {}
+  {
+  public:
+    UMID() {}
+    UMID(const UMID& rhs) : Kumu::Identifier<SMPTE_UMID_LENGTH>(rhs) {}
+    UMID(const byte_t* value) : Kumu::Identifier<SMPTE_UMID_LENGTH>(value) {}
+    virtual ~UMID() {}
 
-      void MakeUMID(int Type);
-      void MakeUMID(int Type, const UUID& ID);
-      const char* EncodeString(char* str_buf, ui32_t buf_len) const;
-    };
+    void MakeUMID(int Type);
+    void MakeUMID(int Type, const UUID& ID);
+    const char* EncodeString(char* str_buf, ui32_t buf_len) const;
+  };
 
   const byte_t nil_UMID[SMPTE_UMID_LENGTH] = {0};
   const UMID NilUMID(nil_UMID);
@@ -142,35 +142,35 @@ inline const char* ui64sz(ui64_t i, char* buf)
 
   //
   class Dictionary
-    {
-      std::map<ASDCP::UL, ui32_t>   m_md_lookup;
-      std::map<std::string, ui32_t> m_md_sym_lookup;
-      std::map<ui32_t, ASDCP::UL>   m_md_rev_lookup;
+  {
+    std::map<ASDCP::UL, ui32_t>   m_md_lookup;
+    std::map<std::string, ui32_t> m_md_sym_lookup;
+    std::map<ui32_t, ASDCP::UL>   m_md_rev_lookup;
 
-      ASDCP_NO_COPY_CONSTRUCT(Dictionary);
+    ASDCP_NO_COPY_CONSTRUCT(Dictionary);
 
-    public:
-      MDDEntry m_MDD_Table[(ui32_t)ASDCP::MDD_Max];
+  public:
+    MDDEntry m_MDD_Table[(ui32_t)ASDCP::MDD_Max];
 
-      Dictionary();
-      ~Dictionary();
+    Dictionary();
+    ~Dictionary();
 
-      void Init();
-      bool AddEntry(const MDDEntry& Entry, ui32_t index);
-      bool DeleteEntry(ui32_t index);
+    void Init();
+    bool AddEntry(const MDDEntry& Entry, ui32_t index);
+    bool DeleteEntry(ui32_t index);
 
-      const MDDEntry* FindULAnyVersion(const byte_t*) const;
-      const MDDEntry* FindULExact(const byte_t*) const;
-      const MDDEntry* FindSymbol(const std::string&) const;
-      const MDDEntry& Type(MDD_t type_id) const;
-      MDDEntry& MutableType(MDD_t type_id);
+    const MDDEntry* FindULAnyVersion(const byte_t*) const;
+    const MDDEntry* FindULExact(const byte_t*) const;
+    const MDDEntry* FindSymbol(const std::string&) const;
+    const MDDEntry& Type(MDD_t type_id) const;
+    MDDEntry& MutableType(MDD_t type_id);
 
-      inline const byte_t* ul(MDD_t type_id) const {
-	return Type(type_id).ul;
-      }
+    inline const byte_t* ul(MDD_t type_id) const {
+      return Type(type_id).ul;
+    }
 
-      void Dump(FILE* = 0) const;
-    };
+    void Dump(FILE* = 0) const;
+  };
 
 
   const Dictionary& AtmosSMPTEDict();
@@ -182,77 +182,77 @@ inline const char* ui64sz(ui64_t i, char* buf)
 
   //
   class IPrimerLookup
-    {
-    public:
-      virtual ~IPrimerLookup() {}
-      virtual void     ClearTagList() = 0;
-      virtual Result_t InsertTag(const MDDEntry& Entry, ASDCP::TagValue& Tag) = 0;
-      virtual Result_t TagForKey(const ASDCP::UL& Key, ASDCP::TagValue& Tag) = 0;
-    };
+  {
+  public:
+    virtual ~IPrimerLookup() {}
+    virtual void     ClearTagList() = 0;
+    virtual Result_t InsertTag(const MDDEntry& Entry, ASDCP::TagValue& Tag) = 0;
+    virtual Result_t TagForKey(const ASDCP::UL& Key, ASDCP::TagValue& Tag) = 0;
+  };
 
   //
   class KLVPacket
+  {
+    ASDCP_NO_COPY_CONSTRUCT(KLVPacket);
+
+  protected:
+    const byte_t* m_KeyStart;
+    ui32_t        m_KLLength;
+    const byte_t* m_ValueStart;
+    ui64_t        m_ValueLength;
+    UL m_UL;
+
+  public:
+    KLVPacket() : m_KeyStart(0), m_KLLength(0), m_ValueStart(0), m_ValueLength(0) {}
+    virtual ~KLVPacket() {}
+
+    inline ui64_t  PacketLength() {
+      return m_KLLength + m_ValueLength;
+    }
+
+    inline ui64_t   ValueLength() {
+      return m_ValueLength;
+    }
+
+    inline ui32_t   KLLength() {
+      return m_KLLength;
+    }
+
+    virtual UL       GetUL();
+    virtual bool     SetUL(const UL&);
+    virtual bool     HasUL(const byte_t*);
+    virtual Result_t InitFromBuffer(const byte_t*, ui32_t);
+    virtual Result_t InitFromBuffer(const byte_t*, ui32_t, const UL& label);
+    virtual Result_t WriteKLToBuffer(ASDCP::FrameBuffer&, const UL& label, ui32_t length);
+
+    virtual Result_t WriteKLToBuffer(ASDCP::FrameBuffer& fb, ui32_t length)
     {
-      ASDCP_NO_COPY_CONSTRUCT(KLVPacket);
-
-    protected:
-      const byte_t* m_KeyStart;
-      ui32_t        m_KLLength;
-      const byte_t* m_ValueStart;
-      ui64_t        m_ValueLength;
-      UL m_UL;
-
-    public:
-      KLVPacket() : m_KeyStart(0), m_KLLength(0), m_ValueStart(0), m_ValueLength(0) {}
-      virtual ~KLVPacket() {}
-
-      inline ui64_t  PacketLength() {
-	return m_KLLength + m_ValueLength;
-      }
-
-      inline ui64_t   ValueLength() {
-	return m_ValueLength;
-      }
-
-      inline ui32_t   KLLength() {
-	return m_KLLength;
-      }
-
-      virtual UL       GetUL();
-      virtual bool     SetUL(const UL&);
-      virtual bool     HasUL(const byte_t*);
-      virtual Result_t InitFromBuffer(const byte_t*, ui32_t);
-      virtual Result_t InitFromBuffer(const byte_t*, ui32_t, const UL& label);
-      virtual Result_t WriteKLToBuffer(ASDCP::FrameBuffer&, const UL& label, ui32_t length);
-
-      virtual Result_t WriteKLToBuffer(ASDCP::FrameBuffer& fb, ui32_t length)
+      if ( ! m_UL.HasValue() )
       {
-	if ( ! m_UL.HasValue() )
-	  {
-	    return RESULT_STATE;
-	  }
-
-	return WriteKLToBuffer(fb, m_UL, length);
+        return RESULT_STATE;
       }
 
-      virtual void     Dump(FILE*, const Dictionary& Dict, bool show_value);
-    };
+      return WriteKLToBuffer(fb, m_UL, length);
+    }
+
+    virtual void     Dump(FILE*, const Dictionary& Dict, bool show_value);
+  };
 
   //
   class KLVFilePacket : public KLVPacket
-    {
-      ASDCP_NO_COPY_CONSTRUCT(KLVFilePacket);
+  {
+    ASDCP_NO_COPY_CONSTRUCT(KLVFilePacket);
 
-    public:
-      ASDCP::FrameBuffer m_Buffer;
+  public:
+    ASDCP::FrameBuffer m_Buffer;
 
-      KLVFilePacket() {}
-      virtual ~KLVFilePacket() {}
+    KLVFilePacket() {}
+    virtual ~KLVFilePacket() {}
 
-      virtual Result_t InitFromFile(const Kumu::FileReader&);
-      virtual Result_t InitFromFile(const Kumu::FileReader&, const UL& label);
-      virtual Result_t WriteKLToFile(Kumu::FileWriter& Writer, const UL& label, ui32_t length);
-    };
+    virtual Result_t InitFromFile(const Kumu::FileReader&);
+    virtual Result_t InitFromFile(const Kumu::FileReader&, const UL& label);
+    virtual Result_t WriteKLToFile(Kumu::FileWriter& Writer, const UL& label, ui32_t length);
+  };
 
 } // namespace ASDCP
 

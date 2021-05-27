@@ -82,7 +82,7 @@ class ASDCP::DCData::MXFReader::h__Reader : public ASDCP::h__ASDCPReader
   ASDCP_NO_COPY_CONSTRUCT(h__Reader);
   h__Reader();
 
- public:
+public:
   DCDataDescriptor m_DDesc;
 
   h__Reader(const Dictionary& d) : ASDCP::h__ASDCPReader(d), m_PrivateLabelCompatibilityMode(false), m_DDesc() {}
@@ -96,7 +96,7 @@ class ASDCP::DCData::MXFReader::h__Reader : public ASDCP::h__ASDCPReader
 //
 ASDCP::Result_t
 ASDCP::DCData::MXFReader::h__Reader::MD_to_DCData_DDesc(const MXF::DCDataDescriptor& descriptor_object,
-							DCData::DCDataDescriptor& DDesc)
+                                                        DCData::DCDataDescriptor& DDesc)
 {
   DDesc.EditRate = descriptor_object.SampleRate;
   assert(descriptor_object.ContainerDuration.const_get() <= 0xFFFFFFFFL);
@@ -108,7 +108,7 @@ ASDCP::DCData::MXFReader::h__Reader::MD_to_DCData_DDesc(const MXF::DCDataDescrip
 //
 ASDCP::Result_t
 ASDCP::DCData::MXFReader::h__Reader::MD_to_DCData_DDesc(const MXF::PrivateDCDataDescriptor& descriptor_object,
-							DCData::DCDataDescriptor& DDesc)
+                                                        DCData::DCDataDescriptor& DDesc)
 {
   DDesc.EditRate = descriptor_object.SampleRate;
   assert(descriptor_object.ContainerDuration.const_get() <= 0xFFFFFFFFL);
@@ -125,35 +125,35 @@ ASDCP::DCData::MXFReader::h__Reader::OpenRead(const std::string& filename)
   Result_t result = OpenMXFRead(filename);
 
   if( KM_SUCCESS(result) )
+  {
+    InterchangeObject* iObj = 0;
+    result = m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(DCDataDescriptor), &iObj);
+
+    if ( KM_SUCCESS(result) )
     {
-      InterchangeObject* iObj = 0;
-      result = m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(DCDataDescriptor), &iObj);
+      const MXF::DCDataDescriptor* p = dynamic_cast<const MXF::DCDataDescriptor*>(iObj);
+      assert(p);
+      result = MD_to_DCData_DDesc(*p, m_DDesc);
+    }
+    else
+    {
+      result = m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(PrivateDCDataDescriptor), &iObj);
 
       if ( KM_SUCCESS(result) )
-	{
-	  const MXF::DCDataDescriptor* p = dynamic_cast<const MXF::DCDataDescriptor*>(iObj);
-	  assert(p);
-	  result = MD_to_DCData_DDesc(*p, m_DDesc);
-	}
-      else
-	{
-	  result = m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(PrivateDCDataDescriptor), &iObj);
-	  
-	  if ( KM_SUCCESS(result) )
-	    {
-	      m_PrivateLabelCompatibilityMode = true;
-	      const MXF::PrivateDCDataDescriptor* p = dynamic_cast<const MXF::PrivateDCDataDescriptor*>(iObj);
-	      assert(p);
-	      result = MD_to_DCData_DDesc(*p, m_DDesc);
-	    }
-	}
-
-      if ( KM_FAILURE(result) )
-	{
-	  DefaultLogSink().Error("DCDataDescriptor object not found in ST 429-14 file.\n");
-	  result = RESULT_FORMAT;
-	}
+      {
+        m_PrivateLabelCompatibilityMode = true;
+        const MXF::PrivateDCDataDescriptor* p = dynamic_cast<const MXF::PrivateDCDataDescriptor*>(iObj);
+        assert(p);
+        result = MD_to_DCData_DDesc(*p, m_DDesc);
+      }
     }
+
+    if ( KM_FAILURE(result) )
+    {
+      DefaultLogSink().Error("DCDataDescriptor object not found in ST 429-14 file.\n");
+      result = RESULT_FORMAT;
+    }
+  }
 
   // check for sample/frame rate sanity
   if ( ASDCP_SUCCESS(result)
@@ -183,16 +183,16 @@ ASDCP::DCData::MXFReader::h__Reader::OpenRead(const std::string& filename)
 //
 ASDCP::Result_t
 ASDCP::DCData::MXFReader::h__Reader::ReadFrame(ui32_t FrameNum, FrameBuffer& FrameBuf,
-		      AESDecContext* Ctx, HMACContext* HMAC)
+                                               AESDecContext* Ctx, HMACContext* HMAC)
 {
   if ( ! m_File.IsOpen() )
     return RESULT_INIT;
 
   assert(m_Dict);
   if ( m_PrivateLabelCompatibilityMode )
-    {
-      return ReadEKLVFrame(FrameNum, FrameBuf, m_Dict->ul(MDD_PrivateDCDataEssence), Ctx, HMAC);
-    }
+  {
+    return ReadEKLVFrame(FrameNum, FrameBuf, m_Dict->ul(MDD_PrivateDCDataEssence), Ctx, HMAC);
+  }
 
   return ReadEKLVFrame(FrameNum, FrameBuf, m_Dict->ul(MDD_DCDataEssence), Ctx, HMAC);
 }
@@ -237,10 +237,10 @@ ASDCP::MXF::OP1aHeader&
 ASDCP::DCData::MXFReader::OP1aHeader()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_OP1aHeader);
-      return *g_OP1aHeader;
-    }
+  {
+    assert(g_OP1aHeader);
+    return *g_OP1aHeader;
+  }
 
   return m_Reader->m_HeaderPart;
 }
@@ -252,10 +252,10 @@ ASDCP::MXF::OPAtomIndexFooter&
 ASDCP::DCData::MXFReader::OPAtomIndexFooter()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_OPAtomIndexFooter);
-      return *g_OPAtomIndexFooter;
-    }
+  {
+    assert(g_OPAtomIndexFooter);
+    return *g_OPAtomIndexFooter;
+  }
 
   return m_Reader->m_IndexAccess;
 }
@@ -267,10 +267,10 @@ ASDCP::MXF::RIP&
 ASDCP::DCData::MXFReader::RIP()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_RIP);
-      return *g_RIP;
-    }
+  {
+    assert(g_RIP);
+    return *g_RIP;
+  }
 
   return m_Reader->m_RIP;
 }
@@ -297,7 +297,7 @@ ASDCP::DCData::MXFReader::ReadFrame(ui32_t FrameNum, FrameBuffer& FrameBuf,
 ASDCP::Result_t
 ASDCP::DCData::MXFReader::LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const
 {
-    return m_Reader->LocateFrame(FrameNum, streamOffset, temporalOffset, keyFrameOffset);
+  return m_Reader->LocateFrame(FrameNum, streamOffset, temporalOffset, keyFrameOffset);
 }
 
 
@@ -307,10 +307,10 @@ ASDCP::Result_t
 ASDCP::DCData::MXFReader::FillDCDataDescriptor(DCDataDescriptor& DDesc) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      DDesc = m_Reader->m_DDesc;
-      return RESULT_OK;
-    }
+  {
+    DDesc = m_Reader->m_DDesc;
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -322,10 +322,10 @@ ASDCP::Result_t
 ASDCP::DCData::MXFReader::FillWriterInfo(WriterInfo& Info) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      Info = m_Reader->m_Info;
-      return RESULT_OK;
-    }
+  {
+    Info = m_Reader->m_Info;
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -352,10 +352,10 @@ ASDCP::Result_t
 ASDCP::DCData::MXFReader::Close() const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      m_Reader->Close();
-      return RESULT_OK;
-    }
+  {
+    m_Reader->Close();
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -404,7 +404,7 @@ ASDCP::DCData::MXFWriter::h__Writer::DCData_DDesc_to_MD(DCData::DCDataDescriptor
 //
 ASDCP::Result_t
 ASDCP::DCData::MXFWriter::h__Writer::OpenWrite(const std::string& filename, ui32_t HeaderSize,
-                                    const SubDescriptorList_t& subDescriptors)
+                                               const SubDescriptorList_t& subDescriptors)
 {
   if ( ! m_State.Test_BEGIN() )
     return RESULT_STATE;
@@ -412,19 +412,19 @@ ASDCP::DCData::MXFWriter::h__Writer::OpenWrite(const std::string& filename, ui32
   Result_t result = m_File.OpenWrite(filename);
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    m_HeaderSize = HeaderSize;
+    m_EssenceDescriptor = new MXF::DCDataDescriptor(m_Dict);
+    SubDescriptorList_t::const_iterator sDObj;
+    SubDescriptorList_t::const_iterator lastDescriptor = subDescriptors.end();
+    for (sDObj = subDescriptors.begin(); sDObj != lastDescriptor; ++sDObj)
     {
-      m_HeaderSize = HeaderSize;
-      m_EssenceDescriptor = new MXF::DCDataDescriptor(m_Dict);
-      SubDescriptorList_t::const_iterator sDObj;
-      SubDescriptorList_t::const_iterator lastDescriptor = subDescriptors.end();
-      for (sDObj = subDescriptors.begin(); sDObj != lastDescriptor; ++sDObj)
-      {
-          m_EssenceSubDescriptorList.push_back(*sDObj);
-          GenRandomValue((*sDObj)->InstanceUID);
-          m_EssenceDescriptor->SubDescriptors.push_back((*sDObj)->InstanceUID);
-      }
-      result = m_State.Goto_INIT();
+      m_EssenceSubDescriptorList.push_back(*sDObj);
+      GenRandomValue((*sDObj)->InstanceUID);
+      m_EssenceDescriptor->SubDescriptors.push_back((*sDObj)->InstanceUID);
     }
+    result = m_State.Goto_INIT();
+  }
 
   return result;
 }
@@ -432,9 +432,9 @@ ASDCP::DCData::MXFWriter::h__Writer::OpenWrite(const std::string& filename, ui32
 //
 ASDCP::Result_t
 ASDCP::DCData::MXFWriter::h__Writer::SetSourceStream(DCDataDescriptor const& DDesc,
-                                          const byte_t * essenceCoding,
-                                          const std::string& packageLabel,
-                                          const std::string& defLabel)
+                                                     const byte_t * essenceCoding,
+                                                     const std::string& packageLabel,
+                                                     const std::string& defLabel)
 {
   if ( ! m_State.Test_INIT() )
     return RESULT_STATE;
@@ -460,7 +460,7 @@ ASDCP::DCData::MXFWriter::h__Writer::SetSourceStream(DCDataDescriptor const& DDe
   assert(m_Dict);
   m_DDesc = DDesc;
   if (NULL != essenceCoding)
-      memcpy(m_DDesc.DataEssenceCoding, essenceCoding, SMPTE_UL_LENGTH);
+    memcpy(m_DDesc.DataEssenceCoding, essenceCoding, SMPTE_UL_LENGTH);
   Result_t result = DCData_DDesc_to_MD(m_DDesc);
 
   if ( ASDCP_SUCCESS(result) )
@@ -475,8 +475,8 @@ ASDCP::DCData::MXFWriter::h__Writer::SetSourceStream(DCDataDescriptor const& DDe
     ui32_t TCFrameRate = m_DDesc.EditRate.Numerator;
 
     result = WriteASDCPHeader(packageLabel, UL(m_Dict->ul(MDD_DCDataWrappingFrame)),
-			      defLabel, UL(m_EssenceUL), UL(m_Dict->ul(MDD_DataDataDef)),
-			      m_DDesc.EditRate, TCFrameRate);
+                              defLabel, UL(m_EssenceUL), UL(m_Dict->ul(MDD_DataDataDef)),
+                              m_DDesc.EditRate, TCFrameRate);
   }
 
   return result;
@@ -539,10 +539,10 @@ ASDCP::MXF::OP1aHeader&
 ASDCP::DCData::MXFWriter::OP1aHeader()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_OP1aHeader);
-      return *g_OP1aHeader;
-    }
+  {
+    assert(g_OP1aHeader);
+    return *g_OP1aHeader;
+  }
 
   return m_Writer->m_HeaderPart;
 }
@@ -554,10 +554,10 @@ ASDCP::MXF::OPAtomIndexFooter&
 ASDCP::DCData::MXFWriter::OPAtomIndexFooter()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_OPAtomIndexFooter);
-      return *g_OPAtomIndexFooter;
-    }
+  {
+    assert(g_OPAtomIndexFooter);
+    return *g_OPAtomIndexFooter;
+  }
 
   return m_Writer->m_FooterPart;
 }
@@ -569,10 +569,10 @@ ASDCP::MXF::RIP&
 ASDCP::DCData::MXFWriter::RIP()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_RIP);
-      return *g_RIP;
-    }
+  {
+    assert(g_RIP);
+    return *g_RIP;
+  }
 
   return m_Writer->m_RIP;
 }
@@ -581,7 +581,7 @@ ASDCP::DCData::MXFWriter::RIP()
 // the operation cannot be completed.
 ASDCP::Result_t
 ASDCP::DCData::MXFWriter::OpenWrite(const std::string& filename, const WriterInfo& Info,
-				       const DCDataDescriptor& DDesc, ui32_t HeaderSize)
+                                    const DCDataDescriptor& DDesc, ui32_t HeaderSize)
 {
   if ( Info.LabelSetType != LS_MXF_SMPTE )
   {
@@ -595,7 +595,7 @@ ASDCP::DCData::MXFWriter::OpenWrite(const std::string& filename, const WriterInf
   Result_t result = m_Writer->OpenWrite(filename, HeaderSize, SubDescriptorList_t());
 
   if ( ASDCP_SUCCESS(result) )
-      result = m_Writer->SetSourceStream(DDesc, NULL, DC_DATA_PACKAGE_LABEL, DC_DATA_DEF_LABEL);
+    result = m_Writer->SetSourceStream(DDesc, NULL, DC_DATA_PACKAGE_LABEL, DC_DATA_DEF_LABEL);
 
   if ( ASDCP_FAILURE(result) )
     m_Writer.release();

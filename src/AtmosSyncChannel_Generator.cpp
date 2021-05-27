@@ -48,89 +48,89 @@ ASDCP::PCM::AtmosSyncChannelGenerator::AtmosSyncChannelGenerator(ui16_t bitsPerS
       m_isSyncEncoderInitialized(false)
 {
 
-    m_ADesc.EditRate = editRate;
-    m_ADesc.ChannelCount = 1;
-    m_ADesc.QuantizationBits = bitsPerSample;
-    m_ADesc.AudioSamplingRate = Rational(sampleRate, 1);
-    m_ADesc.BlockAlign = ((bitsPerSample + 7) / 8);
-    m_ADesc.AvgBps = (sampleRate * m_ADesc.BlockAlign);
+  m_ADesc.EditRate = editRate;
+  m_ADesc.ChannelCount = 1;
+  m_ADesc.QuantizationBits = bitsPerSample;
+  m_ADesc.AudioSamplingRate = Rational(sampleRate, 1);
+  m_ADesc.BlockAlign = ((bitsPerSample + 7) / 8);
+  m_ADesc.AvgBps = (sampleRate * m_ADesc.BlockAlign);
 
-    memcpy(&m_audioTrackUUID.abyUUIDBytes[0], uuid, UUIDlen);
-    m_numSamplesPerFrame = (editRate.Denominator * sampleRate) / editRate.Numerator;
-    m_numBytesPerFrame = m_numSamplesPerFrame * m_ADesc.BlockAlign;
+  memcpy(&m_audioTrackUUID.abyUUIDBytes[0], uuid, UUIDlen);
+  m_numSamplesPerFrame = (editRate.Denominator * sampleRate) / editRate.Numerator;
+  m_numBytesPerFrame = m_numSamplesPerFrame * m_ADesc.BlockAlign;
 
-    if (bitsPerSample == 24)
-    {
-        ui32_t frameRate = editRate.Numerator/editRate.Denominator; // intentionally allowing for imprecise cast to int
-        m_isSyncEncoderInitialized = (SyncEncoderInit(&m_syncEncoder, sampleRate, frameRate, &m_audioTrackUUID) == SYNC_ENCODER_ERROR_NONE);
-        m_syncSignalBuffer = new float[m_numSamplesPerFrame];
-    }
-    else
-    {
-        m_isSyncEncoderInitialized = false;
-    }
+  if (bitsPerSample == 24)
+  {
+    ui32_t frameRate = editRate.Numerator/editRate.Denominator; // intentionally allowing for imprecise cast to int
+    m_isSyncEncoderInitialized = (SyncEncoderInit(&m_syncEncoder, sampleRate, frameRate, &m_audioTrackUUID) == SYNC_ENCODER_ERROR_NONE);
+    m_syncSignalBuffer = new float[m_numSamplesPerFrame];
+  }
+  else
+  {
+    m_isSyncEncoderInitialized = false;
+  }
 }
 
 ASDCP::PCM::AtmosSyncChannelGenerator::~AtmosSyncChannelGenerator()
 {
-    delete [] m_syncSignalBuffer;
+  delete [] m_syncSignalBuffer;
 }
 
 ASDCP::Result_t
 ASDCP::PCM::AtmosSyncChannelGenerator::ReadFrame(FrameBuffer& OutFB)
 {
-    if (OutFB.Capacity() < m_numBytesPerFrame)
-    {
-        return RESULT_SMALLBUF;
-    }
+  if (OutFB.Capacity() < m_numBytesPerFrame)
+  {
+    return RESULT_SMALLBUF;
+  }
 
+  /**
+   * Update frame number and size.
+   */
+  OutFB.FrameNumber(m_currentFrameNumber);
+  OutFB.Size(m_numBytesPerFrame);
+
+  /**
+   * Get pointer to frame essence.
+   */
+  byte_t* frameEssence = OutFB.Data();
+
+  if (m_isSyncEncoderInitialized)
+  {
     /**
-     * Update frame number and size.
+     * Generate sync signal frame.
      */
-    OutFB.FrameNumber(m_currentFrameNumber);
-    OutFB.Size(m_numBytesPerFrame);
-
-    /**
-     * Get pointer to frame essence.
-     */
-    byte_t* frameEssence = OutFB.Data();
-
-    if (m_isSyncEncoderInitialized)
+    int ret = EncodeSync(&m_syncEncoder, m_numSamplesPerFrame, m_syncSignalBuffer, m_currentFrameNumber);
+    if (ret == SYNC_ENCODER_ERROR_NONE)
     {
+      for (unsigned int i = 0; i < m_numSamplesPerFrame; ++i)
+      {
         /**
-         * Generate sync signal frame.
+         * Convert each encoded float sample to a signed 24 bit integer and
+         * copy into the essence buffer.
          */
-        int ret = EncodeSync(&m_syncEncoder, m_numSamplesPerFrame, m_syncSignalBuffer, m_currentFrameNumber);
-        if (ret == SYNC_ENCODER_ERROR_NONE)
-        {
-            for (unsigned int i = 0; i < m_numSamplesPerFrame; ++i)
-            {
-                /**
-                 * Convert each encoded float sample to a signed 24 bit integer and
-                 * copy into the essence buffer.
-                 */
-                i32_t sample = convertSampleFloatToInt24(m_syncSignalBuffer[i]);
-                memcpy(frameEssence, ((byte_t*)(&sample))+1, NUM_BYTES_PER_INT24);
-                frameEssence += NUM_BYTES_PER_INT24;
-            }
-        }
-        else
-        {
-            /**
-             * Encoding error, zero out the frame.
-             */
-            memset(frameEssence, 0, m_numBytesPerFrame);
-        }
+        i32_t sample = convertSampleFloatToInt24(m_syncSignalBuffer[i]);
+        memcpy(frameEssence, ((byte_t*)(&sample))+1, NUM_BYTES_PER_INT24);
+        frameEssence += NUM_BYTES_PER_INT24;
+      }
     }
     else
     {
-        /**
-         * Sync encoder not initialize, zero out the frame.
-         */
-        memset(frameEssence, 0, m_numBytesPerFrame);
+      /**
+       * Encoding error, zero out the frame.
+       */
+      memset(frameEssence, 0, m_numBytesPerFrame);
     }
-    ++m_currentFrameNumber;
-    return RESULT_OK;
+  }
+  else
+  {
+    /**
+     * Sync encoder not initialize, zero out the frame.
+     */
+    memset(frameEssence, 0, m_numBytesPerFrame);
+  }
+  ++m_currentFrameNumber;
+  return RESULT_OK;
 }
 
 ASDCP::Result_t

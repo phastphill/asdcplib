@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    KM_fileio.h
-    \version $Id$
-    \brief   portable file i/o
-  */
+/*! \file    KM_fileio.h
+  \version $Id$
+  \brief   portable file i/o
+*/
 
 #ifndef _KM_FILEIO_H_
 #define _KM_FILEIO_H_

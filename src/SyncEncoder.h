@@ -40,43 +40,43 @@ extern "C" {
 #endif
 
 typedef struct SyncEncoder{
-	INT				iSampleRate;			/* Signal sample rate */
-	INT				iSymbolLength;			/* Symbol Length */
-	INT				iFrameRate;				/* Frame rate */
-	INT				iFrameRateCode;			/* Frame rate code */
-	INT				iAudioBufferLength;		/* Length of audio buffer */
-	INT				iPacketBits;			/* Bits in each packet includes wash bits */
-	INT				iPacketsPerFrame;		/* Number of packets per frame */
-	FLOAT			fSymbolPhase;			/* Symbol phase */
+  INT				iSampleRate;			/* Signal sample rate */
+  INT				iSymbolLength;			/* Symbol Length */
+  INT				iFrameRate;				/* Frame rate */
+  INT				iFrameRateCode;			/* Frame rate code */
+  INT				iAudioBufferLength;		/* Length of audio buffer */
+  INT				iPacketBits;			/* Bits in each packet includes wash bits */
+  INT				iPacketsPerFrame;		/* Number of packets per frame */
+  FLOAT			fSymbolPhase;			/* Symbol phase */
 
-	INT				iUUIDSubIndex;			/* UUID transmission sub index */
-	UUIDINFORMATION	UUID;					/* UUID */
+  INT				iUUIDSubIndex;			/* UUID transmission sub index */
+  UUIDINFORMATION	UUID;					/* UUID */
 
-	BYTE			abyPacket[MAX_PACKET];
+  BYTE			abyPacket[MAX_PACKET];
 
-	INT				iError;					/* Error state */
+  INT				iError;					/* Error state */
 }SYNCENCODER,*LPSYNCENCODER;
 
 enum{
-	SYNC_ENCODER_ERROR_NONE = 0,			/* No error */
-	SYNC_ENCODER_ERROR_INVALID_SR = -1,		/* Invalid sample rate */
-	SYNC_ENCODER_ERROR_INVALID_FR = -2,		/* Invalid frame rate */
-	SYNC_ENCODER_ERROR_INVALID_BL = -10,	/* Buffer length is incorrect */
-	SYNC_ENCODER_ERROR_UNKNOWN = -100,		/* Unknown */
+  SYNC_ENCODER_ERROR_NONE = 0,			/* No error */
+  SYNC_ENCODER_ERROR_INVALID_SR = -1,		/* Invalid sample rate */
+  SYNC_ENCODER_ERROR_INVALID_FR = -2,		/* Invalid frame rate */
+  SYNC_ENCODER_ERROR_INVALID_BL = -10,	/* Buffer length is incorrect */
+  SYNC_ENCODER_ERROR_UNKNOWN = -100,		/* Unknown */
 };
 
 
 INT SyncEncoderInit(LPSYNCENCODER		pSyncEncoder,	/* Out: SYNCENCODER structure to be initialized */
-					INT					iSampleRate,	/* In:	Signal sample rate */
-					INT					iFrameRate,		/* In:	frame rate */
-					LPUUIDINFORMATION	pUUID);			/* In:	UUID */
+                    INT					iSampleRate,	/* In:	Signal sample rate */
+                    INT					iFrameRate,		/* In:	frame rate */
+                    LPUUIDINFORMATION	pUUID);			/* In:	UUID */
 
 INT GetSyncEncoderAudioBufferLength(LPSYNCENCODER pSyncEncoder);
 
 INT EncodeSync(	LPSYNCENCODER	pSyncEncoder,	/* In:	Sync encoder structure */
-				INT				iBufferLength,	/* In:	Length of audio buffer */
-				FLOAT			*pfAudioBuffer,	/* Out: Audio buffer with signal */
-				INT				iFrameIndex);	/* In:	Frame Index */
+                 INT				iBufferLength,	/* In:	Length of audio buffer */
+                 FLOAT			*pfAudioBuffer,	/* Out: Audio buffer with signal */
+                 INT				iFrameIndex);	/* In:	Frame Index */
 
 #ifdef __cplusplus
 } /* extern "C" */

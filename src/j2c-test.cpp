@@ -67,7 +67,7 @@ Copyright (c) 2005-2018 John Hurst\n\n\
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, ASDCP::Version(), PROGRAM_NAME, PROGRAM_NAME);
 }
 
 //
@@ -104,36 +104,36 @@ public:
   std::list<std::string> filename_list;
 
   CommandOptions(int argc, const char** argv) :
-    error_flag(true), version_flag(false), verbose_flag(false),
-    detail_flag(false), help_flag(false)
+      error_flag(true), version_flag(false), verbose_flag(false),
+      detail_flag(false), help_flag(false)
   {
     for ( int i = 1; i < argc; i++ )
+    {
+      if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
       {
-	if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
-	  {
-	    switch ( argv[i][1] )
-	      {
-	      case 'V': version_flag = true; break;
-	      case 'h': help_flag = true; break;
-	      case 'r': detail_flag = true; break;
-	      case 'v': verbose_flag = true; break;
+        switch ( argv[i][1] )
+        {
+          case 'V': version_flag = true; break;
+          case 'h': help_flag = true; break;
+          case 'r': detail_flag = true; break;
+          case 'v': verbose_flag = true; break;
 
-	      default:
-		fprintf(stderr, "Unrecognized option: %c\n", argv[i][1]);
-		return;
-	      }
-	  }
-	else
-	  {
-	    filename_list.push_back(argv[i]);
-	  }
+          default:
+            fprintf(stderr, "Unrecognized option: %c\n", argv[i][1]);
+            return;
+        }
       }
+      else
+      {
+        filename_list.push_back(argv[i]);
+      }
+    }
 
     if ( filename_list.empty() )
-      {
-	fputs("Input j2c filename(s) required.\n", stderr);
-	return;
-      }
+    {
+      fputs("Input j2c filename(s) required.\n", stderr);
+      return;
+    }
 
     error_flag = false;
   }
@@ -158,10 +158,10 @@ main(int argc, const char** argv)
     return 0;
 
   if ( Options.error_flag )
-    {
-      fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
-      return 3;
-    }
+  {
+    fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
+    return 3;
+  }
 
   ASDCP::JP2K::FrameBuffer FB;
   Marker        current_marker;
@@ -172,146 +172,146 @@ main(int argc, const char** argv)
   int marker_count = 0;
 
   Result_t result = FB.Capacity(1024*1024*4);
-  
+
   for ( i = Options.filename_list.begin(); ASDCP_SUCCESS(result) && i != Options.filename_list.end(); i++ )
+  {
+    result = Parser.OpenReadFrame(i->c_str(), FB);
+
+    if ( ASDCP_SUCCESS(result) )
     {
-      result = Parser.OpenReadFrame(i->c_str(), FB);
+      const byte_t* p = FB.RoData();
+      const byte_t* end_p = p + FB.Size();
 
-      if ( ASDCP_SUCCESS(result) )
-	{
-	  const byte_t* p = FB.RoData();
-	  const byte_t* end_p = p + FB.Size();
+      while ( p < end_p && ASDCP_SUCCESS(GetNextMarker(&p, current_marker)) )
+      {
+        ++marker_count;
 
-	  while ( p < end_p && ASDCP_SUCCESS(GetNextMarker(&p, current_marker)) )
-	    {
-	      ++marker_count;
+        if ( current_marker.m_Type == MRK_SOC )
+        {
+          if ( has_soc )
+          {
+            fprintf(stderr, "Duplicate SOC detected.\n");
+            result = RESULT_FAIL;
+            break;
+          }
+          else
+          {
+            has_soc = true;
+            continue;
+          }
+        }
 
-	      if ( current_marker.m_Type == MRK_SOC )
-		{
-		  if ( has_soc )
-		    {
-		      fprintf(stderr, "Duplicate SOC detected.\n");
-		      result = RESULT_FAIL;
-		      break;
-		    }
-		  else
-		    {
-		      has_soc = true;
-		      continue;
-		    }
-		}
+        if  ( ! has_soc )
+        {
+          fprintf(stderr, "Markers detected before SOC.\n");
+          result = RESULT_FAIL;
+          break;
+        }
 
-	      if  ( ! has_soc )
-		{
-		  fprintf(stderr, "Markers detected before SOC.\n");
-		  result = RESULT_FAIL;
-		  break;
-		}
+        if ( Options.verbose_flag )
+        {
+          current_marker.Dump(stdout);
 
-	      if ( Options.verbose_flag )
-		{
-		  current_marker.Dump(stdout);
+          if ( Options.detail_flag )
+          {
+            hexdump(current_marker.m_Data - 2, current_marker.m_DataSize + 2, stdout);
+          }
+        }
 
-		  if ( Options.detail_flag )
-		    {
-		      hexdump(current_marker.m_Data - 2, current_marker.m_DataSize + 2, stdout);
-		    }
-		}
+        if ( current_marker.m_Type == MRK_SOD )
+        {
+          p = end_p;
+        }
+        else if ( current_marker.m_Type == MRK_SIZ )
+        {
+          Accessor::SIZ SIZ_(current_marker);
+          SIZ_.Dump(stdout);
+        }
+        else if ( current_marker.m_Type == MRK_COD )
+        {
+          Accessor::COD COD_(current_marker);
+          COD_.Dump(stdout);
+        }
+        else if ( current_marker.m_Type == MRK_COM )
+        {
+          Accessor::COM COM_(current_marker);
+          COM_.Dump(stdout);
+        }
+        else if ( current_marker.m_Type == MRK_QCD )
+        {
+          Accessor::QCD QCD_(current_marker);
+          QCD_.Dump(stdout);
+        }
+        else if ( current_marker.m_Type == MRK_TLM )
+        {
+          has_tlm = true;
+        }
+        else if ( current_marker.m_Type == MRK_CAP )
+        {
+          Accessor::CAP CAP_(current_marker);
+          CAP_.Dump(stdout);
+        }
+        else if ( current_marker.m_Type == MRK_PRF )
+        {
+          Accessor::PRF PRF_(current_marker);
+          PRF_.Dump(stdout);
+        }
+        else if ( current_marker.m_Type == MRK_CPF )
+        {
+          Accessor::CPF CPF_(current_marker);
+          CPF_.Dump(stdout);
+        }
+        else
+        {
+          fprintf(stderr, "Unprocessed marker - %s\n", GetMarkerString(current_marker.m_Type));
+        }
+      }
 
-	      if ( current_marker.m_Type == MRK_SOD )
-		{
-		  p = end_p;
-		}
-	      else if ( current_marker.m_Type == MRK_SIZ )
-		{
-		  Accessor::SIZ SIZ_(current_marker);
-		  SIZ_.Dump(stdout);
-		}
-	      else if ( current_marker.m_Type == MRK_COD )
-		{
-		  Accessor::COD COD_(current_marker);
-		  COD_.Dump(stdout);
-		}
-	      else if ( current_marker.m_Type == MRK_COM )
-		{
-		  Accessor::COM COM_(current_marker);
-		  COM_.Dump(stdout);
-		}
-	      else if ( current_marker.m_Type == MRK_QCD )
-		{
-		  Accessor::QCD QCD_(current_marker);
-		  QCD_.Dump(stdout);
-		}
-	      else if ( current_marker.m_Type == MRK_TLM )
-		{
-		  has_tlm = true;
-		}
-	      else if ( current_marker.m_Type == MRK_CAP )
-		{
-			Accessor::CAP CAP_(current_marker);
-			CAP_.Dump(stdout);
-		}
-	      else if ( current_marker.m_Type == MRK_PRF )
-		{
-			Accessor::PRF PRF_(current_marker);
-			PRF_.Dump(stdout);
-		}
-	      else if ( current_marker.m_Type == MRK_CPF )
-		{
-			Accessor::CPF CPF_(current_marker);
-			CPF_.Dump(stdout);
-		}
-	      else
-		{
-		  fprintf(stderr, "Unprocessed marker - %s\n", GetMarkerString(current_marker.m_Type));
-		}
-	    }
-
-	  /*
-	  while ( p < end_p )
-	    {
-	      if ( *p == 0xff )
-		{
-		  fprintf(stdout, "0x%02x 0x%02x 0x%02x\n", *(p+1), *(p+2), *(p+3));
-		  p += 4;
-		}
-	      else
-		{
-		  ++p;
-		}
-	    }
-	  */
-	}
+      /*
+      while ( p < end_p )
+        {
+          if ( *p == 0xff )
+      {
+        fprintf(stdout, "0x%02x 0x%02x 0x%02x\n", *(p+1), *(p+2), *(p+3));
+        p += 4;
+      }
+          else
+      {
+        ++p;
+      }
+        }
+      */
     }
+  }
 
   if ( marker_count == 0 )
+  {
+    fprintf(stderr, "No JPEG 2000 marker items found.\n");
+    result = RESULT_FAIL;
+  }
+  else
+  {
+    fprintf(stderr, "Processed %d JPEG 2000 marker item%s.\n", marker_count, (marker_count==1?"":"s"));
+
+    if  ( ! has_tlm )
     {
-      fprintf(stderr, "No JPEG 2000 marker items found.\n");
+      fprintf(stderr, "No TLM marker found.\n");
       result = RESULT_FAIL;
     }
-  else
-    {
-      fprintf(stderr, "Processed %d JPEG 2000 marker item%s.\n", marker_count, (marker_count==1?"":"s"));
-
-      if  ( ! has_tlm )
-	{
-	  fprintf(stderr, "No TLM marker found.\n");
-	  result = RESULT_FAIL;
-	}
-    }
+  }
 
   if ( ASDCP_FAILURE(result) )
+  {
+    fputs("Program stopped on error.\n", stderr);
+
+    if ( result != RESULT_FAIL )
     {
-      fputs("Program stopped on error.\n", stderr);
-
-      if ( result != RESULT_FAIL )
-	{
-	  fputs(result, stderr);
-	  fputc('\n', stderr);
-	}
-
-      return 1;
+      fputs(result, stderr);
+      fputc('\n', stderr);
     }
+
+    return 1;
+  }
 
   return 0;
 }

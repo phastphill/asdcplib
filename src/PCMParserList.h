@@ -40,46 +40,46 @@ namespace ASDCP
 {
   //
   class ParserInstance
-    {
-      const byte_t* m_p;
-      ui32_t        m_SampleSize;
+  {
+    const byte_t* m_p;
+    ui32_t        m_SampleSize;
 
-      ASDCP_NO_COPY_CONSTRUCT(ParserInstance);
+    ASDCP_NO_COPY_CONSTRUCT(ParserInstance);
 
-    public:
-      PCM::WAVParser       Parser;
-      PCM::FrameBuffer     FB;
-      PCM::AudioDescriptor ADesc;
+  public:
+    PCM::WAVParser       Parser;
+    PCM::FrameBuffer     FB;
+    PCM::AudioDescriptor ADesc;
 
-      ParserInstance();
-      virtual ~ParserInstance();
+    ParserInstance();
+    virtual ~ParserInstance();
 
-      Result_t OpenRead(const std::string& filename, const Rational& PictureRate);
-      Result_t PutSample(byte_t* p);
-      Result_t ReadFrame();
-      inline ui32_t SampleSize()  { return m_SampleSize; }
-    };
+    Result_t OpenRead(const std::string& filename, const Rational& PictureRate);
+    Result_t PutSample(byte_t* p);
+    Result_t ReadFrame();
+    inline ui32_t SampleSize()  { return m_SampleSize; }
+  };
 
   //
   class PCMParserList : public std::vector<ParserInstance*>
-    {
-      ASDCP_NO_COPY_CONSTRUCT(PCMParserList);
+  {
+    ASDCP_NO_COPY_CONSTRUCT(PCMParserList);
 
-    protected:
-      PCM::AudioDescriptor m_ADesc;
-      ui32_t m_ChannelCount;
+  protected:
+    PCM::AudioDescriptor m_ADesc;
+    ui32_t m_ChannelCount;
 
-    public:
-      PCMParserList();
-      virtual ~PCMParserList();
+  public:
+    PCMParserList();
+    virtual ~PCMParserList();
 
-      Result_t OpenRead(ui32_t argc, const char** argv, const Rational& PictureRate);
-      Result_t OpenRead(const Kumu::PathList_t& argv, const Rational& PictureRate);
-      Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
-      Result_t Reset();
-      Result_t ReadFrame(PCM::FrameBuffer& OutFB);
-      Result_t Seek(ui32_t frame_number);
-    };
+    Result_t OpenRead(ui32_t argc, const char** argv, const Rational& PictureRate);
+    Result_t OpenRead(const Kumu::PathList_t& argv, const Rational& PictureRate);
+    Result_t FillAudioDescriptor(PCM::AudioDescriptor& ADesc) const;
+    Result_t Reset();
+    Result_t ReadFrame(PCM::FrameBuffer& OutFB);
+    Result_t Seek(ui32_t frame_number);
+  };
 }
 
 

@@ -40,16 +40,16 @@ extern "C" {
 #endif
 
 typedef struct UUIInformation{
-	BYTE abyUUIDBytes[16];
+  BYTE abyUUIDBytes[16];
 } UUIDINFORMATION,*LPUUIDINFORMATION;
 
 void UUIDSynthesize(LPUUIDINFORMATION pUUID);
 
 void UUIDPrint(	FILE				*pFilePtr,
-				LPUUIDINFORMATION	pUUID);
+                 LPUUIDINFORMATION	pUUID);
 
 void UUIDPrintFormated(	FILE				*pFilePtr,
-						LPUUIDINFORMATION	pUUID);
+                         LPUUIDINFORMATION	pUUID);
 
 #ifdef __cplusplus
 } /* extern "C" */

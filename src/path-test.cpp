@@ -51,7 +51,7 @@ main(int argc, const char** argv)
   assert(PathExists(Path_2));
   assert(!PathIsFile(Path_2));
   assert(PathIsDirectory(Path_2));
-  
+
   string Path_3 = "/foo/bar/baz.buz"; // must have 3 elements
   PathCompList_t PathList_3;
   PathToComponents(Path_3, PathList_3);
@@ -112,14 +112,14 @@ main(int argc, const char** argv)
   PathList_t::iterator pi;
 
   if ( false )
-    {
-      for ( pi = OutList.begin(); pi != OutList.end(); pi++ )
-	cerr << *pi << endl;
-    }
+  {
+    for ( pi = OutList.begin(); pi != OutList.end(); pi++ )
+      cerr << *pi << endl;
+  }
   else
-    {
-      cerr << OutList.size() << ( ( OutList.size() == 1 ) ? " file" : " files" ) << endl;
-    }
+  {
+    cerr << OutList.size() << ( ( OutList.size() == 1 ) ? " file" : " files" ) << endl;
+  }
 
   cerr << "----------------------------------" << endl;
   OutList.clear();

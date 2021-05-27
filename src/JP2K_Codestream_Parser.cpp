@@ -61,15 +61,15 @@ public:
     Result_t result = m_File.OpenRead(filename);
 
     if ( ASDCP_SUCCESS(result) )
-      {
-	Kumu::fsize_t file_size = m_File.Size();
+    {
+      Kumu::fsize_t file_size = m_File.Size();
 
-	if ( FB.Capacity() < file_size )
-	  {
-	    DefaultLogSink().Error("FrameBuf.Capacity: %u frame length: %u\n", FB.Capacity(), (ui32_t)file_size);
-	    return RESULT_SMALLBUF;
-	  }
+      if ( FB.Capacity() < file_size )
+      {
+        DefaultLogSink().Error("FrameBuf.Capacity: %u frame length: %u\n", FB.Capacity(), (ui32_t)file_size);
+        return RESULT_SMALLBUF;
       }
+    }
 
     ui32_t read_count;
 
@@ -80,13 +80,13 @@ public:
       FB.Size(read_count);
 
     if ( ASDCP_SUCCESS(result) )
-      {
-	byte_t start_of_data = 0; // out param
-	result = ParseMetadataIntoDesc(FB, m_PDesc, &start_of_data);
+    {
+      byte_t start_of_data = 0; // out param
+      result = ParseMetadataIntoDesc(FB, m_PDesc, &start_of_data);
 
-	if ( ASDCP_SUCCESS(result) )
-	  FB.PlaintextOffset(start_of_data);
-      }
+      if ( ASDCP_SUCCESS(result) )
+        FB.PlaintextOffset(start_of_data);
+    }
 
     return result;
   }
@@ -108,144 +108,144 @@ ASDCP::JP2K::ParseMetadataIntoDesc(const FrameBuffer& FB, PictureDescriptor& PDe
   PDesc.CorrespondingProfile.N = 0;
 
   while ( p < end_p && ASDCP_SUCCESS(result) )
+  {
+    result = GetNextMarker(&p, NextMarker);
+
+    if ( ASDCP_FAILURE(result) )
     {
-      result = GetNextMarker(&p, NextMarker);
-
-      if ( ASDCP_FAILURE(result) )
-	{
-	  result = RESULT_RAW_ESS;
-	  break;
-	}
-
-      switch ( NextMarker.m_Type )
-	{
-	case MRK_SOD:
-	  if ( start_of_data != 0 )
-	    *start_of_data = p - FB.RoData();
-
-	  p = end_p;
-	  break;
-
-	case MRK_SIZ:
-	  {
-	    Accessor::SIZ SIZ_(NextMarker);
-	    PDesc.StoredWidth = SIZ_.Xsize();
-	    PDesc.StoredHeight = SIZ_.Ysize();
-	    PDesc.AspectRatio = Rational(SIZ_.Xsize(), SIZ_.Ysize());
-	    PDesc.Rsize = SIZ_.Rsize();
-	    PDesc.Xsize = SIZ_.Xsize();
-	    PDesc.Ysize = SIZ_.Ysize();
-	    PDesc.XOsize = SIZ_.XOsize();
-	    PDesc.YOsize = SIZ_.YOsize();
-	    PDesc.XTsize = SIZ_.XTsize();
-	    PDesc.YTsize = SIZ_.YTsize();
-	    PDesc.XTOsize = SIZ_.XTOsize();
-	    PDesc.YTOsize = SIZ_.YTOsize();
-	    PDesc.Csize = SIZ_.Csize();
-
-	    if ( PDesc.Csize != 3 )
-	      {
-		DefaultLogSink().Error("Unexpected number of components: %u\n", PDesc.Csize);
-		return RESULT_RAW_FORMAT;
-	      }
-	    
-	    for ( i = 0; i < PDesc.Csize; i++ )
-	      SIZ_.ReadComponent(i, PDesc.ImageComponents[i]);
-	  }
-	  break;
-
-	case MRK_COD:
-	  memset(&PDesc.CodingStyleDefault, 0, sizeof(CodingStyleDefault_t));
-
-	  if ( NextMarker.m_DataSize > sizeof(CodingStyleDefault_t) )
-	    {
-	      DefaultLogSink().Error("Unexpectedly large CodingStyle data: %u\n", NextMarker.m_DataSize);
-	      return RESULT_RAW_FORMAT;
-	    }
-	  
-	  memcpy(&PDesc.CodingStyleDefault, NextMarker.m_Data, NextMarker.m_DataSize);
-	  break;
-
-	case MRK_QCD:
-	  memset(&PDesc.QuantizationDefault, 0, sizeof(QuantizationDefault_t));
-
-	  if ( NextMarker.m_DataSize < 3 ) // ( Sqcd = 8 bits, SPqcd = 8 bits ) == 2 bytes, error if not greater
-	    {
-	      DefaultLogSink().Error("No quantization signaled. QCD size=%s.\n", NextMarker.m_DataSize);
-	      return RESULT_RAW_FORMAT;
-	    }
-	  
-	  if ( NextMarker.m_DataSize > MaxDefaults )
-	    {
-	      DefaultLogSink().Error("Quantization Default length exceeds maximum %d\n", NextMarker.m_DataSize);
-	      return RESULT_RAW_FORMAT;
-	    }
-
-	  memcpy(&PDesc.QuantizationDefault, NextMarker.m_Data, NextMarker.m_DataSize);
-	  PDesc.QuantizationDefault.SPqcdLength = NextMarker.m_DataSize - 1;
-	  break;
-
-	case MRK_CAP:
-	  {
-	    Accessor::CAP CAP_(NextMarker);
-	    
-			PDesc.ExtendedCapabilities.Pcap = CAP_.pcap();
-
-			PDesc.ExtendedCapabilities.N = CAP_.N();
-
-			for (i32_t i = 0; i < CAP_.N(); i++) {
-
-				PDesc.ExtendedCapabilities.Ccap[i] = CAP_.ccap(i);
-
-			}
-
-	  }
-	  break;
-
-		case MRK_PRF:
-	  {
-	    Accessor::PRF PRF_(NextMarker);
-
-		ui16_t n = PRF_.N();
-
-		if ( n > MaxPRFN )
-	    {
-	      DefaultLogSink().Error("Number (%d) of Pprf^i exceeds maximum supported\n", n);
-	      return RESULT_RAW_FORMAT;
-	    }
-
-			PDesc.Profile.N = n;
-
-			for(i32_t i = 0; i < n ; i++) {
-
-				PDesc.Profile.Pprf[i] = PRF_.pprf(i+1);
-			}
-	  }
-	  break;
-
-		case MRK_CPF:
-	  {
-	    Accessor::CPF CPF_(NextMarker);
-
-		ui16_t n = CPF_.N();
-
-		if ( n > MaxCPFN )
-	    {
-	      DefaultLogSink().Error("Number (%d) of Pcpf^i exceeds maximum supported\n", n);
-	      return RESULT_RAW_FORMAT;
-	    }
-
-			PDesc.CorrespondingProfile.N = n;
-
-			for(i32_t i = 0; i < n; i++) {
-
-				PDesc.CorrespondingProfile.Pcpf[i] = CPF_.pcpf(i+1);
-			}
-	  }
-	  break;
-
-	}
+      result = RESULT_RAW_ESS;
+      break;
     }
+
+    switch ( NextMarker.m_Type )
+    {
+      case MRK_SOD:
+        if ( start_of_data != 0 )
+          *start_of_data = p - FB.RoData();
+
+        p = end_p;
+        break;
+
+      case MRK_SIZ:
+      {
+        Accessor::SIZ SIZ_(NextMarker);
+        PDesc.StoredWidth = SIZ_.Xsize();
+        PDesc.StoredHeight = SIZ_.Ysize();
+        PDesc.AspectRatio = Rational(SIZ_.Xsize(), SIZ_.Ysize());
+        PDesc.Rsize = SIZ_.Rsize();
+        PDesc.Xsize = SIZ_.Xsize();
+        PDesc.Ysize = SIZ_.Ysize();
+        PDesc.XOsize = SIZ_.XOsize();
+        PDesc.YOsize = SIZ_.YOsize();
+        PDesc.XTsize = SIZ_.XTsize();
+        PDesc.YTsize = SIZ_.YTsize();
+        PDesc.XTOsize = SIZ_.XTOsize();
+        PDesc.YTOsize = SIZ_.YTOsize();
+        PDesc.Csize = SIZ_.Csize();
+
+        if ( PDesc.Csize != 3 )
+        {
+          DefaultLogSink().Error("Unexpected number of components: %u\n", PDesc.Csize);
+          return RESULT_RAW_FORMAT;
+        }
+
+        for ( i = 0; i < PDesc.Csize; i++ )
+          SIZ_.ReadComponent(i, PDesc.ImageComponents[i]);
+      }
+        break;
+
+      case MRK_COD:
+        memset(&PDesc.CodingStyleDefault, 0, sizeof(CodingStyleDefault_t));
+
+        if ( NextMarker.m_DataSize > sizeof(CodingStyleDefault_t) )
+        {
+          DefaultLogSink().Error("Unexpectedly large CodingStyle data: %u\n", NextMarker.m_DataSize);
+          return RESULT_RAW_FORMAT;
+        }
+
+        memcpy(&PDesc.CodingStyleDefault, NextMarker.m_Data, NextMarker.m_DataSize);
+        break;
+
+      case MRK_QCD:
+        memset(&PDesc.QuantizationDefault, 0, sizeof(QuantizationDefault_t));
+
+        if ( NextMarker.m_DataSize < 3 ) // ( Sqcd = 8 bits, SPqcd = 8 bits ) == 2 bytes, error if not greater
+        {
+          DefaultLogSink().Error("No quantization signaled. QCD size=%s.\n", NextMarker.m_DataSize);
+          return RESULT_RAW_FORMAT;
+        }
+
+        if ( NextMarker.m_DataSize > MaxDefaults )
+        {
+          DefaultLogSink().Error("Quantization Default length exceeds maximum %d\n", NextMarker.m_DataSize);
+          return RESULT_RAW_FORMAT;
+        }
+
+        memcpy(&PDesc.QuantizationDefault, NextMarker.m_Data, NextMarker.m_DataSize);
+        PDesc.QuantizationDefault.SPqcdLength = NextMarker.m_DataSize - 1;
+        break;
+
+      case MRK_CAP:
+      {
+        Accessor::CAP CAP_(NextMarker);
+
+        PDesc.ExtendedCapabilities.Pcap = CAP_.pcap();
+
+        PDesc.ExtendedCapabilities.N = CAP_.N();
+
+        for (i32_t i = 0; i < CAP_.N(); i++) {
+
+          PDesc.ExtendedCapabilities.Ccap[i] = CAP_.ccap(i);
+
+        }
+
+      }
+        break;
+
+      case MRK_PRF:
+      {
+        Accessor::PRF PRF_(NextMarker);
+
+        ui16_t n = PRF_.N();
+
+        if ( n > MaxPRFN )
+        {
+          DefaultLogSink().Error("Number (%d) of Pprf^i exceeds maximum supported\n", n);
+          return RESULT_RAW_FORMAT;
+        }
+
+        PDesc.Profile.N = n;
+
+        for(i32_t i = 0; i < n ; i++) {
+
+          PDesc.Profile.Pprf[i] = PRF_.pprf(i+1);
+        }
+      }
+        break;
+
+      case MRK_CPF:
+      {
+        Accessor::CPF CPF_(NextMarker);
+
+        ui16_t n = CPF_.N();
+
+        if ( n > MaxCPFN )
+        {
+          DefaultLogSink().Error("Number (%d) of Pcpf^i exceeds maximum supported\n", n);
+          return RESULT_RAW_FORMAT;
+        }
+
+        PDesc.CorrespondingProfile.N = n;
+
+        for(i32_t i = 0; i < n; i++) {
+
+          PDesc.CorrespondingProfile.Pcpf[i] = CPF_.pcpf(i+1);
+        }
+      }
+        break;
+
+    }
+  }
 
   return result;
 }

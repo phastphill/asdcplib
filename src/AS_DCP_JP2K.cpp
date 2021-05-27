@@ -71,12 +71,12 @@ ASDCP::JP2K::operator << (std::ostream& strm, const PictureDescriptor& PDesc)
 
   ui32_t i;
   for ( i = 0; i < PDesc.Csize && i < MaxComponents; ++i )
-    {
-      strm << "  " << std::setw(4) << PDesc.ImageComponents[i].Ssize + 1 /* See ISO 15444-1, Table A11, for the origin of '+1' */
-	   << "  " << std::setw(5) << PDesc.ImageComponents[i].XRsize
-	   << " " << std::setw(5) << PDesc.ImageComponents[i].YRsize
-	   << std::endl;
-    }
+  {
+    strm << "  " << std::setw(4) << PDesc.ImageComponents[i].Ssize + 1 /* See ISO 15444-1, Table A11, for the origin of '+1' */
+         << "  " << std::setw(5) << PDesc.ImageComponents[i].XRsize
+         << " " << std::setw(5) << PDesc.ImageComponents[i].YRsize
+         << std::endl;
+  }
 
   strm << "               Scod: " << (short) PDesc.CodingStyleDefault.Scod << std::endl;
   strm << "   ProgressionOrder: " << (short) PDesc.CodingStyleDefault.SGcod.ProgressionOrder << std::endl;
@@ -99,7 +99,7 @@ ASDCP::JP2K::operator << (std::ostream& strm, const PictureDescriptor& PDesc)
 
   for ( i = 0; i < precinct_set_size && i < MaxPrecincts; ++i )
     strm << "    " << i + 1 << ": " << s_exp_lookup[PDesc.CodingStyleDefault.SPcod.PrecinctSize[i]&0x0f] << " x "
-	 << s_exp_lookup[(PDesc.CodingStyleDefault.SPcod.PrecinctSize[i]>>4)&0x0f] << std::endl;
+         << s_exp_lookup[(PDesc.CodingStyleDefault.SPcod.PrecinctSize[i]>>4)&0x0f] << std::endl;
 
   strm << "               Sqcd: " << (short) PDesc.QuantizationDefault.Sqcd << std::endl;
 
@@ -108,43 +108,43 @@ ASDCP::JP2K::operator << (std::ostream& strm, const PictureDescriptor& PDesc)
        << std::endl;
 
   if (PDesc.Profile.N != 0) {
-	  strm << "Profile:" << std::endl;
+    strm << "Profile:" << std::endl;
 
-	  for (ui16_t i = 0; i < PDesc.Profile.N; i++) {
-		  strm << "              Pprf(" << (i + 1) << "): "
-			  << std::hex << std::showbase << PDesc.Profile.Pprf[i] << std::dec << std::noshowbase
-			  << std::endl;
-	  }
+    for (ui16_t i = 0; i < PDesc.Profile.N; i++) {
+      strm << "              Pprf(" << (i + 1) << "): "
+           << std::hex << std::showbase << PDesc.Profile.Pprf[i] << std::dec << std::noshowbase
+           << std::endl;
+    }
   }
 
   if (PDesc.CorrespondingProfile.N != 0) {
-	  strm << "Corresponding Profile:" << std::endl;
+    strm << "Corresponding Profile:" << std::endl;
 
-	  for (ui16_t i = 0; i < PDesc.CorrespondingProfile.N; i++) {
+    for (ui16_t i = 0; i < PDesc.CorrespondingProfile.N; i++) {
 
-		  strm << "              Pcpf(" << (i + 1) << "): "
-			  << std::hex << std::showbase <<  PDesc.CorrespondingProfile.Pcpf[i] << std::dec << std::noshowbase
-			  << std::endl;
-	  }
+      strm << "              Pcpf(" << (i + 1) << "): "
+           << std::hex << std::showbase <<  PDesc.CorrespondingProfile.Pcpf[i] << std::dec << std::noshowbase
+           << std::endl;
+    }
   }
 
   if (PDesc.ExtendedCapabilities.N != JP2K::NoExtendedCapabilitiesSignaled && PDesc.ExtendedCapabilities.Pcap != 0) {
 
-	  strm << "Extended Capabilities:" << std::endl;
+    strm << "Extended Capabilities:" << std::endl;
 
 
-	  strm << "                     Pcap:" << PDesc.ExtendedCapabilities.Pcap << std::endl;
+    strm << "                     Pcap:" << PDesc.ExtendedCapabilities.Pcap << std::endl;
 
-	  for (i32_t b = 0, i = 0; b < JP2K::MaxCapabilities; b++) {
+    for (i32_t b = 0, i = 0; b < JP2K::MaxCapabilities; b++) {
 
-		  if ((PDesc.ExtendedCapabilities.Pcap >> b) & 0x1) {
+      if ((PDesc.ExtendedCapabilities.Pcap >> b) & 0x1) {
 
-			  strm << "              Ccap(" << (JP2K::MaxCapabilities - b) << "): " <<
-				  std::hex << std::showbase << PDesc.ExtendedCapabilities.Ccap[i++] << std::dec << std::noshowbase
-				  << std::endl;
+        strm << "              Ccap(" << (JP2K::MaxCapabilities - b) << "): " <<
+             std::hex << std::showbase << PDesc.ExtendedCapabilities.Ccap[i++] << std::dec << std::noshowbase
+             << std::endl;
 
-		  }
-	  }
+      }
+    }
   }
 
   return strm;
@@ -173,22 +173,22 @@ ASDCP::JP2K::PictureDescriptorDump(const PictureDescriptor& PDesc, FILE* stream)
            XTOsize: %u\n\
            YTOsize: %u\n\
  ContainerDuration: %u\n",
-	  PDesc.AspectRatio.Numerator, PDesc.AspectRatio.Denominator,
-	  PDesc.EditRate.Numerator, PDesc.EditRate.Denominator,
-	  PDesc.SampleRate.Numerator, PDesc.SampleRate.Denominator,
-	  PDesc.StoredWidth,
-	  PDesc.StoredHeight,
-	  PDesc.Rsize,
-	  PDesc.Xsize,
-	  PDesc.Ysize,
-	  PDesc.XOsize,
-	  PDesc.YOsize,
-	  PDesc.XTsize,
-	  PDesc.YTsize,
-	  PDesc.XTOsize,
-	  PDesc.YTOsize,
-	  PDesc.ContainerDuration
-	  );
+          PDesc.AspectRatio.Numerator, PDesc.AspectRatio.Denominator,
+          PDesc.EditRate.Numerator, PDesc.EditRate.Denominator,
+          PDesc.SampleRate.Numerator, PDesc.SampleRate.Denominator,
+          PDesc.StoredWidth,
+          PDesc.StoredHeight,
+          PDesc.Rsize,
+          PDesc.Xsize,
+          PDesc.Ysize,
+          PDesc.XOsize,
+          PDesc.YOsize,
+          PDesc.XTsize,
+          PDesc.YTsize,
+          PDesc.XTOsize,
+          PDesc.YTOsize,
+          PDesc.ContainerDuration
+  );
 
   fprintf(stream, "-- JPEG 2000 Metadata --\n");
   fprintf(stream, "    ImageComponents:\n");
@@ -196,18 +196,18 @@ ASDCP::JP2K::PictureDescriptorDump(const PictureDescriptor& PDesc, FILE* stream)
 
   ui32_t i;
   for ( i = 0; i < PDesc.Csize && i < MaxComponents; i++ )
-    {
-      fprintf(stream, "  %4d  %5d %5d\n",
-	      PDesc.ImageComponents[i].Ssize + 1, // See ISO 15444-1, Table A11, for the origin of '+1'
-	      PDesc.ImageComponents[i].XRsize,
-	      PDesc.ImageComponents[i].YRsize
-	      );
-    }
-  
+  {
+    fprintf(stream, "  %4d  %5d %5d\n",
+            PDesc.ImageComponents[i].Ssize + 1, // See ISO 15444-1, Table A11, for the origin of '+1'
+            PDesc.ImageComponents[i].XRsize,
+            PDesc.ImageComponents[i].YRsize
+    );
+  }
+
   fprintf(stream, "               Scod: %hhu\n", PDesc.CodingStyleDefault.Scod);
   fprintf(stream, "   ProgressionOrder: %hhu\n", PDesc.CodingStyleDefault.SGcod.ProgressionOrder);
   fprintf(stream, "     NumberOfLayers: %hd\n",
-	  KM_i16_BE(Kumu::cp2i<ui16_t>(PDesc.CodingStyleDefault.SGcod.NumberOfLayers)));
+          KM_i16_BE(Kumu::cp2i<ui16_t>(PDesc.CodingStyleDefault.SGcod.NumberOfLayers)));
 
   fprintf(stream, " MultiCompTransform: %hhu\n", PDesc.CodingStyleDefault.SGcod.MultiCompTransform);
   fprintf(stream, "DecompositionLevels: %hhu\n", PDesc.CodingStyleDefault.SPcod.DecompositionLevels);
@@ -227,53 +227,53 @@ ASDCP::JP2K::PictureDescriptorDump(const PictureDescriptor& PDesc, FILE* stream)
 
   for ( i = 0; i < precinct_set_size && i < MaxPrecincts; i++ )
     fprintf(stream, "    %d: %d x %d\n", i + 1,
-	    s_exp_lookup[PDesc.CodingStyleDefault.SPcod.PrecinctSize[i]&0x0f],
-	    s_exp_lookup[(PDesc.CodingStyleDefault.SPcod.PrecinctSize[i]>>4)&0x0f]
-	    );
+            s_exp_lookup[PDesc.CodingStyleDefault.SPcod.PrecinctSize[i]&0x0f],
+            s_exp_lookup[(PDesc.CodingStyleDefault.SPcod.PrecinctSize[i]>>4)&0x0f]
+    );
 
   fprintf(stream, "               Sqcd: %hhu\n", PDesc.QuantizationDefault.Sqcd);
 
   char tmp_buf[MaxDefaults*2];
   fprintf(stream, "              SPqcd: %s\n",
-	  Kumu::bin2hex(PDesc.QuantizationDefault.SPqcd, PDesc.QuantizationDefault.SPqcdLength,
-			tmp_buf, MaxDefaults*2)
-	  );
+          Kumu::bin2hex(PDesc.QuantizationDefault.SPqcd, PDesc.QuantizationDefault.SPqcdLength,
+                        tmp_buf, MaxDefaults*2)
+  );
 
 
   if (PDesc.Profile.N != 0) {
-	  fprintf(stream, "               Profile:\n");
+    fprintf(stream, "               Profile:\n");
 
-	  for (ui16_t i = 0; i < PDesc.Profile.N; i++) {
+    for (ui16_t i = 0; i < PDesc.Profile.N; i++) {
 
-		  fprintf(stream, "              Pprf(%d): %hx\n", i + 1, PDesc.Profile.Pprf[i]);
+      fprintf(stream, "              Pprf(%d): %hx\n", i + 1, PDesc.Profile.Pprf[i]);
 
-	  }
+    }
   }
 
   if (PDesc.CorrespondingProfile.N != 0) {
-	  fprintf(stream, "Corresponding Profile:\n");
+    fprintf(stream, "Corresponding Profile:\n");
 
-	  for (ui16_t i = 0; i < PDesc.CorrespondingProfile.N; i++) {
-		  fprintf(stream, "              Pcpf(%d): %hx\n", i + 1, PDesc.CorrespondingProfile.Pcpf[i]);
+    for (ui16_t i = 0; i < PDesc.CorrespondingProfile.N; i++) {
+      fprintf(stream, "              Pcpf(%d): %hx\n", i + 1, PDesc.CorrespondingProfile.Pcpf[i]);
 
-	  }
+    }
   }
 
   if (PDesc.ExtendedCapabilities.N != JP2K::NoExtendedCapabilitiesSignaled) {
 
-	  fprintf(stream, "Extended Capabilities: %x\n", PDesc.ExtendedCapabilities.Pcap);
+    fprintf(stream, "Extended Capabilities: %x\n", PDesc.ExtendedCapabilities.Pcap);
 
-	  for (i32_t b = 0, i = 0; b < JP2K::MaxCapabilities && i < PDesc.ExtendedCapabilities.N; b++) {
+    for (i32_t b = 0, i = 0; b < JP2K::MaxCapabilities && i < PDesc.ExtendedCapabilities.N; b++) {
 
-		  if ((PDesc.ExtendedCapabilities.Pcap >> (JP2K::MaxCapabilities - b - 1)) & 0x1) {
+      if ((PDesc.ExtendedCapabilities.Pcap >> (JP2K::MaxCapabilities - b - 1)) & 0x1) {
 
-			  fprintf(stream, "           Ccap(%d): %hx\n", b + 1, PDesc.ExtendedCapabilities.Ccap[i++]);
+        fprintf(stream, "           Ccap(%d): %hx\n", b + 1, PDesc.ExtendedCapabilities.Ccap[i++]);
 
-		  }
-	  }
+      }
+    }
 
   }
-  
+
 }
 
 
@@ -284,9 +284,9 @@ static const byte_t s_PixelLayoutXYZ[PixelLayoutSize] = { 0xd8, 0x0c, 0xd9, 0x0c
 //
 ASDCP::Result_t
 ASDCP::JP2K_PDesc_to_MD(const JP2K::PictureDescriptor& PDesc,
-			const ASDCP::Dictionary& dict,
-			ASDCP::MXF::GenericPictureEssenceDescriptor& EssenceDescriptor,
-			ASDCP::MXF::JPEG2000PictureSubDescriptor& EssenceSubDescriptor)
+                        const ASDCP::Dictionary& dict,
+                        ASDCP::MXF::GenericPictureEssenceDescriptor& EssenceDescriptor,
+                        ASDCP::MXF::JPEG2000PictureSubDescriptor& EssenceSubDescriptor)
 {
   EssenceDescriptor.ContainerDuration = PDesc.ContainerDuration;
   EssenceDescriptor.SampleRate = PDesc.EditRate;
@@ -335,52 +335,52 @@ ASDCP::JP2K_PDesc_to_MD(const JP2K::PictureDescriptor& PDesc,
   // Profile
 
   if (PDesc.Profile.N == 0) {
-	  EssenceSubDescriptor.J2KProfile.set_has_value(false);
+    EssenceSubDescriptor.J2KProfile.set_has_value(false);
   } else {
-	  EssenceSubDescriptor.J2KProfile.get().resize(PDesc.Profile.N);
+    EssenceSubDescriptor.J2KProfile.get().resize(PDesc.Profile.N);
 
-	  std::copy(PDesc.Profile.Pprf,
-		  PDesc.Profile.Pprf + PDesc.Profile.N,
-		   EssenceSubDescriptor.J2KProfile.get().begin());
+    std::copy(PDesc.Profile.Pprf,
+              PDesc.Profile.Pprf + PDesc.Profile.N,
+              EssenceSubDescriptor.J2KProfile.get().begin());
 
-	  EssenceSubDescriptor.J2KProfile.set_has_value();
+    EssenceSubDescriptor.J2KProfile.set_has_value();
   }
 
   // Corresponding profile
 
   if (PDesc.CorrespondingProfile.N == 0) {
-	
-	  EssenceSubDescriptor.J2KCorrespondingProfile.set_has_value(false);
-  
+
+    EssenceSubDescriptor.J2KCorrespondingProfile.set_has_value(false);
+
   } else {
-	  EssenceSubDescriptor.J2KCorrespondingProfile.get().resize(PDesc.CorrespondingProfile.N);
+    EssenceSubDescriptor.J2KCorrespondingProfile.get().resize(PDesc.CorrespondingProfile.N);
 
-	  std::copy(PDesc.CorrespondingProfile.Pcpf,
-		  PDesc.CorrespondingProfile.Pcpf + PDesc.CorrespondingProfile.N,
-		  EssenceSubDescriptor.J2KCorrespondingProfile.get().begin());
+    std::copy(PDesc.CorrespondingProfile.Pcpf,
+              PDesc.CorrespondingProfile.Pcpf + PDesc.CorrespondingProfile.N,
+              EssenceSubDescriptor.J2KCorrespondingProfile.get().begin());
 
-	  EssenceSubDescriptor.J2KCorrespondingProfile.set_has_value();
+    EssenceSubDescriptor.J2KCorrespondingProfile.set_has_value();
   }
 
   // Extended capabilities
 
   if (PDesc.ExtendedCapabilities.N == JP2K::NoExtendedCapabilitiesSignaled) {
 
-	  /* No extended capabilities are signaled */
+    /* No extended capabilities are signaled */
 
-	  EssenceSubDescriptor.J2KExtendedCapabilities.set_has_value(false);
+    EssenceSubDescriptor.J2KExtendedCapabilities.set_has_value(false);
 
   } else {
 
-	  EssenceSubDescriptor.J2KExtendedCapabilities.get().Pcap = PDesc.ExtendedCapabilities.Pcap;
+    EssenceSubDescriptor.J2KExtendedCapabilities.get().Pcap = PDesc.ExtendedCapabilities.Pcap;
 
-	  EssenceSubDescriptor.J2KExtendedCapabilities.get().Ccap.resize(PDesc.ExtendedCapabilities.N);
+    EssenceSubDescriptor.J2KExtendedCapabilities.get().Ccap.resize(PDesc.ExtendedCapabilities.N);
 
-	  std::copy(PDesc.ExtendedCapabilities.Ccap,
-		  PDesc.ExtendedCapabilities.Ccap + PDesc.ExtendedCapabilities.N,
-		  EssenceSubDescriptor.J2KExtendedCapabilities.get().Ccap.begin());
+    std::copy(PDesc.ExtendedCapabilities.Ccap,
+              PDesc.ExtendedCapabilities.Ccap + PDesc.ExtendedCapabilities.N,
+              EssenceSubDescriptor.J2KExtendedCapabilities.get().Ccap.begin());
 
-	  EssenceSubDescriptor.J2KExtendedCapabilities.set_has_value(true);
+    EssenceSubDescriptor.J2KExtendedCapabilities.set_has_value(true);
 
   }
 
@@ -391,9 +391,9 @@ ASDCP::JP2K_PDesc_to_MD(const JP2K::PictureDescriptor& PDesc,
 //
 ASDCP::Result_t
 ASDCP::MD_to_JP2K_PDesc(const ASDCP::MXF::GenericPictureEssenceDescriptor&  EssenceDescriptor,
-			const ASDCP::MXF::JPEG2000PictureSubDescriptor& EssenceSubDescriptor,
-			const ASDCP::Rational& EditRate, const ASDCP::Rational& SampleRate,
-			ASDCP::JP2K::PictureDescriptor& PDesc)
+                        const ASDCP::MXF::JPEG2000PictureSubDescriptor& EssenceSubDescriptor,
+                        const ASDCP::Rational& EditRate, const ASDCP::Rational& SampleRate,
+                        ASDCP::JP2K::PictureDescriptor& PDesc)
 {
   memset(&PDesc, 0, sizeof(PDesc));
 
@@ -420,26 +420,26 @@ ASDCP::MD_to_JP2K_PDesc(const ASDCP::MXF::GenericPictureEssenceDescriptor&  Esse
   ui32_t tmp_size = EssenceSubDescriptor.PictureComponentSizing.const_get().Length();
 
   if ( tmp_size == 17 ) // ( 2 * sizeof(ui32_t) ) + 3 components * 3 byte each
-    {
-      memcpy(&PDesc.ImageComponents, EssenceSubDescriptor.PictureComponentSizing.const_get().RoData() + 8, tmp_size - 8);
-    }
+  {
+    memcpy(&PDesc.ImageComponents, EssenceSubDescriptor.PictureComponentSizing.const_get().RoData() + 8, tmp_size - 8);
+  }
   else
-    {
-      DefaultLogSink().Warn("Unexpected PictureComponentSizing size: %u, should be 17.\n", tmp_size);
-    }
+  {
+    DefaultLogSink().Warn("Unexpected PictureComponentSizing size: %u, should be 17.\n", tmp_size);
+  }
 
   // CodingStyleDefault
   memset(&PDesc.CodingStyleDefault, 0, sizeof(CodingStyleDefault_t));
   memcpy(&PDesc.CodingStyleDefault,
-	 EssenceSubDescriptor.CodingStyleDefault.const_get().RoData(),
-	 EssenceSubDescriptor.CodingStyleDefault.const_get().Length());
+         EssenceSubDescriptor.CodingStyleDefault.const_get().RoData(),
+         EssenceSubDescriptor.CodingStyleDefault.const_get().Length());
 
   // QuantizationDefault
   memset(&PDesc.QuantizationDefault, 0, sizeof(QuantizationDefault_t));
   memcpy(&PDesc.QuantizationDefault,
-	 EssenceSubDescriptor.QuantizationDefault.const_get().RoData(),
-	 EssenceSubDescriptor.QuantizationDefault.const_get().Length());
-  
+         EssenceSubDescriptor.QuantizationDefault.const_get().RoData(),
+         EssenceSubDescriptor.QuantizationDefault.const_get().Length());
+
   PDesc.QuantizationDefault.SPqcdLength = EssenceSubDescriptor.QuantizationDefault.const_get().Length() - 1;
 
   // Profile
@@ -447,17 +447,17 @@ ASDCP::MD_to_JP2K_PDesc(const ASDCP::MXF::GenericPictureEssenceDescriptor&  Esse
   std::fill(PDesc.Profile.Pprf, PDesc.Profile.Pprf + JP2K::MaxPRFN, 0);
 
   if (EssenceSubDescriptor.J2KProfile.empty() ||
-	  EssenceSubDescriptor.J2KProfile.const_get().size() == 0) {
+      EssenceSubDescriptor.J2KProfile.const_get().size() == 0) {
 
-	  PDesc.Profile.N = 0;
+    PDesc.Profile.N = 0;
 
   } else {
 
-	  PDesc.Profile.N = EssenceSubDescriptor.J2KProfile.const_get().size();
+    PDesc.Profile.N = EssenceSubDescriptor.J2KProfile.const_get().size();
 
-	  std::copy(EssenceSubDescriptor.J2KProfile.const_get().begin(),
-		  EssenceSubDescriptor.J2KProfile.const_get().end(),
-		  PDesc.Profile.Pprf);
+    std::copy(EssenceSubDescriptor.J2KProfile.const_get().begin(),
+              EssenceSubDescriptor.J2KProfile.const_get().end(),
+              PDesc.Profile.Pprf);
 
   }
 
@@ -466,18 +466,18 @@ ASDCP::MD_to_JP2K_PDesc(const ASDCP::MXF::GenericPictureEssenceDescriptor&  Esse
   std::fill(PDesc.CorrespondingProfile.Pcpf, PDesc.CorrespondingProfile.Pcpf + JP2K::MaxCPFN, 0);
 
   if (EssenceSubDescriptor.J2KCorrespondingProfile.empty() ||
-	  EssenceSubDescriptor.J2KCorrespondingProfile.const_get().size() == 0) {
+      EssenceSubDescriptor.J2KCorrespondingProfile.const_get().size() == 0) {
 
-	  PDesc.CorrespondingProfile.N = 0;
+    PDesc.CorrespondingProfile.N = 0;
 
   }
   else {
 
-	  PDesc.CorrespondingProfile.N = EssenceSubDescriptor.J2KCorrespondingProfile.const_get().size();
+    PDesc.CorrespondingProfile.N = EssenceSubDescriptor.J2KCorrespondingProfile.const_get().size();
 
-	  std::copy(EssenceSubDescriptor.J2KCorrespondingProfile.const_get().begin(),
-		  EssenceSubDescriptor.J2KCorrespondingProfile.const_get().end(),
-		  PDesc.CorrespondingProfile.Pcpf);
+    std::copy(EssenceSubDescriptor.J2KCorrespondingProfile.const_get().begin(),
+              EssenceSubDescriptor.J2KCorrespondingProfile.const_get().end(),
+              PDesc.CorrespondingProfile.Pcpf);
 
   }
 
@@ -487,18 +487,18 @@ ASDCP::MD_to_JP2K_PDesc(const ASDCP::MXF::GenericPictureEssenceDescriptor&  Esse
 
   if (EssenceSubDescriptor.J2KExtendedCapabilities.empty()) {
 
-	  PDesc.ExtendedCapabilities.Pcap = 0;
-	  PDesc.ExtendedCapabilities.N = JP2K::NoExtendedCapabilitiesSignaled;
+    PDesc.ExtendedCapabilities.Pcap = 0;
+    PDesc.ExtendedCapabilities.N = JP2K::NoExtendedCapabilitiesSignaled;
 
   }
   else {
 
-	  PDesc.ExtendedCapabilities.Pcap = EssenceSubDescriptor.J2KExtendedCapabilities.const_get().Pcap;
-	  PDesc.ExtendedCapabilities.N = EssenceSubDescriptor.J2KExtendedCapabilities.const_get().Ccap.size();
+    PDesc.ExtendedCapabilities.Pcap = EssenceSubDescriptor.J2KExtendedCapabilities.const_get().Pcap;
+    PDesc.ExtendedCapabilities.N = EssenceSubDescriptor.J2KExtendedCapabilities.const_get().Ccap.size();
 
-	  std::copy(EssenceSubDescriptor.J2KExtendedCapabilities.const_get().Ccap.begin(),
-		  EssenceSubDescriptor.J2KExtendedCapabilities.const_get().Ccap.end(),
-		  PDesc.ExtendedCapabilities.Ccap);
+    std::copy(EssenceSubDescriptor.J2KExtendedCapabilities.const_get().Ccap.begin(),
+              EssenceSubDescriptor.J2KExtendedCapabilities.const_get().Ccap.end(),
+              PDesc.ExtendedCapabilities.Ccap);
 
   }
 
@@ -525,7 +525,7 @@ public:
   PictureDescriptor m_PDesc;        // codestream parameter list
 
   lh__Reader(const Dictionary& d) :
-    ASDCP::h__ASDCPReader(d), m_EssenceDescriptor(0), m_EssenceSubDescriptor(0), m_Format(ESS_UNKNOWN) {}
+      ASDCP::h__ASDCPReader(d), m_EssenceDescriptor(0), m_EssenceSubDescriptor(0), m_Format(ESS_UNKNOWN) {}
 
   virtual ~lh__Reader() {}
 
@@ -542,152 +542,152 @@ lh__Reader::OpenRead(const std::string& filename, EssenceType_t type)
   Result_t result = OpenMXFRead(filename);
 
   if( ASDCP_SUCCESS(result) )
+  {
+    InterchangeObject* tmp_iobj = 0;
+    m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(RGBAEssenceDescriptor), &tmp_iobj);
+    m_EssenceDescriptor = static_cast<RGBAEssenceDescriptor*>(tmp_iobj);
+
+    if ( m_EssenceDescriptor == 0 )
     {
-      InterchangeObject* tmp_iobj = 0;
-      m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(RGBAEssenceDescriptor), &tmp_iobj);
-      m_EssenceDescriptor = static_cast<RGBAEssenceDescriptor*>(tmp_iobj);
-
-      if ( m_EssenceDescriptor == 0 )
-	{
-	  DefaultLogSink().Error("RGBAEssenceDescriptor object not found.\n");
-	  return RESULT_FORMAT;
-	}
-
-      m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(JPEG2000PictureSubDescriptor), &tmp_iobj);
-      m_EssenceSubDescriptor = static_cast<JPEG2000PictureSubDescriptor*>(tmp_iobj);
-
-      if ( m_EssenceSubDescriptor == 0 )
-	{
-	  m_EssenceDescriptor = 0;
-	  DefaultLogSink().Error("JPEG2000PictureSubDescriptor object not found.\n");
-	  return RESULT_FORMAT;
-	}
-
-      std::list<InterchangeObject*> ObjectList;
-      m_HeaderPart.GetMDObjectsByType(OBJ_TYPE_ARGS(Track), ObjectList);
-
-      if ( ObjectList.empty() )
-	{
-	  DefaultLogSink().Error("MXF Metadata contains no Track Sets.\n");
-	  return RESULT_FORMAT;
-	}
-
-      m_EditRate = ((Track*)ObjectList.front())->EditRate;
-      m_SampleRate = m_EssenceDescriptor->SampleRate;
-
-      if ( type == ASDCP::ESS_JPEG_2000 )
-	{
-	  if ( m_EditRate != m_SampleRate )
-	    {
-	      DefaultLogSink().Warn("EditRate and SampleRate do not match (%.03f, %.03f).\n",
-				    m_EditRate.Quotient(), m_SampleRate.Quotient());
-	      
-	      if ( ( m_EditRate == EditRate_24 && m_SampleRate == EditRate_48 )
-		   || ( m_EditRate == EditRate_25 && m_SampleRate == EditRate_50 )
-		   || ( m_EditRate == EditRate_30 && m_SampleRate == EditRate_60 )
-		   || ( m_EditRate == EditRate_48 && m_SampleRate == EditRate_96 )
-		   || ( m_EditRate == EditRate_50 && m_SampleRate == EditRate_100 )
-		   || ( m_EditRate == EditRate_60 && m_SampleRate == EditRate_120 )
-		   || ( m_EditRate == EditRate_96 && m_SampleRate == EditRate_192 )
-		   || ( m_EditRate == EditRate_100 && m_SampleRate == EditRate_200 )
-		   || ( m_EditRate == EditRate_120 && m_SampleRate == EditRate_240 ) )
-		{
-		  DefaultLogSink().Debug("File may contain JPEG Interop stereoscopic images.\n");
-		  return RESULT_SFORMAT;
-		}
-
-	      return RESULT_FORMAT;
-	    }
-	}
-      else if ( type == ASDCP::ESS_JPEG_2000_S )
-	{
-	  if ( m_EditRate == EditRate_24 )
-	    {
-	      if ( m_SampleRate != EditRate_48 )
-		{
-		  DefaultLogSink().Error("EditRate and SampleRate not correct for 24/48 stereoscopic essence.\n");
-		  return RESULT_FORMAT;
-		}
-	    }
-	  else if ( m_EditRate == EditRate_25 )
-	    {
-	      if ( m_SampleRate != EditRate_50 )
-		{
-		  DefaultLogSink().Error("EditRate and SampleRate not correct for 25/50 stereoscopic essence.\n");
-		  return RESULT_FORMAT;
-		}
-	    }
-	  else if ( m_EditRate == EditRate_30 )
-	    {
-	      if ( m_SampleRate != EditRate_60 )
-		{
-		  DefaultLogSink().Error("EditRate and SampleRate not correct for 30/60 stereoscopic essence.\n");
-		  return RESULT_FORMAT;
-		}
-	    }
-	  else if ( m_EditRate == EditRate_48 )
-	    {
-	      if ( m_SampleRate != EditRate_96 )
-		{
-		  DefaultLogSink().Error("EditRate and SampleRate not correct for 48/96 stereoscopic essence.\n");
-		  return RESULT_FORMAT;
-		}
-	    }
-	  else if ( m_EditRate == EditRate_50 )
-	    {
-	      if ( m_SampleRate != EditRate_100 )
-		{
-		  DefaultLogSink().Error("EditRate and SampleRate not correct for 50/100 stereoscopic essence.\n");
-		  return RESULT_FORMAT;
-		}
-	    }
-	  else if ( m_EditRate == EditRate_60 )
-	    {
-	      if ( m_SampleRate != EditRate_120 )
-		{
-		  DefaultLogSink().Error("EditRate and SampleRate not correct for 60/120 stereoscopic essence.\n");
-		  return RESULT_FORMAT;
-		}
-	    }
-	  else if ( m_EditRate == EditRate_96 )
-	    {
-	      if ( m_SampleRate != EditRate_192 )
-		{
-		  DefaultLogSink().Error("EditRate and SampleRate not correct for 96/192 stereoscopic essence.\n");
-		  return RESULT_FORMAT;
-		}
-	    }
-	  else if ( m_EditRate == EditRate_100 )
-	    {
-	      if ( m_SampleRate != EditRate_200 )
-		{
-		  DefaultLogSink().Error("EditRate and SampleRate not correct for 100/200 stereoscopic essence.\n");
-		  return RESULT_FORMAT;
-		}
-	    }
-	  else if ( m_EditRate == EditRate_120 )
-	    {
-	      if ( m_SampleRate != EditRate_240 )
-		{
-		  DefaultLogSink().Error("EditRate and SampleRate not correct for 120/240 stereoscopic essence.\n");
-		  return RESULT_FORMAT;
-		}
-	    }
-	  else
-	    {
-	      DefaultLogSink().Error("EditRate not correct for stereoscopic essence: %d/%d.\n",
-				     m_EditRate.Numerator, m_EditRate.Denominator);
-	      return RESULT_FORMAT;
-	    }
-	}
-      else
-	{
-	  DefaultLogSink().Error("'type' argument unexpected: %x\n", type);
-	  return RESULT_STATE;
-	}
-
-      result = MD_to_JP2K_PDesc(*m_EssenceDescriptor, *m_EssenceSubDescriptor, m_EditRate, m_SampleRate, m_PDesc);
+      DefaultLogSink().Error("RGBAEssenceDescriptor object not found.\n");
+      return RESULT_FORMAT;
     }
+
+    m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(JPEG2000PictureSubDescriptor), &tmp_iobj);
+    m_EssenceSubDescriptor = static_cast<JPEG2000PictureSubDescriptor*>(tmp_iobj);
+
+    if ( m_EssenceSubDescriptor == 0 )
+    {
+      m_EssenceDescriptor = 0;
+      DefaultLogSink().Error("JPEG2000PictureSubDescriptor object not found.\n");
+      return RESULT_FORMAT;
+    }
+
+    std::list<InterchangeObject*> ObjectList;
+    m_HeaderPart.GetMDObjectsByType(OBJ_TYPE_ARGS(Track), ObjectList);
+
+    if ( ObjectList.empty() )
+    {
+      DefaultLogSink().Error("MXF Metadata contains no Track Sets.\n");
+      return RESULT_FORMAT;
+    }
+
+    m_EditRate = ((Track*)ObjectList.front())->EditRate;
+    m_SampleRate = m_EssenceDescriptor->SampleRate;
+
+    if ( type == ASDCP::ESS_JPEG_2000 )
+    {
+      if ( m_EditRate != m_SampleRate )
+      {
+        DefaultLogSink().Warn("EditRate and SampleRate do not match (%.03f, %.03f).\n",
+                              m_EditRate.Quotient(), m_SampleRate.Quotient());
+
+        if ( ( m_EditRate == EditRate_24 && m_SampleRate == EditRate_48 )
+             || ( m_EditRate == EditRate_25 && m_SampleRate == EditRate_50 )
+             || ( m_EditRate == EditRate_30 && m_SampleRate == EditRate_60 )
+             || ( m_EditRate == EditRate_48 && m_SampleRate == EditRate_96 )
+             || ( m_EditRate == EditRate_50 && m_SampleRate == EditRate_100 )
+             || ( m_EditRate == EditRate_60 && m_SampleRate == EditRate_120 )
+             || ( m_EditRate == EditRate_96 && m_SampleRate == EditRate_192 )
+             || ( m_EditRate == EditRate_100 && m_SampleRate == EditRate_200 )
+             || ( m_EditRate == EditRate_120 && m_SampleRate == EditRate_240 ) )
+        {
+          DefaultLogSink().Debug("File may contain JPEG Interop stereoscopic images.\n");
+          return RESULT_SFORMAT;
+        }
+
+        return RESULT_FORMAT;
+      }
+    }
+    else if ( type == ASDCP::ESS_JPEG_2000_S )
+    {
+      if ( m_EditRate == EditRate_24 )
+      {
+        if ( m_SampleRate != EditRate_48 )
+        {
+          DefaultLogSink().Error("EditRate and SampleRate not correct for 24/48 stereoscopic essence.\n");
+          return RESULT_FORMAT;
+        }
+      }
+      else if ( m_EditRate == EditRate_25 )
+      {
+        if ( m_SampleRate != EditRate_50 )
+        {
+          DefaultLogSink().Error("EditRate and SampleRate not correct for 25/50 stereoscopic essence.\n");
+          return RESULT_FORMAT;
+        }
+      }
+      else if ( m_EditRate == EditRate_30 )
+      {
+        if ( m_SampleRate != EditRate_60 )
+        {
+          DefaultLogSink().Error("EditRate and SampleRate not correct for 30/60 stereoscopic essence.\n");
+          return RESULT_FORMAT;
+        }
+      }
+      else if ( m_EditRate == EditRate_48 )
+      {
+        if ( m_SampleRate != EditRate_96 )
+        {
+          DefaultLogSink().Error("EditRate and SampleRate not correct for 48/96 stereoscopic essence.\n");
+          return RESULT_FORMAT;
+        }
+      }
+      else if ( m_EditRate == EditRate_50 )
+      {
+        if ( m_SampleRate != EditRate_100 )
+        {
+          DefaultLogSink().Error("EditRate and SampleRate not correct for 50/100 stereoscopic essence.\n");
+          return RESULT_FORMAT;
+        }
+      }
+      else if ( m_EditRate == EditRate_60 )
+      {
+        if ( m_SampleRate != EditRate_120 )
+        {
+          DefaultLogSink().Error("EditRate and SampleRate not correct for 60/120 stereoscopic essence.\n");
+          return RESULT_FORMAT;
+        }
+      }
+      else if ( m_EditRate == EditRate_96 )
+      {
+        if ( m_SampleRate != EditRate_192 )
+        {
+          DefaultLogSink().Error("EditRate and SampleRate not correct for 96/192 stereoscopic essence.\n");
+          return RESULT_FORMAT;
+        }
+      }
+      else if ( m_EditRate == EditRate_100 )
+      {
+        if ( m_SampleRate != EditRate_200 )
+        {
+          DefaultLogSink().Error("EditRate and SampleRate not correct for 100/200 stereoscopic essence.\n");
+          return RESULT_FORMAT;
+        }
+      }
+      else if ( m_EditRate == EditRate_120 )
+      {
+        if ( m_SampleRate != EditRate_240 )
+        {
+          DefaultLogSink().Error("EditRate and SampleRate not correct for 120/240 stereoscopic essence.\n");
+          return RESULT_FORMAT;
+        }
+      }
+      else
+      {
+        DefaultLogSink().Error("EditRate not correct for stereoscopic essence: %d/%d.\n",
+                               m_EditRate.Numerator, m_EditRate.Denominator);
+        return RESULT_FORMAT;
+      }
+    }
+    else
+    {
+      DefaultLogSink().Error("'type' argument unexpected: %x\n", type);
+      return RESULT_STATE;
+    }
+
+    result = MD_to_JP2K_PDesc(*m_EssenceDescriptor, *m_EssenceSubDescriptor, m_EditRate, m_SampleRate, m_PDesc);
+  }
 
   return result;
 }
@@ -696,7 +696,7 @@ lh__Reader::OpenRead(const std::string& filename, EssenceType_t type)
 //
 ASDCP::Result_t
 lh__Reader::ReadFrame(ui32_t FrameNum, JP2K::FrameBuffer& FrameBuf,
-		      AESDecContext* Ctx, HMACContext* HMAC)
+                      AESDecContext* Ctx, HMACContext* HMAC)
 {
   if ( ! m_File.IsOpen() )
     return RESULT_INIT;
@@ -729,7 +729,7 @@ ASDCP::JP2K::FrameBuffer::Dump(FILE* stream, ui32_t dump_len) const
     stream = stderr;
 
   fprintf(stream, "Frame: %06u, %7u bytes", m_FrameNumber, m_Size);
-  
+
   fputc('\n', stream);
 
   if ( dump_len > 0 )
@@ -758,10 +758,10 @@ ASDCP::MXF::OP1aHeader&
 ASDCP::JP2K::MXFReader::OP1aHeader()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_OP1aHeader);
-      return *g_OP1aHeader;
-    }
+  {
+    assert(g_OP1aHeader);
+    return *g_OP1aHeader;
+  }
 
   return m_Reader->m_HeaderPart;
 }
@@ -773,10 +773,10 @@ ASDCP::MXF::OPAtomIndexFooter&
 ASDCP::JP2K::MXFReader::OPAtomIndexFooter()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_OPAtomIndexFooter);
-      return *g_OPAtomIndexFooter;
-    }
+  {
+    assert(g_OPAtomIndexFooter);
+    return *g_OPAtomIndexFooter;
+  }
 
   return m_Reader->m_IndexAccess;
 }
@@ -788,10 +788,10 @@ ASDCP::MXF::RIP&
 ASDCP::JP2K::MXFReader::RIP()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_RIP);
-      return *g_RIP;
-    }
+  {
+    assert(g_RIP);
+    return *g_RIP;
+  }
 
   return m_Reader->m_RIP;
 }
@@ -807,7 +807,7 @@ ASDCP::JP2K::MXFReader::OpenRead(const std::string& filename) const
 //
 ASDCP::Result_t
 ASDCP::JP2K::MXFReader::ReadFrame(ui32_t FrameNum, FrameBuffer& FrameBuf,
-				   AESDecContext* Ctx, HMACContext* HMAC) const
+                                  AESDecContext* Ctx, HMACContext* HMAC) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
     return m_Reader->ReadFrame(FrameNum, FrameBuf, Ctx, HMAC);
@@ -818,7 +818,7 @@ ASDCP::JP2K::MXFReader::ReadFrame(ui32_t FrameNum, FrameBuffer& FrameBuf,
 ASDCP::Result_t
 ASDCP::JP2K::MXFReader::LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const
 {
-    return m_Reader->LocateFrame(FrameNum, streamOffset, temporalOffset, keyFrameOffset);
+  return m_Reader->LocateFrame(FrameNum, streamOffset, temporalOffset, keyFrameOffset);
 }
 
 
@@ -828,10 +828,10 @@ ASDCP::Result_t
 ASDCP::JP2K::MXFReader::FillPictureDescriptor(PictureDescriptor& PDesc) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      PDesc = m_Reader->m_PDesc;
-      return RESULT_OK;
-    }
+  {
+    PDesc = m_Reader->m_PDesc;
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -843,10 +843,10 @@ ASDCP::Result_t
 ASDCP::JP2K::MXFReader::FillWriterInfo(WriterInfo& Info) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      Info = m_Reader->m_Info;
-      return RESULT_OK;
-    }
+  {
+    Info = m_Reader->m_Info;
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -873,10 +873,10 @@ ASDCP::Result_t
 ASDCP::JP2K::MXFReader::Close() const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      m_Reader->Close();
-      return RESULT_OK;
-    }
+  {
+    m_Reader->Close();
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -894,70 +894,70 @@ public:
 
   //
   Result_t ReadFrame(ui32_t FrameNum, StereoscopicPhase_t phase, FrameBuffer& FrameBuf,
-		     AESDecContext* Ctx, HMACContext* HMAC)
+                     AESDecContext* Ctx, HMACContext* HMAC)
   {
     // look up frame index node
     IndexTableSegment::IndexEntry TmpEntry;
 
     if ( ASDCP_FAILURE(m_IndexAccess.Lookup(FrameNum, TmpEntry)) )
-      {
-	return RESULT_RANGE;
-      }
+    {
+      return RESULT_RANGE;
+    }
 
     // get frame position
     Kumu::fpos_t FilePosition = m_HeaderPart.BodyOffset + TmpEntry.StreamOffset;
     Result_t result = RESULT_OK;
 
     if ( phase == SP_LEFT )
-      {    
-	if ( FilePosition != m_LastPosition )
-	  {
-	    m_LastPosition = FilePosition;
-	    result = m_File.Seek(FilePosition);
-	  }
-
-	// the call to ReadEKLVPacket() will leave the file on an R frame
-	m_StereoFrameReady = FrameNum;
+    {
+      if ( FilePosition != m_LastPosition )
+      {
+        m_LastPosition = FilePosition;
+        result = m_File.Seek(FilePosition);
       }
+
+      // the call to ReadEKLVPacket() will leave the file on an R frame
+      m_StereoFrameReady = FrameNum;
+    }
     else if ( phase == SP_RIGHT )
+    {
+      if ( m_StereoFrameReady != FrameNum )
       {
-	if ( m_StereoFrameReady != FrameNum )
-	  {
-	    // the file is not already positioned, we must do some work
-	    // seek to the companion SP_LEFT frame and read the frame's key and length
-	    if ( FilePosition != m_LastPosition )
-	      {
-		m_LastPosition = FilePosition;
-		result = m_File.Seek(FilePosition);
-	      }
+        // the file is not already positioned, we must do some work
+        // seek to the companion SP_LEFT frame and read the frame's key and length
+        if ( FilePosition != m_LastPosition )
+        {
+          m_LastPosition = FilePosition;
+          result = m_File.Seek(FilePosition);
+        }
 
-	    KLReader Reader;
-	    result = Reader.ReadKLFromFile(m_File);
+        KLReader Reader;
+        result = Reader.ReadKLFromFile(m_File);
 
-	    if ( ASDCP_SUCCESS(result) )
-	      {
-		// skip over the companion SP_LEFT frame
-		Kumu::fpos_t new_pos = FilePosition + SMPTE_UL_LENGTH + Reader.KLLength() + Reader.Length();
-		result = m_File.Seek(new_pos);
-	      }
-	  }
-
-	// the call to ReadEKLVPacket() will leave the file not on an R frame
-	m_StereoFrameReady = 0xffffffff;
+        if ( ASDCP_SUCCESS(result) )
+        {
+          // skip over the companion SP_LEFT frame
+          Kumu::fpos_t new_pos = FilePosition + SMPTE_UL_LENGTH + Reader.KLLength() + Reader.Length();
+          result = m_File.Seek(new_pos);
+        }
       }
+
+      // the call to ReadEKLVPacket() will leave the file not on an R frame
+      m_StereoFrameReady = 0xffffffff;
+    }
     else
-      {
-	DefaultLogSink().Error("Unexpected stereoscopic phase value: %u\n", phase);
-	return RESULT_STATE;
-      }
+    {
+      DefaultLogSink().Error("Unexpected stereoscopic phase value: %u\n", phase);
+      return RESULT_STATE;
+    }
 
     if( ASDCP_SUCCESS(result) )
-      {
-	ui32_t SequenceNum = FrameNum * 2;
-	SequenceNum += ( phase == SP_RIGHT ) ? 2 : 1;
-	assert(m_Dict);
-	result = ReadEKLVPacket(FrameNum, SequenceNum, FrameBuf, m_Dict->ul(MDD_JPEG2000Essence), Ctx, HMAC);
-      }
+    {
+      ui32_t SequenceNum = FrameNum * 2;
+      SequenceNum += ( phase == SP_RIGHT ) ? 2 : 1;
+      assert(m_Dict);
+      result = ReadEKLVPacket(FrameNum, SequenceNum, FrameBuf, m_Dict->ul(MDD_JPEG2000Essence), Ctx, HMAC);
+    }
 
     return result;
   }
@@ -984,10 +984,10 @@ ASDCP::MXF::OP1aHeader&
 ASDCP::JP2K::MXFSReader::OP1aHeader()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_OP1aHeader);
-      return *g_OP1aHeader;
-    }
+  {
+    assert(g_OP1aHeader);
+    return *g_OP1aHeader;
+  }
 
   return m_Reader->m_HeaderPart;
 }
@@ -999,10 +999,10 @@ ASDCP::MXF::OPAtomIndexFooter&
 ASDCP::JP2K::MXFSReader::OPAtomIndexFooter()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_OPAtomIndexFooter);
-      return *g_OPAtomIndexFooter;
-    }
+  {
+    assert(g_OPAtomIndexFooter);
+    return *g_OPAtomIndexFooter;
+  }
 
   return m_Reader->m_IndexAccess;
 }
@@ -1014,10 +1014,10 @@ ASDCP::MXF::RIP&
 ASDCP::JP2K::MXFSReader::RIP()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_RIP);
-      return *g_RIP;
-    }
+  {
+    assert(g_RIP);
+    return *g_RIP;
+  }
 
   return m_Reader->m_RIP;
 }
@@ -1037,12 +1037,12 @@ ASDCP::JP2K::MXFSReader::ReadFrame(ui32_t FrameNum, SFrameBuffer& FrameBuf, AESD
   Result_t result = RESULT_INIT;
 
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      result = m_Reader->ReadFrame(FrameNum, SP_LEFT, FrameBuf.Left, Ctx, HMAC);
+  {
+    result = m_Reader->ReadFrame(FrameNum, SP_LEFT, FrameBuf.Left, Ctx, HMAC);
 
-      if ( ASDCP_SUCCESS(result) )
-	result = m_Reader->ReadFrame(FrameNum, SP_RIGHT, FrameBuf.Right, Ctx, HMAC);
-    }
+    if ( ASDCP_SUCCESS(result) )
+      result = m_Reader->ReadFrame(FrameNum, SP_RIGHT, FrameBuf.Right, Ctx, HMAC);
+  }
 
   return result;
 }
@@ -1050,7 +1050,7 @@ ASDCP::JP2K::MXFSReader::ReadFrame(ui32_t FrameNum, SFrameBuffer& FrameBuf, AESD
 //
 ASDCP::Result_t
 ASDCP::JP2K::MXFSReader::ReadFrame(ui32_t FrameNum, StereoscopicPhase_t phase, FrameBuffer& FrameBuf,
-				   AESDecContext* Ctx, HMACContext* HMAC) const
+                                   AESDecContext* Ctx, HMACContext* HMAC) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
     return m_Reader->ReadFrame(FrameNum, phase, FrameBuf, Ctx, HMAC);
@@ -1061,7 +1061,7 @@ ASDCP::JP2K::MXFSReader::ReadFrame(ui32_t FrameNum, StereoscopicPhase_t phase, F
 ASDCP::Result_t
 ASDCP::JP2K::MXFSReader::LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const
 {
-    return m_Reader->LocateFrame(FrameNum, streamOffset, temporalOffset, keyFrameOffset);
+  return m_Reader->LocateFrame(FrameNum, streamOffset, temporalOffset, keyFrameOffset);
 }
 
 // Fill the struct with the values from the file's header.
@@ -1070,10 +1070,10 @@ ASDCP::Result_t
 ASDCP::JP2K::MXFSReader::FillPictureDescriptor(PictureDescriptor& PDesc) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      PDesc = m_Reader->m_PDesc;
-      return RESULT_OK;
-    }
+  {
+    PDesc = m_Reader->m_PDesc;
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -1085,10 +1085,10 @@ ASDCP::Result_t
 ASDCP::JP2K::MXFSReader::FillWriterInfo(WriterInfo& Info) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      Info = m_Reader->m_Info;
-      return RESULT_OK;
-    }
+  {
+    Info = m_Reader->m_Info;
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -1115,10 +1115,10 @@ ASDCP::Result_t
 ASDCP::JP2K::MXFSReader::Close() const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      m_Reader->Close();
-      return RESULT_OK;
-    }
+  {
+    m_Reader->Close();
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -1147,7 +1147,7 @@ public:
 
   Result_t OpenWrite(const std::string&, EssenceType_t type, ui32_t HeaderSize);
   Result_t SetSourceStream(const PictureDescriptor&, const std::string& label,
-			   ASDCP::Rational LocalEditRate = ASDCP::Rational(0,0));
+                           ASDCP::Rational LocalEditRate = ASDCP::Rational(0,0));
   Result_t WriteFrame(const JP2K::FrameBuffer&, bool add_index, AESEncContext*, HMACContext*);
   Result_t Finalize();
 };
@@ -1163,29 +1163,29 @@ lh__Writer::OpenWrite(const std::string& filename, EssenceType_t type, ui32_t He
   Result_t result = m_File.OpenWrite(filename);
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    m_HeaderSize = HeaderSize;
+    RGBAEssenceDescriptor* tmp_rgba = new RGBAEssenceDescriptor(m_Dict);
+    tmp_rgba->ComponentMaxRef = 4095;
+    tmp_rgba->ComponentMinRef = 0;
+
+    m_EssenceDescriptor = tmp_rgba;
+    m_EssenceSubDescriptor = new JPEG2000PictureSubDescriptor(m_Dict);
+    m_EssenceSubDescriptorList.push_back((InterchangeObject*)m_EssenceSubDescriptor);
+
+    GenRandomValue(m_EssenceSubDescriptor->InstanceUID);
+    m_EssenceDescriptor->SubDescriptors.push_back(m_EssenceSubDescriptor->InstanceUID);
+
+    if ( type == ASDCP::ESS_JPEG_2000_S && m_Info.LabelSetType == LS_MXF_SMPTE )
     {
-      m_HeaderSize = HeaderSize;
-      RGBAEssenceDescriptor* tmp_rgba = new RGBAEssenceDescriptor(m_Dict);
-      tmp_rgba->ComponentMaxRef = 4095;
-      tmp_rgba->ComponentMinRef = 0;
-
-      m_EssenceDescriptor = tmp_rgba;
-      m_EssenceSubDescriptor = new JPEG2000PictureSubDescriptor(m_Dict);
-      m_EssenceSubDescriptorList.push_back((InterchangeObject*)m_EssenceSubDescriptor);
-
-      GenRandomValue(m_EssenceSubDescriptor->InstanceUID);
-      m_EssenceDescriptor->SubDescriptors.push_back(m_EssenceSubDescriptor->InstanceUID);
-
-      if ( type == ASDCP::ESS_JPEG_2000_S && m_Info.LabelSetType == LS_MXF_SMPTE )
-	{
-	  InterchangeObject* StereoSubDesc = new StereoscopicPictureSubDescriptor(m_Dict);
-	  m_EssenceSubDescriptorList.push_back(StereoSubDesc);
-	  GenRandomValue(StereoSubDesc->InstanceUID);
-	  m_EssenceDescriptor->SubDescriptors.push_back(StereoSubDesc->InstanceUID);
-	}
-
-      result = m_State.Goto_INIT();
+      InterchangeObject* StereoSubDesc = new StereoscopicPictureSubDescriptor(m_Dict);
+      m_EssenceSubDescriptorList.push_back(StereoSubDesc);
+      GenRandomValue(StereoSubDesc->InstanceUID);
+      m_EssenceDescriptor->SubDescriptors.push_back(StereoSubDesc->InstanceUID);
     }
+
+    result = m_State.Goto_INIT();
+  }
 
   return result;
 }
@@ -1206,33 +1206,33 @@ lh__Writer::SetSourceStream(const PictureDescriptor& PDesc, const std::string& l
   assert(m_EssenceDescriptor);
   assert(m_EssenceSubDescriptor);
   Result_t result = JP2K_PDesc_to_MD(m_PDesc, *m_Dict,
-				     *static_cast<ASDCP::MXF::GenericPictureEssenceDescriptor*>(m_EssenceDescriptor),
-				     *m_EssenceSubDescriptor);
+                                     *static_cast<ASDCP::MXF::GenericPictureEssenceDescriptor*>(m_EssenceDescriptor),
+                                     *m_EssenceSubDescriptor);
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    if ( PDesc.StoredWidth < 2049 )
     {
-      if ( PDesc.StoredWidth < 2049 )
-	{
-	  static_cast<ASDCP::MXF::RGBAEssenceDescriptor*>(m_EssenceDescriptor)->PictureEssenceCoding.Set(m_Dict->ul(MDD_JP2KEssenceCompression_2K));
-	  m_EssenceSubDescriptor->Rsize = 3;
-	}
-      else
-	{
-	  static_cast<ASDCP::MXF::RGBAEssenceDescriptor*>(m_EssenceDescriptor)->PictureEssenceCoding.Set(m_Dict->ul(MDD_JP2KEssenceCompression_4K));
-	  m_EssenceSubDescriptor->Rsize = 4;
-	}
-
-      memcpy(m_EssenceUL, m_Dict->ul(MDD_JPEG2000Essence), SMPTE_UL_LENGTH);
-      m_EssenceUL[SMPTE_UL_LENGTH-1] = 1; // first (and only) essence container
-      result = m_State.Goto_READY();
+      static_cast<ASDCP::MXF::RGBAEssenceDescriptor*>(m_EssenceDescriptor)->PictureEssenceCoding.Set(m_Dict->ul(MDD_JP2KEssenceCompression_2K));
+      m_EssenceSubDescriptor->Rsize = 3;
     }
+    else
+    {
+      static_cast<ASDCP::MXF::RGBAEssenceDescriptor*>(m_EssenceDescriptor)->PictureEssenceCoding.Set(m_Dict->ul(MDD_JP2KEssenceCompression_4K));
+      m_EssenceSubDescriptor->Rsize = 4;
+    }
+
+    memcpy(m_EssenceUL, m_Dict->ul(MDD_JPEG2000Essence), SMPTE_UL_LENGTH);
+    m_EssenceUL[SMPTE_UL_LENGTH-1] = 1; // first (and only) essence container
+    result = m_State.Goto_READY();
+  }
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      result = WriteASDCPHeader(label, UL(m_Dict->ul(MDD_MXFGCFUFrameWrappedPictureElement)),
-				PICT_DEF_LABEL, UL(m_EssenceUL), UL(m_Dict->ul(MDD_PictureDataDef)),
-				LocalEditRate, derive_timecode_rate_from_edit_rate(m_PDesc.EditRate));
-    }
+  {
+    result = WriteASDCPHeader(label, UL(m_Dict->ul(MDD_MXFGCFUFrameWrappedPictureElement)),
+                              PICT_DEF_LABEL, UL(m_EssenceUL), UL(m_Dict->ul(MDD_PictureDataDef)),
+                              LocalEditRate, derive_timecode_rate_from_edit_rate(m_PDesc.EditRate));
+  }
 
   return result;
 }
@@ -1244,24 +1244,24 @@ lh__Writer::SetSourceStream(const PictureDescriptor& PDesc, const std::string& l
 //
 ASDCP::Result_t
 lh__Writer::WriteFrame(const JP2K::FrameBuffer& FrameBuf, bool add_index,
-		       AESEncContext* Ctx, HMACContext* HMAC)
+                       AESEncContext* Ctx, HMACContext* HMAC)
 {
   Result_t result = RESULT_OK;
 
   if ( m_State.Test_READY() )
     result = m_State.Goto_RUNNING(); // first time through
- 
+
   ui64_t StreamOffset = m_StreamOffset;
 
   if ( ASDCP_SUCCESS(result) )
     result = WriteEKLVPacket(FrameBuf, m_EssenceUL, MXF_BER_LENGTH, Ctx, HMAC);
 
   if ( ASDCP_SUCCESS(result) && add_index )
-    {  
-      IndexTableSegment::IndexEntry Entry;
-      Entry.StreamOffset = StreamOffset;
-      m_FooterPart.PushIndexEntry(Entry);
-    }
+  {
+    IndexTableSegment::IndexEntry Entry;
+    Entry.StreamOffset = StreamOffset;
+    m_FooterPart.PushIndexEntry(Entry);
+  }
 
   m_FramesWritten++;
   return result;
@@ -1312,10 +1312,10 @@ ASDCP::MXF::OP1aHeader&
 ASDCP::JP2K::MXFWriter::OP1aHeader()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_OP1aHeader);
-      return *g_OP1aHeader;
-    }
+  {
+    assert(g_OP1aHeader);
+    return *g_OP1aHeader;
+  }
 
   return m_Writer->m_HeaderPart;
 }
@@ -1327,10 +1327,10 @@ ASDCP::MXF::OPAtomIndexFooter&
 ASDCP::JP2K::MXFWriter::OPAtomIndexFooter()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_OPAtomIndexFooter);
-      return *g_OPAtomIndexFooter;
-    }
+  {
+    assert(g_OPAtomIndexFooter);
+    return *g_OPAtomIndexFooter;
+  }
 
   return m_Writer->m_FooterPart;
 }
@@ -1342,10 +1342,10 @@ ASDCP::MXF::RIP&
 ASDCP::JP2K::MXFWriter::RIP()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_RIP);
-      return *g_RIP;
-    }
+  {
+    assert(g_RIP);
+    return *g_RIP;
+  }
 
   return m_Writer->m_RIP;
 }
@@ -1354,7 +1354,7 @@ ASDCP::JP2K::MXFWriter::RIP()
 // the operation cannot be completed.
 ASDCP::Result_t
 ASDCP::JP2K::MXFWriter::OpenWrite(const std::string& filename, const WriterInfo& Info,
-				  const PictureDescriptor& PDesc, ui32_t HeaderSize)
+                                  const PictureDescriptor& PDesc, ui32_t HeaderSize)
 {
   if ( Info.LabelSetType == LS_MXF_SMPTE )
     m_Writer = new h__Writer(DefaultSMPTEDict());
@@ -1414,16 +1414,16 @@ public:
 
   //
   Result_t WriteFrame(const FrameBuffer& FrameBuf, StereoscopicPhase_t phase,
-		      AESEncContext* Ctx, HMACContext* HMAC)
+                      AESEncContext* Ctx, HMACContext* HMAC)
   {
     if ( m_NextPhase != phase )
       return RESULT_SPHASE;
 
     if ( phase == SP_LEFT )
-      {
-	m_NextPhase = SP_RIGHT;
-	return lh__Writer::WriteFrame(FrameBuf, true, Ctx, HMAC);
-      }
+    {
+      m_NextPhase = SP_RIGHT;
+      return lh__Writer::WriteFrame(FrameBuf, true, Ctx, HMAC);
+    }
 
     m_NextPhase = SP_LEFT;
     return lh__Writer::WriteFrame(FrameBuf, false, Ctx, HMAC);
@@ -1458,10 +1458,10 @@ ASDCP::MXF::OP1aHeader&
 ASDCP::JP2K::MXFSWriter::OP1aHeader()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_OP1aHeader);
-      return *g_OP1aHeader;
-    }
+  {
+    assert(g_OP1aHeader);
+    return *g_OP1aHeader;
+  }
 
   return m_Writer->m_HeaderPart;
 }
@@ -1473,10 +1473,10 @@ ASDCP::MXF::OPAtomIndexFooter&
 ASDCP::JP2K::MXFSWriter::OPAtomIndexFooter()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_OPAtomIndexFooter);
-      return *g_OPAtomIndexFooter;
-    }
+  {
+    assert(g_OPAtomIndexFooter);
+    return *g_OPAtomIndexFooter;
+  }
 
   return m_Writer->m_FooterPart;
 }
@@ -1488,10 +1488,10 @@ ASDCP::MXF::RIP&
 ASDCP::JP2K::MXFSWriter::RIP()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_RIP);
-      return *g_RIP;
-    }
+  {
+    assert(g_RIP);
+    return *g_RIP;
+  }
 
   return m_Writer->m_RIP;
 }
@@ -1500,7 +1500,7 @@ ASDCP::JP2K::MXFSWriter::RIP()
 // the operation cannot be completed.
 ASDCP::Result_t
 ASDCP::JP2K::MXFSWriter::OpenWrite(const std::string& filename, const WriterInfo& Info,
-				   const PictureDescriptor& PDesc, ui32_t HeaderSize)
+                                   const PictureDescriptor& PDesc, ui32_t HeaderSize)
 {
   if ( Info.LabelSetType == LS_MXF_SMPTE )
     m_Writer = new h__SWriter(DefaultSMPTEDict());
@@ -1513,10 +1513,10 @@ ASDCP::JP2K::MXFSWriter::OpenWrite(const std::string& filename, const WriterInfo
        && PDesc.EditRate != ASDCP::EditRate_48
        && PDesc.EditRate != ASDCP::EditRate_50
        && PDesc.EditRate != ASDCP::EditRate_60 )
-    {
-      DefaultLogSink().Error("Stereoscopic wrapping requires 24, 25, 30, 48, 50 or 60 fps input streams.\n");
-      return RESULT_FORMAT;
-    }
+  {
+    DefaultLogSink().Error("Stereoscopic wrapping requires 24, 25, 30, 48, 50 or 60 fps input streams.\n");
+    return RESULT_FORMAT;
+  }
 
   if ( PDesc.StoredWidth > 2048 )
     DefaultLogSink().Warn("Wrapping non-standard 4K stereoscopic content. I hope you know what you are doing!\n");
@@ -1526,38 +1526,38 @@ ASDCP::JP2K::MXFSWriter::OpenWrite(const std::string& filename, const WriterInfo
   Result_t result = m_Writer->OpenWrite(filename, ASDCP::ESS_JPEG_2000_S, HeaderSize);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      PictureDescriptor TmpPDesc = PDesc;
+  {
+    PictureDescriptor TmpPDesc = PDesc;
 
-      if ( PDesc.EditRate == ASDCP::EditRate_24 )
-	TmpPDesc.EditRate = ASDCP::EditRate_48;
+    if ( PDesc.EditRate == ASDCP::EditRate_24 )
+      TmpPDesc.EditRate = ASDCP::EditRate_48;
 
-      else if ( PDesc.EditRate == ASDCP::EditRate_25 )
-	TmpPDesc.EditRate = ASDCP::EditRate_50;
+    else if ( PDesc.EditRate == ASDCP::EditRate_25 )
+      TmpPDesc.EditRate = ASDCP::EditRate_50;
 
-      else if ( PDesc.EditRate == ASDCP::EditRate_30 )
-	TmpPDesc.EditRate = ASDCP::EditRate_60;
+    else if ( PDesc.EditRate == ASDCP::EditRate_30 )
+      TmpPDesc.EditRate = ASDCP::EditRate_60;
 
-      else if ( PDesc.EditRate == ASDCP::EditRate_48 )
-	TmpPDesc.EditRate = ASDCP::EditRate_96;
+    else if ( PDesc.EditRate == ASDCP::EditRate_48 )
+      TmpPDesc.EditRate = ASDCP::EditRate_96;
 
-      else if ( PDesc.EditRate == ASDCP::EditRate_50 )
-	TmpPDesc.EditRate = ASDCP::EditRate_100;
+    else if ( PDesc.EditRate == ASDCP::EditRate_50 )
+      TmpPDesc.EditRate = ASDCP::EditRate_100;
 
-      else if ( PDesc.EditRate == ASDCP::EditRate_60 )
-	TmpPDesc.EditRate = ASDCP::EditRate_120;
+    else if ( PDesc.EditRate == ASDCP::EditRate_60 )
+      TmpPDesc.EditRate = ASDCP::EditRate_120;
 
-      else if ( PDesc.EditRate == ASDCP::EditRate_96 )
-	TmpPDesc.EditRate = ASDCP::EditRate_192;
+    else if ( PDesc.EditRate == ASDCP::EditRate_96 )
+      TmpPDesc.EditRate = ASDCP::EditRate_192;
 
-      else if ( PDesc.EditRate == ASDCP::EditRate_100 )
-	TmpPDesc.EditRate = ASDCP::EditRate_200;
+    else if ( PDesc.EditRate == ASDCP::EditRate_100 )
+      TmpPDesc.EditRate = ASDCP::EditRate_200;
 
-      else if ( PDesc.EditRate == ASDCP::EditRate_120 )
-	TmpPDesc.EditRate = ASDCP::EditRate_240;
+    else if ( PDesc.EditRate == ASDCP::EditRate_120 )
+      TmpPDesc.EditRate = ASDCP::EditRate_240;
 
-      result = m_Writer->SetSourceStream(TmpPDesc, JP2K_S_PACKAGE_LABEL, PDesc.EditRate);
-    }
+    result = m_Writer->SetSourceStream(TmpPDesc, JP2K_S_PACKAGE_LABEL, PDesc.EditRate);
+  }
 
   if ( ASDCP_FAILURE(result) )
     m_Writer.release();
@@ -1585,7 +1585,7 @@ ASDCP::JP2K::MXFSWriter::WriteFrame(const SFrameBuffer& FrameBuf, AESEncContext*
 // error occurs.
 ASDCP::Result_t
 ASDCP::JP2K::MXFSWriter::WriteFrame(const FrameBuffer& FrameBuf, StereoscopicPhase_t phase,
-				    AESEncContext* Ctx, HMACContext* HMAC)
+                                    AESEncContext* Ctx, HMACContext* HMAC)
 {
   if ( m_Writer.empty() )
     return RESULT_INIT;

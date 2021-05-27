@@ -139,21 +139,21 @@ ASDCP::MPEG2::VideoDescriptorDump(const VideoDescriptor& VDesc, FILE* stream)
            BitRate: %u\n\
    ProfileAndLevel: %u\n\
  ContainerDuration: %u\n",
-	  VDesc.SampleRate.Numerator ,VDesc.SampleRate.Denominator,
-	  VDesc.FrameLayout,
-	  VDesc.StoredWidth,
-	  VDesc.StoredHeight,
-	  VDesc.AspectRatio.Numerator ,VDesc.AspectRatio.Denominator,
-	  VDesc.ComponentDepth,
-	  VDesc.HorizontalSubsampling,
-	  VDesc.VerticalSubsampling,
-	  VDesc.ColorSiting,
-	  VDesc.CodedContentType,
-	  VDesc.LowDelay,
-	  VDesc.BitRate,
-	  VDesc.ProfileAndLevel,
-	  VDesc.ContainerDuration
-	  );
+          VDesc.SampleRate.Numerator ,VDesc.SampleRate.Denominator,
+          VDesc.FrameLayout,
+          VDesc.StoredWidth,
+          VDesc.StoredHeight,
+          VDesc.AspectRatio.Numerator ,VDesc.AspectRatio.Denominator,
+          VDesc.ComponentDepth,
+          VDesc.HorizontalSubsampling,
+          VDesc.VerticalSubsampling,
+          VDesc.ColorSiting,
+          VDesc.CodedContentType,
+          VDesc.LowDelay,
+          VDesc.BitRate,
+          VDesc.ProfileAndLevel,
+          VDesc.ContainerDuration
+  );
 }
 
 //------------------------------------------------------------------------------------------
@@ -186,20 +186,20 @@ ASDCP::MPEG2::MXFReader::h__Reader::OpenRead(const std::string& filename)
   Result_t result = OpenMXFRead(filename);
 
   if( ASDCP_SUCCESS(result) )
+  {
+    InterchangeObject* Object = 0;
+
+    if ( ASDCP_SUCCESS(m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(MPEG2VideoDescriptor), &Object)) )
     {
-      InterchangeObject* Object = 0;
+      if ( Object == 0 )
+      {
+        DefaultLogSink().Error("MPEG2VideoDescriptor object not found.\n");
+        return RESULT_FORMAT;
+      }
 
-      if ( ASDCP_SUCCESS(m_HeaderPart.GetMDObjectByType(OBJ_TYPE_ARGS(MPEG2VideoDescriptor), &Object)) )
-	{
-	  if ( Object == 0 )
-	    {
-	      DefaultLogSink().Error("MPEG2VideoDescriptor object not found.\n");
-	      return RESULT_FORMAT;
-	    }
-
-	  result = MD_to_MPEG2_VDesc((MXF::MPEG2VideoDescriptor*)Object, m_VDesc);
-	}
+      result = MD_to_MPEG2_VDesc((MXF::MPEG2VideoDescriptor*)Object, m_VDesc);
     }
+  }
 
   return result;
 }
@@ -209,7 +209,7 @@ ASDCP::MPEG2::MXFReader::h__Reader::OpenRead(const std::string& filename)
 //
 ASDCP::Result_t
 ASDCP::MPEG2::MXFReader::h__Reader::ReadFrameGOPStart(ui32_t FrameNum, FrameBuffer& FrameBuf,
-						      AESDecContext* Ctx, HMACContext* HMAC)
+                                                      AESDecContext* Ctx, HMACContext* HMAC)
 {
   ui32_t KeyFrameNum;
 
@@ -236,9 +236,9 @@ ASDCP::MPEG2::MXFReader::h__Reader::FindFrameGOPStart(ui32_t FrameNum, ui32_t& K
   IndexTableSegment::IndexEntry TmpEntry;
 
   if ( ASDCP_FAILURE(m_IndexAccess.Lookup(FrameNum, TmpEntry)) )
-    {
-      return RESULT_RANGE;
-    }
+  {
+    return RESULT_RANGE;
+  }
 
   KeyFrameNum = FrameNum - TmpEntry.KeyFrameOffset;
 
@@ -256,9 +256,9 @@ ASDCP::MPEG2::MXFReader::h__Reader::FrameType(ui32_t FrameNum, FrameType_t& type
   IndexTableSegment::IndexEntry TmpEntry;
 
   if ( ASDCP_FAILURE(m_IndexAccess.Lookup(FrameNum, TmpEntry)) )
-    {
-      return RESULT_RANGE;
-    }
+  {
+    return RESULT_RANGE;
+  }
 
   type = ( (TmpEntry.Flags & 0x0f) == 3 ) ? FRAME_B : ( (TmpEntry.Flags & 0x0f) == 2 ) ? FRAME_P : FRAME_I;
   return RESULT_OK;
@@ -269,7 +269,7 @@ ASDCP::MPEG2::MXFReader::h__Reader::FrameType(ui32_t FrameNum, FrameType_t& type
 //
 ASDCP::Result_t
 ASDCP::MPEG2::MXFReader::h__Reader::ReadFrame(ui32_t FrameNum, FrameBuffer& FrameBuf,
-					      AESDecContext* Ctx, HMACContext* HMAC)
+                                              AESDecContext* Ctx, HMACContext* HMAC)
 {
   assert(m_Dict);
   if ( ! m_File.IsOpen() )
@@ -284,12 +284,12 @@ ASDCP::MPEG2::MXFReader::h__Reader::ReadFrame(ui32_t FrameNum, FrameBuffer& Fram
   m_IndexAccess.Lookup(FrameNum, TmpEntry);
 
   switch ( ( TmpEntry.Flags >> 4 ) & 0x03 )
-    {
+  {
     case 0:  FrameBuf.FrameType(FRAME_I); break;
     case 2:  FrameBuf.FrameType(FRAME_P); break;
     case 3:  FrameBuf.FrameType(FRAME_B); break;
     default: FrameBuf.FrameType(FRAME_U);
-    }
+  }
 
   FrameBuf.TemporalOffset(TmpEntry.TemporalOffset);
   FrameBuf.GOPStart(TmpEntry.Flags & 0x40 ? true : false);
@@ -309,11 +309,11 @@ ASDCP::MPEG2::FrameBuffer::Dump(FILE* stream, ui32_t dump_len) const
     stream = stderr;
 
   fprintf(stream, "Frame: %06u, %c%-2hhu, %7u bytes",
-	  m_FrameNumber, FrameTypeChar(m_FrameType), m_TemporalOffset, m_Size);
+          m_FrameNumber, FrameTypeChar(m_FrameType), m_TemporalOffset, m_Size);
 
   if ( m_GOPStart )
     fprintf(stream, " (start %s GOP)", ( m_ClosedGOP ? "closed" : "open"));
-  
+
   fputc('\n', stream);
 
   if ( dump_len > 0 )
@@ -342,10 +342,10 @@ ASDCP::MXF::OP1aHeader&
 ASDCP::MPEG2::MXFReader::OP1aHeader()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_OP1aHeader);
-      return *g_OP1aHeader;
-    }
+  {
+    assert(g_OP1aHeader);
+    return *g_OP1aHeader;
+  }
 
   return m_Reader->m_HeaderPart;
 }
@@ -357,10 +357,10 @@ ASDCP::MXF::OPAtomIndexFooter&
 ASDCP::MPEG2::MXFReader::OPAtomIndexFooter()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_OPAtomIndexFooter);
-      return *g_OPAtomIndexFooter;
-    }
+  {
+    assert(g_OPAtomIndexFooter);
+    return *g_OPAtomIndexFooter;
+  }
 
   return m_Reader->m_IndexAccess;
 }
@@ -372,10 +372,10 @@ ASDCP::MXF::RIP&
 ASDCP::MPEG2::MXFReader::RIP()
 {
   if ( m_Reader.empty() )
-    {
-      assert(g_RIP);
-      return *g_RIP;
-    }
+  {
+    assert(g_RIP);
+    return *g_RIP;
+  }
 
   return m_Reader->m_RIP;
 }
@@ -391,7 +391,7 @@ ASDCP::MPEG2::MXFReader::OpenRead(const std::string& filename) const
 //
 ASDCP::Result_t
 ASDCP::MPEG2::MXFReader::ReadFrame(ui32_t FrameNum, FrameBuffer& FrameBuf,
-				   AESDecContext* Ctx, HMACContext* HMAC) const
+                                   AESDecContext* Ctx, HMACContext* HMAC) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
     return m_Reader->ReadFrame(FrameNum, FrameBuf, Ctx, HMAC);
@@ -404,13 +404,13 @@ ASDCP::MPEG2::MXFReader::ReadFrame(ui32_t FrameNum, FrameBuffer& FrameBuf,
 ASDCP::Result_t
 ASDCP::MPEG2::MXFReader::LocateFrame(ui32_t FrameNum, Kumu::fpos_t& streamOffset, i8_t& temporalOffset, i8_t& keyFrameOffset) const
 {
-    return m_Reader->LocateFrame(FrameNum, streamOffset, temporalOffset, keyFrameOffset);
+  return m_Reader->LocateFrame(FrameNum, streamOffset, temporalOffset, keyFrameOffset);
 }
 
 //
 ASDCP::Result_t
 ASDCP::MPEG2::MXFReader::ReadFrameGOPStart(ui32_t FrameNum, FrameBuffer& FrameBuf,
-					   AESDecContext* Ctx, HMACContext* HMAC) const
+                                           AESDecContext* Ctx, HMACContext* HMAC) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
     return m_Reader->ReadFrameGOPStart(FrameNum, FrameBuf, Ctx, HMAC);
@@ -436,10 +436,10 @@ ASDCP::Result_t
 ASDCP::MPEG2::MXFReader::FillVideoDescriptor(VideoDescriptor& VDesc) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      VDesc = m_Reader->m_VDesc;
-      return RESULT_OK;
-    }
+  {
+    VDesc = m_Reader->m_VDesc;
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -451,10 +451,10 @@ ASDCP::Result_t
 ASDCP::MPEG2::MXFReader::FillWriterInfo(WriterInfo& Info) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      Info = m_Reader->m_Info;
-      return RESULT_OK;
-    }
+  {
+    Info = m_Reader->m_Info;
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -481,10 +481,10 @@ ASDCP::Result_t
 ASDCP::MPEG2::MXFReader::Close() const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      m_Reader->Close();
-      return RESULT_OK;
-    }
+  {
+    m_Reader->Close();
+    return RESULT_OK;
+  }
 
   return RESULT_INIT;
 }
@@ -537,11 +537,11 @@ ASDCP::MPEG2::MXFWriter::h__Writer::OpenWrite(const std::string& filename, ui32_
   Result_t result = m_File.OpenWrite(filename);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      m_HeaderSize = HeaderSize;
-      m_EssenceDescriptor = new MPEG2VideoDescriptor(m_Dict);
-      result = m_State.Goto_INIT();
-    }
+  {
+    m_HeaderSize = HeaderSize;
+    m_EssenceDescriptor = new MPEG2VideoDescriptor(m_Dict);
+    result = m_State.Goto_INIT();
+  }
 
   return result;
 }
@@ -558,20 +558,20 @@ ASDCP::MPEG2::MXFWriter::h__Writer::SetSourceStream(const VideoDescriptor& VDesc
   Result_t result = MPEG2_VDesc_to_MD(m_VDesc, (MPEG2VideoDescriptor*)m_EssenceDescriptor);
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      memcpy(m_EssenceUL, m_Dict->ul(MDD_MPEG2Essence), SMPTE_UL_LENGTH);
-      m_EssenceUL[SMPTE_UL_LENGTH-1] = 1; // first (and only) essence container
-      result = m_State.Goto_READY();
-    }
+  {
+    memcpy(m_EssenceUL, m_Dict->ul(MDD_MPEG2Essence), SMPTE_UL_LENGTH);
+    m_EssenceUL[SMPTE_UL_LENGTH-1] = 1; // first (and only) essence container
+    result = m_State.Goto_READY();
+  }
 
   if ( ASDCP_SUCCESS(result) )
-    {
-      m_FooterPart.SetDeltaParams(IndexTableSegment::DeltaEntry(-1, 0, 0));
+  {
+    m_FooterPart.SetDeltaParams(IndexTableSegment::DeltaEntry(-1, 0, 0));
 
-      result = WriteASDCPHeader(MPEG_PACKAGE_LABEL, UL(m_Dict->ul(MDD_MPEG2_VESWrappingFrame)), 
-				PICT_DEF_LABEL, UL(m_EssenceUL), UL(m_Dict->ul(MDD_PictureDataDef)),
-				m_VDesc.EditRate, derive_timecode_rate_from_edit_rate(m_VDesc.EditRate));
-    }
+    result = WriteASDCPHeader(MPEG_PACKAGE_LABEL, UL(m_Dict->ul(MDD_MPEG2_VESWrappingFrame)),
+                              PICT_DEF_LABEL, UL(m_EssenceUL), UL(m_Dict->ul(MDD_PictureDataDef)),
+                              m_VDesc.EditRate, derive_timecode_rate_from_edit_rate(m_VDesc.EditRate));
+  }
 
   return result;
 }
@@ -583,7 +583,7 @@ ASDCP::MPEG2::MXFWriter::h__Writer::SetSourceStream(const VideoDescriptor& VDesc
 //
 ASDCP::Result_t
 ASDCP::MPEG2::MXFWriter::h__Writer::WriteFrame(const FrameBuffer& FrameBuf, AESEncContext* Ctx,
-					       HMACContext* HMAC)
+                                               HMACContext* HMAC)
 {
   Result_t result = RESULT_OK;
 
@@ -603,20 +603,20 @@ ASDCP::MPEG2::MXFWriter::h__Writer::WriteFrame(const FrameBuffer& FrameBuf, AESE
   int Flags = 0;
 
   switch ( FrameBuf.FrameType() )
-    {
+  {
     case FRAME_I: Flags = 0x00; break;
     case FRAME_P: Flags = 0x22; break;
     case FRAME_B: Flags = 0x33; break;
-    }
+  }
 
   if ( FrameBuf.GOPStart() )
-    {
-      m_GOPOffset = 0;
-      Flags |= 0x40;
+  {
+    m_GOPOffset = 0;
+    Flags |= 0x40;
 
-      if ( FrameBuf.ClosedGOP() )
-	Flags |= 0x80;
-    }
+    if ( FrameBuf.ClosedGOP() )
+      Flags |= 0x80;
+  }
 
   // update the index manager
   Entry.TemporalOffset = - FrameBuf.TemporalOffset();
@@ -670,10 +670,10 @@ ASDCP::MXF::OP1aHeader&
 ASDCP::MPEG2::MXFWriter::OP1aHeader()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_OP1aHeader);
-      return *g_OP1aHeader;
-    }
+  {
+    assert(g_OP1aHeader);
+    return *g_OP1aHeader;
+  }
 
   return m_Writer->m_HeaderPart;
 }
@@ -685,10 +685,10 @@ ASDCP::MXF::OPAtomIndexFooter&
 ASDCP::MPEG2::MXFWriter::OPAtomIndexFooter()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_OPAtomIndexFooter);
-      return *g_OPAtomIndexFooter;
-    }
+  {
+    assert(g_OPAtomIndexFooter);
+    return *g_OPAtomIndexFooter;
+  }
 
   return m_Writer->m_FooterPart;
 }
@@ -700,10 +700,10 @@ ASDCP::MXF::RIP&
 ASDCP::MPEG2::MXFWriter::RIP()
 {
   if ( m_Writer.empty() )
-    {
-      assert(g_RIP);
-      return *g_RIP;
-    }
+  {
+    assert(g_RIP);
+    return *g_RIP;
+  }
 
   return m_Writer->m_RIP;
 }
@@ -712,7 +712,7 @@ ASDCP::MPEG2::MXFWriter::RIP()
 // the operation cannot be completed.
 ASDCP::Result_t
 ASDCP::MPEG2::MXFWriter::OpenWrite(const std::string& filename, const WriterInfo& Info,
-				   const VideoDescriptor& VDesc, ui32_t HeaderSize)
+                                   const VideoDescriptor& VDesc, ui32_t HeaderSize)
 {
   if ( Info.LabelSetType == LS_MXF_SMPTE )
     m_Writer = new h__Writer(DefaultSMPTEDict());
@@ -720,7 +720,7 @@ ASDCP::MPEG2::MXFWriter::OpenWrite(const std::string& filename, const WriterInfo
     m_Writer = new h__Writer(DefaultInteropDict());
 
   m_Writer->m_Info = Info;
-  
+
   Result_t result = m_Writer->OpenWrite(filename, HeaderSize);
 
   if ( ASDCP_SUCCESS(result) )

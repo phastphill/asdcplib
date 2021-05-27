@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    KM_prng.cpp
-    \version $Id$
-    \brief   Fortuna pseudo-random number generator
-  */
+/*! \file    KM_prng.cpp
+  \version $Id$
+  \brief   Fortuna pseudo-random number generator
+*/
 
 #include <KM_prng.h>
 #include <KM_log.h>
@@ -85,20 +85,20 @@ public:
       Result_t result = URandom.OpenRead(DEV_URANDOM);
 
       if ( KM_SUCCESS(result) )
-	{
-	  ui32_t read_count;
-	  result = URandom.Read(rng_key, RNG_KEY_SIZE, &read_count);
-	}
+      {
+        ui32_t read_count;
+        result = URandom.Read(rng_key, RNG_KEY_SIZE, &read_count);
+      }
 
       if ( KM_FAILURE(result) )
-	DefaultLogSink().Error("Error opening random device: %s\n", DEV_URANDOM);
+        DefaultLogSink().Error("Error opening random device: %s\n", DEV_URANDOM);
 
 #endif // KM_WIN32
     } // end AutoMutex context
 
     set_key(rng_key);
   }
-	
+
   //
   void
   set_key(const byte_t* key_fodder)
@@ -116,7 +116,7 @@ public:
     AES_set_encrypt_key(sha_buf, RNG_KEY_SIZE_BITS, &m_Context);
     *(ui32_t*)(m_ctr_buf + 12) = 1;
   }
-	
+
   //
   void
   fill_rand(byte_t* buf, ui32_t len)
@@ -126,18 +126,18 @@ public:
     AutoMutex Lock(m_Lock);
 
     while ( gen_count + RNG_BLOCK_SIZE <= len )
-      {
-	AES_encrypt(m_ctr_buf, buf + gen_count, &m_Context);
-	*(ui32_t*)(m_ctr_buf + 12) += 1;
-	gen_count += RNG_BLOCK_SIZE;
-      }
-			
+    {
+      AES_encrypt(m_ctr_buf, buf + gen_count, &m_Context);
+      *(ui32_t*)(m_ctr_buf + 12) += 1;
+      gen_count += RNG_BLOCK_SIZE;
+    }
+
     if ( len != gen_count ) // partial count needed?
-      {
-	byte_t tmp[RNG_BLOCK_SIZE];
-	AES_encrypt(m_ctr_buf, tmp, &m_Context);
-	memcpy(buf + gen_count, tmp, len - gen_count);
-      }
+    {
+      byte_t tmp[RNG_BLOCK_SIZE];
+      AES_encrypt(m_ctr_buf, tmp, &m_Context);
+      memcpy(buf + gen_count, tmp, len - gen_count);
+    }
   }
 };
 
@@ -166,20 +166,20 @@ Kumu::FortunaRNG::FillRandom(byte_t* buf, ui32_t len)
   const byte_t* front_of_buffer = buf;
 
   while ( len )
-    {
-      // 2^20 bytes max per seeding, use 2^19 to save
-      // room for generating reseed values
-      ui32_t gen_size = xmin(len, MAX_SEQUENCE_LEN);
-      s_RNG->fill_rand(buf, gen_size);
-      buf += gen_size;
-      len -= gen_size;
-	  
-      // re-seed the generator
-      byte_t rng_key[RNG_KEY_SIZE];
-      s_RNG->fill_rand(rng_key, RNG_KEY_SIZE);
-      s_RNG->set_key(rng_key);
+  {
+    // 2^20 bytes max per seeding, use 2^19 to save
+    // room for generating reseed values
+    ui32_t gen_size = xmin(len, MAX_SEQUENCE_LEN);
+    s_RNG->fill_rand(buf, gen_size);
+    buf += gen_size;
+    len -= gen_size;
+
+    // re-seed the generator
+    byte_t rng_key[RNG_KEY_SIZE];
+    s_RNG->fill_rand(rng_key, RNG_KEY_SIZE);
+    s_RNG->set_key(rng_key);
   }
-  
+
   return front_of_buffer;
 }
 
@@ -228,49 +228,49 @@ Kumu::Gen_FIPS_186_Value(const byte_t* key, ui32_t key_size, byte_t* out_buf, ui
   BN_exp(c_2powb, c_2, c_b, ctx1);
 
   for (;;)
-    {
-      SHA_CTX SHA;
+  {
+    SHA_CTX SHA;
 
-      // step c -- x = G(t,xkey)
-      SHA1_Init(&SHA); // set t
-      SHA1_Update(&SHA, xkey, xkey_len);
+    // step c -- x = G(t,xkey)
+    SHA1_Init(&SHA); // set t
+    SHA1_Update(&SHA, xkey, xkey_len);
 
-      ui32_t* buf_p = (ui32_t*)sha_buf;
-      *buf_p++ = KM_i32_BE(SHA.h0);
-      *buf_p++ = KM_i32_BE(SHA.h1);
-      *buf_p++ = KM_i32_BE(SHA.h2);
-      *buf_p++ = KM_i32_BE(SHA.h3);
-      *buf_p++ = KM_i32_BE(SHA.h4);
-      memcpy(out_buf, sha_buf, xmin<ui32_t>(out_buf_len, SHA_DIGEST_LENGTH));
+    ui32_t* buf_p = (ui32_t*)sha_buf;
+    *buf_p++ = KM_i32_BE(SHA.h0);
+    *buf_p++ = KM_i32_BE(SHA.h1);
+    *buf_p++ = KM_i32_BE(SHA.h2);
+    *buf_p++ = KM_i32_BE(SHA.h3);
+    *buf_p++ = KM_i32_BE(SHA.h4);
+    memcpy(out_buf, sha_buf, xmin<ui32_t>(out_buf_len, SHA_DIGEST_LENGTH));
 
-      if ( out_buf_len <= SHA_DIGEST_LENGTH )
-	break;
+    if ( out_buf_len <= SHA_DIGEST_LENGTH )
+      break;
 
-      out_buf_len -= SHA_DIGEST_LENGTH;
-      out_buf += SHA_DIGEST_LENGTH;
+    out_buf_len -= SHA_DIGEST_LENGTH;
+    out_buf += SHA_DIGEST_LENGTH;
 
-      // step d -- XKEY = (1 + XKEY + x) mod 2^b
-      BIGNUM *bn_tmp = BN_new();
-      BIGNUM *bn_xkey = BN_new();
-      BIGNUM *bn_x_n = BN_new();
-      assert(bn_tmp);
-      assert(bn_xkey);
-      assert(bn_x_n);
+    // step d -- XKEY = (1 + XKEY + x) mod 2^b
+    BIGNUM *bn_tmp = BN_new();
+    BIGNUM *bn_xkey = BN_new();
+    BIGNUM *bn_x_n = BN_new();
+    assert(bn_tmp);
+    assert(bn_xkey);
+    assert(bn_x_n);
 
-      BN_bin2bn(xkey, key_size, bn_xkey);
-      BN_bin2bn(sha_buf, SHA_DIGEST_LENGTH, bn_x_n);
-      BN_add_word(bn_xkey, 1);            // xkey += 1
-      BN_add(bn_tmp, bn_xkey, bn_x_n);       // xkey += x
-      BN_mod(bn_xkey, bn_tmp, c_2powb, ctx1);  // xkey = xkey mod (2^b)
+    BN_bin2bn(xkey, key_size, bn_xkey);
+    BN_bin2bn(sha_buf, SHA_DIGEST_LENGTH, bn_x_n);
+    BN_add_word(bn_xkey, 1);            // xkey += 1
+    BN_add(bn_tmp, bn_xkey, bn_x_n);       // xkey += x
+    BN_mod(bn_xkey, bn_tmp, c_2powb, ctx1);  // xkey = xkey mod (2^b)
 
-      memset(xkey, 0, xkey_len);
-      ui32_t bn_buf_len = BN_num_bytes(bn_xkey);
-      ui32_t idx = ( bn_buf_len < key_size ) ? key_size - bn_buf_len : 0;
-      BN_bn2bin(bn_xkey, &xkey[idx]);
-      BN_free(bn_tmp);
-      BN_free(bn_xkey);
-      BN_free(bn_x_n);
-    }
+    memset(xkey, 0, xkey_len);
+    ui32_t bn_buf_len = BN_num_bytes(bn_xkey);
+    ui32_t idx = ( bn_buf_len < key_size ) ? key_size - bn_buf_len : 0;
+    BN_bn2bin(bn_xkey, &xkey[idx]);
+    BN_free(bn_tmp);
+    BN_free(bn_xkey);
+    BN_free(bn_x_n);
+  }
 
   BN_free(c_2powb);
   BN_free(c_2);

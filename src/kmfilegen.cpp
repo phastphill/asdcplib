@@ -74,7 +74,7 @@ Copyright (c) 2005-2009 John Hurst\n\
 asdcplib may be copied only under the terms of the license found at\n\
 the top of every file in the asdcplib distribution kit.\n\n\
 Specify the -h (help) option for further information about %s\n\n",
-	  PROGRAM_NAME, Kumu::Version(), PROGRAM_NAME, PROGRAM_NAME);
+          PROGRAM_NAME, Kumu::Version(), PROGRAM_NAME, PROGRAM_NAME);
 }
 
 
@@ -130,104 +130,104 @@ public:
 
   //
   CommandOptions(int argc, const char** argv) :
-    error_flag(true), order(""), verbose_flag(false),
-    version_flag(false), help_flag(false),
-    chunk_count(0), mode(MMT_VALIDATE)
+      error_flag(true), order(""), verbose_flag(false),
+      version_flag(false), help_flag(false),
+      chunk_count(0), mode(MMT_VALIDATE)
   {
     //    order = "rand";
 
     for ( int i = 1; i < argc; i++ )
+    {
+
+      if ( (strcmp( argv[i], "-help") == 0) )
       {
-
-	if ( (strcmp( argv[i], "-help") == 0) )
-	  {
-	    help_flag = true;
-	    continue;
-	  }
-     
-	if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
-	  {
-	    switch ( argv[i][1] )
-	      {
-	      case 'c':
-		mode = MMT_CREATE;
-		TEST_EXTRA_ARG(i, 'c');
-		chunk_count = Kumu::xabs(strtol(argv[i], 0, 10));
-		break;
-		
-	      case 'V': version_flag = true; break;
-	      case 'h': help_flag = true; break;
-	      case 'v': verbose_flag = true; break;
-
-	      case 'o':
-		TEST_EXTRA_ARG(i, 'o');
-		order = argv[i];
-
-		if ( strcmp(order, "fwd" ) != 0 
-		     && strcmp(order, "rev" ) != 0
-		     && strcmp(order, "rand" ) != 0 )
-		  {
-		    fprintf(stderr, "Unexpected order token: %s, expecting fwd|rev|rand\n", order);
-		    return;
-		  }
-
-		break;
-
-	      case 'w':
-		mode = MMT_VAL_WRITE;
-		TEST_EXTRA_ARG(i, 'w');
-		write_filename = argv[i];
-		break;
-		    
-	      default:
-		fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-		return;
-	      }
-	  }
-	else
-	  {
-	    if (argv[i][0] != '-' )
-	      {
-		if ( ! filename.empty() )
-		  {
-		    fprintf(stderr, "Extra filename found: %s\n", argv[i]);
-		    return;
-		  }
-		else
-		  filename = argv[i];
-	      }
-	    else
-	      {
-		fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
-		return;
-	      }
-	  }
+        help_flag = true;
+        continue;
       }
-    
+
+      if ( argv[i][0] == '-' && isalpha(argv[i][1]) && argv[i][2] == 0 )
+      {
+        switch ( argv[i][1] )
+        {
+          case 'c':
+            mode = MMT_CREATE;
+            TEST_EXTRA_ARG(i, 'c');
+            chunk_count = Kumu::xabs(strtol(argv[i], 0, 10));
+            break;
+
+          case 'V': version_flag = true; break;
+          case 'h': help_flag = true; break;
+          case 'v': verbose_flag = true; break;
+
+          case 'o':
+            TEST_EXTRA_ARG(i, 'o');
+            order = argv[i];
+
+            if ( strcmp(order, "fwd" ) != 0
+                 && strcmp(order, "rev" ) != 0
+                 && strcmp(order, "rand" ) != 0 )
+            {
+              fprintf(stderr, "Unexpected order token: %s, expecting fwd|rev|rand\n", order);
+              return;
+            }
+
+            break;
+
+          case 'w':
+            mode = MMT_VAL_WRITE;
+            TEST_EXTRA_ARG(i, 'w');
+            write_filename = argv[i];
+            break;
+
+          default:
+            fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+            return;
+        }
+      }
+      else
+      {
+        if (argv[i][0] != '-' )
+        {
+          if ( ! filename.empty() )
+          {
+            fprintf(stderr, "Extra filename found: %s\n", argv[i]);
+            return;
+          }
+          else
+            filename = argv[i];
+        }
+        else
+        {
+          fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+          return;
+        }
+      }
+    }
+
     if ( help_flag || version_flag )
       return;
-    
+
     if ( filename.empty() )
-      {
-	fprintf(stderr, "Filename required.\n");
-	return;
-      }
-    
+    {
+      fprintf(stderr, "Filename required.\n");
+      return;
+    }
+
     if ( mode != MMT_VALIDATE && strcmp(order, "") != 0 )
-      {
-	fprintf(stderr, "-o option not valid with -c or -w options.\n");
-	return;
-      }
+    {
+      fprintf(stderr, "-o option not valid with -c or -w options.\n");
+      return;
+    }
     else
-      if ( strcmp(order, "") == 0 )
-	order = "rand";
+    if ( strcmp(order, "") == 0 )
+      order = "rand";
 
     if ( filename == write_filename )
-      {
-	fprintf(stderr, "Output and input files must be different.\n");
-	return;
-      }
-    
+    {
+      fprintf(stderr, "Output and input files must be different.\n");
+      return;
+    }
+
     error_flag = false;
   }
 };
@@ -253,7 +253,7 @@ public:
 
   inline ui32_t Nonce()     { return KM_i32_LE(m_nonce); }
   inline ui32_t WriteSize() { return ( sizeof(m_key) + sizeof(m_preamble)
-				       + sizeof(m_nonce) + sizeof(m_ctr) ); }
+                                       + sizeof(m_nonce) + sizeof(m_ctr) ); }
 
   //
   void SetupWrite(byte_t* buf)
@@ -280,11 +280,11 @@ public:
   {
     ui32_t gen_count = 0;
     while ( gen_count + RNG_BLOCK_SIZE <= buf_len )
-      {
-	AES_encrypt(m_preamble, buf + gen_count, &m_Context);
-	m_ctr = KM_i32_LE(KM_i32_LE(m_ctr) + 1);
-	gen_count += RNG_BLOCK_SIZE;
-      }
+    {
+      AES_encrypt(m_preamble, buf + gen_count, &m_Context);
+      m_ctr = KM_i32_LE(KM_i32_LE(m_ctr) + 1);
+      gen_count += RNG_BLOCK_SIZE;
+    }
   }
 };
 
@@ -305,18 +305,18 @@ CreateLargeFile(CommandOptions& Options)
   Result_t result = Writer.OpenWrite(Options.filename);
 
   while ( KM_SUCCESS(result) && write_total < Options.chunk_count )
+  {
+    if ( KM_SUCCESS(result))
     {
-      if ( KM_SUCCESS(result))
-	{
-	  CTR_Setup CTR;
-	  CTR.SetupWrite(FB.Data());
-	  CTR.FillRandom(FB.Data() + CTR.WriteSize(), Megabyte - CTR.WriteSize());
-	  result = Writer.Write(FB.RoData(), Megabyte, &write_count);
-	  assert(write_count == Megabyte);
-	  fprintf(stderr, "\r%8u ", ++write_total);
-	}
+      CTR_Setup CTR;
+      CTR.SetupWrite(FB.Data());
+      CTR.FillRandom(FB.Data() + CTR.WriteSize(), Megabyte - CTR.WriteSize());
+      result = Writer.Write(FB.RoData(), Megabyte, &write_count);
+      assert(write_count == Megabyte);
+      fprintf(stderr, "\r%8u ", ++write_total);
     }
-  
+  }
+
   fputs("\n", stderr);
 
   return result;
@@ -331,15 +331,15 @@ validate_chunk(ByteString& FB, ByteString& CB, ui32_t* nonce_value)
   CTR.SetupRead(FB.RoData());
 
   CTR.FillRandom(CB.Data() + CTR.WriteSize(),
-		 Megabyte - CTR.WriteSize());
+                 Megabyte - CTR.WriteSize());
 
   if ( memcmp(FB.RoData() + CTR.WriteSize(),
-	      CB.RoData() + CTR.WriteSize(),
-	      Megabyte - CTR.WriteSize()) != 0 )
-    {
-      fprintf(stderr, "Check data mismatched in chunk\n");
-      return RESULT_FAIL;
-    }
+              CB.RoData() + CTR.WriteSize(),
+              Megabyte - CTR.WriteSize()) != 0 )
+  {
+    fprintf(stderr, "Check data mismatched in chunk\n");
+    return RESULT_FAIL;
+  }
 
   *nonce_value = CTR.Nonce();
 
@@ -361,22 +361,22 @@ randomize_list(read_list_t* read_list, ui32_t check_total)
   static ui32_t seq = 0;
 
   for ( ui32_t j = 0; j < check_total; j++ )
-    {
-      if ( seq > 3 )
-	seq = 0;
+  {
+    if ( seq > 3 )
+      seq = 0;
 
-      if ( seq == 0 )
-	s_RNG.FillRandom((byte_t*)tmp_ints, 16);
+    if ( seq == 0 )
+      s_RNG.FillRandom((byte_t*)tmp_ints, 16);
 
-      ui32_t i = tmp_ints[seq++] % (check_total - 1);
+    ui32_t i = tmp_ints[seq++] % (check_total - 1);
 
-      if ( i == j )
-	continue;
+    if ( i == j )
+      continue;
 
-      read_list_t t = read_list[i];
-      read_list[i] = read_list[j];
-      read_list[j] = t;
-    }
+    read_list_t t = read_list[i];
+    read_list[i] = read_list[j];
+    read_list[j] = t;
+  }
 }
 
 //
@@ -405,32 +405,32 @@ ReadValidateWriteLargeFile(CommandOptions& Options)
 
   // read the first chunk and get set up
   while ( KM_SUCCESS(result) )
+  {
+    result = Reader.Read(FB.Data(), Megabyte, &read_count);
+
+    if ( KM_SUCCESS(result) )
     {
-      result = Reader.Read(FB.Data(), Megabyte, &read_count);
+      if ( read_count < Megabyte )
+      {
+        fprintf(stderr, "Read() returned short buffer: %u\n", read_count);
+        result = RESULT_FAIL;
+      }
+
+      result = validate_chunk(FB, CB, &check_total);
 
       if ( KM_SUCCESS(result) )
-	{
-	  if ( read_count < Megabyte )
-	    {
-	      fprintf(stderr, "Read() returned short buffer: %u\n", read_count);
-	      result = RESULT_FAIL;
-	    }
-
-	  result = validate_chunk(FB, CB, &check_total);
-
-	  if ( KM_SUCCESS(result) )
-	    {
-	      result = Writer.Write(FB.RoData(), Megabyte, &write_count);
-	      assert(write_count == Megabyte);
-	      fprintf(stderr, "\r%8u ", ++write_total);
-	    }
-	}
-      else if ( result == RESULT_ENDOFFILE )
-	{
-	  result = RESULT_OK;
-	  break;
-	}
+      {
+        result = Writer.Write(FB.RoData(), Megabyte, &write_count);
+        assert(write_count == Megabyte);
+        fprintf(stderr, "\r%8u ", ++write_total);
+      }
     }
+    else if ( result == RESULT_ENDOFFILE )
+    {
+      result = RESULT_OK;
+      break;
+    }
+  }
 
   fputs("\n", stderr);
   return result;
@@ -457,102 +457,102 @@ ValidateLargeFile(CommandOptions& Options)
 
   // read the first chunk and get set up
   if ( KM_SUCCESS(result) )
+  {
+    result = Reader.Read(FB.Data(), Megabyte, &read_count);
+
+    if ( read_count < Megabyte )
     {
-      result = Reader.Read(FB.Data(), Megabyte, &read_count);
-
-      if ( read_count < Megabyte )
-	{
-	  fprintf(stderr, "Read() returned short buffer: %u\n", read_count);
-	  result = RESULT_FAIL;
-	}
-      else if ( KM_SUCCESS(result) )
-	result = validate_chunk(FB, CB, &check_total);
-
-      if ( KM_SUCCESS(result) )
-	{
-	  fprintf(stderr, "Validating %u chunk%s in %s order:\n",
-		  check_total, (check_total == 1 ? "" : "s"), Options.order);
-	  assert(read_list == 0);
-	  read_list = (read_list_t*)malloc(check_total * sizeof(read_list_t));
-	  assert(read_list);
-
-	  // Set up an index to the chunks. The chunks are written
-	  // to the file in order of descending nonce value.
-	  if ( strcmp(Options.order, "fwd") == 0 )
-	    {
-	      for ( ui32_t i = 0; i < check_total; i++ )
-		{
-		  read_list[i].nonce = check_total - i;
-		  Kumu::fpos_t ofst = check_total - read_list[i].nonce;
-		  read_list[i].position = ofst * (Kumu::fpos_t)Megabyte;
-		}
-	    }
-	  else
-	    {
-	      for ( ui32_t i = 0; i < check_total; i++ )
-		{
-		  read_list[i].nonce = i + 1;
-		  Kumu::fpos_t ofst = check_total - read_list[i].nonce;
-		  read_list[i].position = ofst * (Kumu::fpos_t)Megabyte;
-		}
-
-	      if ( strcmp(Options.order, "rand") == 0 )
-		randomize_list(read_list, check_total); // this makes it random
-	    }
-	}
+      fprintf(stderr, "Read() returned short buffer: %u\n", read_count);
+      result = RESULT_FAIL;
     }
+    else if ( KM_SUCCESS(result) )
+      result = validate_chunk(FB, CB, &check_total);
+
+    if ( KM_SUCCESS(result) )
+    {
+      fprintf(stderr, "Validating %u chunk%s in %s order:\n",
+              check_total, (check_total == 1 ? "" : "s"), Options.order);
+      assert(read_list == 0);
+      read_list = (read_list_t*)malloc(check_total * sizeof(read_list_t));
+      assert(read_list);
+
+      // Set up an index to the chunks. The chunks are written
+      // to the file in order of descending nonce value.
+      if ( strcmp(Options.order, "fwd") == 0 )
+      {
+        for ( ui32_t i = 0; i < check_total; i++ )
+        {
+          read_list[i].nonce = check_total - i;
+          Kumu::fpos_t ofst = check_total - read_list[i].nonce;
+          read_list[i].position = ofst * (Kumu::fpos_t)Megabyte;
+        }
+      }
+      else
+      {
+        for ( ui32_t i = 0; i < check_total; i++ )
+        {
+          read_list[i].nonce = i + 1;
+          Kumu::fpos_t ofst = check_total - read_list[i].nonce;
+          read_list[i].position = ofst * (Kumu::fpos_t)Megabyte;
+        }
+
+        if ( strcmp(Options.order, "rand") == 0 )
+          randomize_list(read_list, check_total); // this makes it random
+      }
+    }
+  }
 
   if ( KM_SUCCESS(result) )
+  {
+    assert(read_list);
+    ui32_t nonce = 0;
+
+    for ( read_list_i = 0;
+          read_list_i < check_total && KM_SUCCESS(result);
+          read_list_i++ )
     {
-      assert(read_list);
-      ui32_t nonce = 0;
+      fprintf(stderr, "\r%8u [%8u] ", read_list_i+1, read_list[read_list_i].nonce);
+      result = Reader.Seek(read_list[read_list_i].position);
 
-      for ( read_list_i = 0;
-	    read_list_i < check_total && KM_SUCCESS(result);
-	    read_list_i++ )
-	{
-	  fprintf(stderr, "\r%8u [%8u] ", read_list_i+1, read_list[read_list_i].nonce);
-	  result = Reader.Seek(read_list[read_list_i].position);
+      if ( KM_SUCCESS(result) )
+        result = Reader.Read(FB.Data(), Megabyte, &read_count);
 
-	  if ( KM_SUCCESS(result) )
-	    result = Reader.Read(FB.Data(), Megabyte, &read_count);
+      if ( result == RESULT_ENDOFFILE )
+        break;
 
-	  if ( result == RESULT_ENDOFFILE )
-	    break;
+      else if ( read_count < Megabyte )
+      {
+        fprintf(stderr, "Read() returned short buffer: %u\n", read_count);
+        result = RESULT_FAIL;
+      }
+      else if ( KM_SUCCESS(result) )
+      {
+        result = validate_chunk(FB, CB, &nonce);
 
-	  else if ( read_count < Megabyte )
-	    {
-	      fprintf(stderr, "Read() returned short buffer: %u\n", read_count);
-	      result = RESULT_FAIL;
-	    }
-	  else if ( KM_SUCCESS(result) )
-	    {
-	      result = validate_chunk(FB, CB, &nonce);
-	      
-	      if ( nonce != read_list[read_list_i].nonce )
-		{
-		  fprintf(stderr, "Nonce mismatch: expecting %u, got %u\n",
-			  nonce, read_list[read_list_i].nonce);
+        if ( nonce != read_list[read_list_i].nonce )
+        {
+          fprintf(stderr, "Nonce mismatch: expecting %u, got %u\n",
+                  nonce, read_list[read_list_i].nonce);
 
-		  return RESULT_FAIL;
-		}
-	    }
-	}
+          return RESULT_FAIL;
+        }
+      }
     }
+  }
 
   fputs("\n", stderr);
 
   if ( result == RESULT_ENDOFFILE )
+  {
+    if ( check_total == read_list_i )
+      result = RESULT_OK;
+    else
     {
-      if ( check_total == read_list_i )
-	result = RESULT_OK;
-      else
-	{
-	  fprintf(stderr, "Unexpected chunk count, got %u, wanted %u\n",
-		  read_list_i, check_total);
-	  result = RESULT_FAIL;
-	}
+      fprintf(stderr, "Unexpected chunk count, got %u, wanted %u\n",
+              read_list_i, check_total);
+      result = RESULT_FAIL;
     }
+  }
 
   return result;
 }
@@ -574,13 +574,13 @@ main(int argc, const char **argv)
     return 0;
 
   if ( Options.error_flag )
-    {
-      fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
-      return 3;
-    }
+  {
+    fprintf(stderr, "There was a problem. Type %s -h for help.\n", PROGRAM_NAME);
+    return 3;
+  }
 
   switch ( Options.mode )
-    {
+  {
 
     case MMT_CREATE:
       result = CreateLargeFile(Options);
@@ -593,20 +593,20 @@ main(int argc, const char **argv)
     case MMT_VAL_WRITE:
       result = ReadValidateWriteLargeFile(Options);
       break;
-    }
+  }
 
   if ( result != RESULT_OK )
+  {
+    fputs("Program stopped on error.\n", stderr);
+
+    if ( result != RESULT_FAIL )
     {
-      fputs("Program stopped on error.\n", stderr);
-
-      if ( result != RESULT_FAIL )
-	{
-	  fputs(result.Label(), stderr);
-	  fputc('\n', stderr);
-	}
-
-      return 1;
+      fputs(result.Label(), stderr);
+      fputc('\n', stderr);
     }
+
+    return 1;
+  }
 
   return 0;
 }

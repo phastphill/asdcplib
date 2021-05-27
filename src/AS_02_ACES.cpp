@@ -217,12 +217,12 @@ AS_02::Result_t AS_02::ACES::ACES_PDesc_to_MD(const PictureDescriptor &PDesc, co
     EssenceDescriptor.PixelLayout = RGBALayout(ACESPixelLayoutMonoscopicWAlpha);
   }
   else if(PDesc.Channels.size() == 6 && PDesc.Channels.at(0).name == "B" && PDesc.Channels.at(1).name == "G" && PDesc.Channels.at(2).name == "R" &&
-                            PDesc.Channels.at(3).name == "left.B" && PDesc.Channels.at(4).name == "left.G" && PDesc.Channels.at(5).name == "left.R")
+          PDesc.Channels.at(3).name == "left.B" && PDesc.Channels.at(4).name == "left.G" && PDesc.Channels.at(5).name == "left.R")
   {
     return RESULT_NOTIMPL;
   }
   else if(PDesc.Channels.size() == 8 && PDesc.Channels.at(0).name == "A" && PDesc.Channels.at(1).name == "B" && PDesc.Channels.at(2).name == "G" && PDesc.Channels.at(3).name == "R" &&
-                            PDesc.Channels.at(4).name == "left.A" && PDesc.Channels.at(5).name == "left.B" && PDesc.Channels.at(6).name == "left.G" && PDesc.Channels.at(7).name == "left.R")
+          PDesc.Channels.at(4).name == "left.A" && PDesc.Channels.at(5).name == "left.B" && PDesc.Channels.at(6).name == "left.G" && PDesc.Channels.at(7).name == "left.R")
   {
     return RESULT_NOTIMPL;
   }
@@ -292,7 +292,7 @@ class AS_02::ACES::MXFReader::h__Reader : public AS_02::h__AS02Reader
 
 public:
   h__Reader(const Dictionary& d) :
-    AS_02::h__AS02Reader(d), m_EssenceDescriptor(NULL) {}
+      AS_02::h__AS02Reader(d), m_EssenceDescriptor(NULL) {}
 
   AS_02::ACES::ResourceList_t m_Anc_Resources;
 
@@ -413,7 +413,7 @@ AS_02::Result_t AS_02::ACES::MXFReader::h__Reader::ReadAncillaryResource(const K
         return RESULT_FORMAT;
       }
 
-        // read the essence packet
+      // read the essence packet
       assert(m_Dict);
       if(ASDCP_SUCCESS(result))
         result = ReadEKLVPacket(0, sequence, FrameBuf, m_Dict->ul(MDD_GenericStream_DataElement), Ctx, HMAC);
@@ -438,13 +438,13 @@ AS_02::Result_t AS_02::ACES::MXFReader::h__Reader::FillAncillaryResourceDescript
     InterchangeObject* tmp_iobj = NULL;
     result = m_HeaderPart.GetMDObjectByID(*sdi, &tmp_iobj);
     if (!tmp_iobj->IsA(m_Dict->ul(MDD_TargetFrameSubDescriptor)))
-        continue;
+      continue;
     DescObject = static_cast<TargetFrameSubDescriptor*>(tmp_iobj);
     if(KM_SUCCESS(result) && DescObject)
     {
-      AncillaryResourceDescriptor TmpResource; 
+      AncillaryResourceDescriptor TmpResource;
       memcpy(TmpResource.ResourceID, DescObject->TargetFrameAncillaryResourceID.Value(), UUIDlen);
-      
+
       if(DescObject->MediaType.find("image/png") != std::string::npos)
       {
         TmpResource.Type = AS_02::ACES::MT_PNG;
@@ -475,9 +475,9 @@ void
 AS_02::ACES::MXFReader::DumpHeaderMetadata(FILE* stream) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      m_Reader->m_HeaderPart.Dump(stream);
-    }
+  {
+    m_Reader->m_HeaderPart.Dump(stream);
+  }
 }
 
 
@@ -486,9 +486,9 @@ void
 AS_02::ACES::MXFReader::DumpIndex(FILE* stream) const
 {
   if ( m_Reader && m_Reader->m_File.IsOpen() )
-    {
-      m_Reader->m_IndexAccess.Dump(stream);
-    }
+  {
+    m_Reader->m_IndexAccess.Dump(stream);
+  }
 }
 
 
@@ -523,8 +523,8 @@ public:
 // Open the file for writing. The file must not exist. Returns error if
 // the operation cannot be completed.
 AS_02::Result_t AS_02::ACES::MXFWriter::h__Writer::OpenWrite(const std::string &filename, ASDCP::MXF::FileDescriptor *essence_descriptor,
-       ASDCP::MXF::InterchangeObject_list_t& essence_sub_descriptor_list,
-    const AS_02::IndexStrategy_t &IndexStrategy, const ui32_t &PartitionSpace_sec, const ui32_t &HeaderSize)
+                                                             ASDCP::MXF::InterchangeObject_list_t& essence_sub_descriptor_list,
+                                                             const AS_02::IndexStrategy_t &IndexStrategy, const ui32_t &PartitionSpace_sec, const ui32_t &HeaderSize)
 {
 
   if(!m_State.Test_BEGIN())
@@ -560,13 +560,13 @@ AS_02::Result_t AS_02::ACES::MXFWriter::h__Writer::OpenWrite(const std::string &
     for ( i = essence_sub_descriptor_list.begin(); i != essence_sub_descriptor_list.end(); ++i )
     {
       if ( ( (*i)->GetUL() != UL(m_Dict->ul(MDD_ACESPictureSubDescriptor)) )
-               && ( (*i)->GetUL() != UL(m_Dict->ul(MDD_TargetFrameSubDescriptor)) )
-               && ( (*i)->GetUL() != UL(m_Dict->ul(MDD_ContainerConstraintsSubDescriptor)) )
-			  )
-        {
-          DefaultLogSink().Error("Essence sub-descriptor is not an ACESPictureSubDescriptor or a TargetFrameSubDescriptor.\n");
-          (*i)->Dump();
-        }
+           && ( (*i)->GetUL() != UL(m_Dict->ul(MDD_TargetFrameSubDescriptor)) )
+           && ( (*i)->GetUL() != UL(m_Dict->ul(MDD_ContainerConstraintsSubDescriptor)) )
+          )
+      {
+        DefaultLogSink().Error("Essence sub-descriptor is not an ACESPictureSubDescriptor or a TargetFrameSubDescriptor.\n");
+        (*i)->Dump();
+      }
 
       m_EssenceSubDescriptorList.push_back(*i);
       if (!(*i)->InstanceUID.HasValue()) GenRandomValue((*i)->InstanceUID);
@@ -698,8 +698,8 @@ AS_02::Result_t AS_02::ACES::MXFWriter::h__Writer::WriteAncillaryResource(const 
     ui64_t this_stream_offset = m_StreamOffset; // m_StreamOffset will be changed by the call to Write_EKLV_Packet
 
     result = Write_EKLV_Packet(m_File, *m_Dict, m_HeaderPart, m_Info, m_CtFrameBuf, m_FramesWritten,
-			       m_StreamOffset, FrameBuf, GenericStream_DataElement.Value(),
-			       MXF_BER_LENGTH, Ctx, HMAC);
+                               m_StreamOffset, FrameBuf, GenericStream_DataElement.Value(),
+                               MXF_BER_LENGTH, Ctx, HMAC);
   }
   return result;
 }
@@ -737,9 +737,9 @@ ASDCP::MXF::RIP& AS_02::ACES::MXFWriter::RIP()
 }
 
 AS_02::Result_t AS_02::ACES::MXFWriter::OpenWrite(const std::string &filename, const ASDCP::WriterInfo &Info,
-    ASDCP::MXF::FileDescriptor *essence_descriptor,
-    ASDCP::MXF::InterchangeObject_list_t& essence_sub_descriptor_list,
-    const ASDCP::Rational &edit_rate, const AS_02::ACES::ResourceList_t &ancillary_resources /*= ResourceList_t()*/, const ui32_t &header_size /*= 16384*/, const AS_02::IndexStrategy_t &strategy /*= IS_FOLLOW*/, const ui32_t &partition_space /*= 10*/)
+                                                  ASDCP::MXF::FileDescriptor *essence_descriptor,
+                                                  ASDCP::MXF::InterchangeObject_list_t& essence_sub_descriptor_list,
+                                                  const ASDCP::Rational &edit_rate, const AS_02::ACES::ResourceList_t &ancillary_resources /*= ResourceList_t()*/, const ui32_t &header_size /*= 16384*/, const AS_02::IndexStrategy_t &strategy /*= IS_FOLLOW*/, const ui32_t &partition_space /*= 10*/)
 {
 
   if(essence_descriptor == NULL)
@@ -875,7 +875,7 @@ AS_02::Result_t AS_02::ACES::MXFReader::ReadAncillaryResource(const Kumu::UUID &
 
   if(m_Reader && m_Reader->m_File.IsOpen())
     return m_Reader->ReadAncillaryResource(uuid, FrameBuf, Ctx, HMAC);
-  
+
   return RESULT_INIT;
 }
 

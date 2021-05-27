@@ -35,9 +35,9 @@ const ui32_t kl_length = ASDCP::SMPTE_UL_LENGTH + ASDCP::MXF_BER_LENGTH;
 
 //
 ASDCP::MXF::IndexTableSegment::IndexTableSegment(const Dictionary*& d) :
-  InterchangeObject(d), m_Dict(d), RtFileOffset(0), RtEntryOffset(0),
-  IndexStartPosition(0), IndexDuration(0), EditUnitByteCount(0),
-  IndexSID(129), BodySID(1), SliceCount(0), PosTableCount(0)
+    InterchangeObject(d), m_Dict(d), RtFileOffset(0), RtEntryOffset(0),
+    IndexStartPosition(0), IndexDuration(0), EditUnitByteCount(0),
+    IndexSID(129), BodySID(1), SliceCount(0), PosTableCount(0)
 {
   assert(m_Dict);
   m_UL = m_Dict->ul(MDD_IndexTableSegment);
@@ -81,39 +81,39 @@ ASDCP::MXF::IndexTableSegment::InitFromTLVSet(TLVReader& TLVSet)
   if ( ASDCP_SUCCESS(result) ) result = TLVSet.ReadObject(OBJ_READ_ARGS(IndexTableSegment, DeltaEntryArray));
 
   if ( ASDCP_SUCCESS(result) )
+  {
+    bool rc = TLVSet.FindTL(m_Dict->Type(MDD_IndexTableSegment_IndexEntryArray));
+
+    if ( rc )
     {
-      bool rc = TLVSet.FindTL(m_Dict->Type(MDD_IndexTableSegment_IndexEntryArray));
+      ui32_t item_count, item_size;
+      ui32_t const decoder_item_size = IndexEntryArray.ItemSize();
 
-      if ( rc )
-	{
-	  ui32_t item_count, item_size;
-	  ui32_t const decoder_item_size = IndexEntryArray.ItemSize();
+      if ( TLVSet.ReadUi32BE(&item_count) )
+      {
+        if ( TLVSet.ReadUi32BE(&item_size) )
+        {
+          for ( ui32_t i = 0; i < item_count && rc; ++i )
+          {
+            IndexEntry tmp_item;
+            rc = tmp_item.Unarchive(&TLVSet);
 
-	  if ( TLVSet.ReadUi32BE(&item_count) )
-	    {
-	      if ( TLVSet.ReadUi32BE(&item_size) )
-		{
-		  for ( ui32_t i = 0; i < item_count && rc; ++i )
-		    {
-		      IndexEntry tmp_item;
-		      rc = tmp_item.Unarchive(&TLVSet);
+            if ( rc )
+            {
+              IndexEntryArray.push_back(tmp_item);
 
-		      if ( rc )
-			{
-			  IndexEntryArray.push_back(tmp_item);
-
-			  if ( decoder_item_size < item_size )
-			    {
-			      TLVSet.SkipOffset(item_size - decoder_item_size);
-			    }
-			}
-		    }
-		}
-	    }
-	}
-
-      result = rc ? RESULT_OK : RESULT_FALSE;
+              if ( decoder_item_size < item_size )
+              {
+                TLVSet.SkipOffset(item_size - decoder_item_size);
+              }
+            }
+          }
+        }
+      }
     }
+
+    result = rc ? RESULT_OK : RESULT_FALSE;
+  }
 
   return result;
 }
@@ -172,18 +172,18 @@ ASDCP::MXF::IndexTableSegment::Dump(FILE* stream)
   fprintf(stream, "  DeltaEntryArray:\n");  DeltaEntryArray.Dump(stream);
 
   if ( IndexEntryArray.empty() )
-    {
-      fprintf(stream, "  IndexEntryArray: NO ENTRIES\n");
-    }
+  {
+    fprintf(stream, "  IndexEntryArray: NO ENTRIES\n");
+  }
   else if ( IndexEntryArray.size() < 1000 )
-    {
-      fprintf(stream, "  IndexEntryArray:\n");
-      IndexEntryArray.Dump(stream);
-    }
+  {
+    fprintf(stream, "  IndexEntryArray:\n");
+    IndexEntryArray.Dump(stream);
+  }
   else
-    {
-      fprintf(stream, "  IndexEntryArray: %zu entries\n", IndexEntryArray.size());
-    }
+  {
+    fprintf(stream, "  IndexEntryArray: %zu entries\n", IndexEntryArray.size());
+  }
 }
 
 //------------------------------------------------------------------------------------------
@@ -247,8 +247,8 @@ ASDCP::MXF::IndexTableSegment::IndexEntry::EncodeString(char* str_buf, ui32_t bu
   txt_flags[5] = 0;
 
   snprintf(str_buf, buf_len, "%3i %-3hhu %s %s",
-	   TemporalOffset, KeyFrameOffset, txt_flags,
-	   i64sz(StreamOffset, intbuf));
+           TemporalOffset, KeyFrameOffset, txt_flags,
+           i64sz(StreamOffset, intbuf));
 
   return str_buf;
 }

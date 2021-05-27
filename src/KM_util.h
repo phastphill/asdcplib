@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    KM_util.h
-    \version $Id$
-    \brief   Utility functions
-  */
+/*! \file    KM_util.h
+  \version $Id$
+  \brief   Utility functions
+*/
 
 #ifndef _KM_UTIL_H_
 #define _KM_UTIL_H_

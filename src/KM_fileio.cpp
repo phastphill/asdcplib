@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    KM_fileio.cpp
-    \version $Id$
-    \brief   portable file i/o
-  */
+/*! \file    KM_fileio.cpp
+  \version $Id$
+  \brief   portable file i/o
+*/
 
 #include <KM_fileio.h>
 #include <KM_log.h>
@@ -157,10 +157,10 @@ Kumu::PathIsFile(const std::string& pathname)
   fstat_t info;
 
   if ( KM_SUCCESS(do_stat(pathname.c_str(), &info)) )
-    {
-      if ( info.st_mode & ( S_IFREG|S_IFLNK ) )
-        return true;
-    }
+  {
+    if ( info.st_mode & ( S_IFREG|S_IFLNK ) )
+      return true;
+  }
 
   return false;
 }
@@ -176,10 +176,10 @@ Kumu::PathIsDirectory(const std::string& pathname)
   fstat_t info;
 
   if ( KM_SUCCESS(do_stat(pathname.c_str(), &info)) )
-    {
-      if ( info.st_mode & S_IFDIR )
-        return true;
-    }
+  {
+    if ( info.st_mode & S_IFDIR )
+      return true;
+  }
 
   return false;
 }
@@ -194,10 +194,10 @@ Kumu::FileSize(const std::string& pathname)
   fstat_t info;
 
   if ( KM_SUCCESS(do_stat(pathname.c_str(), &info)) )
-    {
-      if ( info.st_mode & ( S_IFREG|S_IFLNK ) )
-        return(info.st_size);
-    }
+  {
+    if ( info.st_mode & ( S_IFREG|S_IFLNK ) )
+      return(info.st_size);
+  }
 
   return 0;
 }
@@ -208,19 +208,19 @@ make_canonical_list(const PathCompList_t& in_list, PathCompList_t& out_list)
 {
   PathCompList_t::const_iterator i;
   for ( i = in_list.begin(); i != in_list.end(); ++i )
+  {
+    if ( *i == ".." )
     {
-      if ( *i == ".." )
-	{
-	  if ( ! out_list.empty() )
-	    {
-	      out_list.pop_back();
-	    }
-	}
-      else if ( *i != "." )
-	{
-	  out_list.push_back(*i);
-	}
+      if ( ! out_list.empty() )
+      {
+        out_list.pop_back();
+      }
     }
+    else if ( *i != "." )
+    {
+      out_list.push_back(*i);
+    }
+  }
 }
 
 //
@@ -255,12 +255,12 @@ Kumu::PathToComponents(const std::string& path, PathCompList_t& component_list, 
   PathCompList_t::const_iterator i;
 
   for ( i = tmp_list.begin(); i != tmp_list.end(); ++i )
+  {
+    if ( ! i->empty() )
     {
-      if ( ! i->empty() )
-	{
-	  component_list.push_back(*i);
-	}
+      component_list.push_back(*i);
     }
+  }
 
   return component_list;
 }
@@ -290,12 +290,12 @@ Kumu::ComponentsToAbsolutePath(const PathCompList_t& CList, char separator)
   if ( CList.empty() )
     out_path = separator;
   else
-    {
-      PathCompList_t::const_iterator ci;
+  {
+    PathCompList_t::const_iterator ci;
 
-      for ( ci = CList.begin(); ci != CList.end(); ci++ )
-	out_path += separator + *ci;
-    }
+    for ( ci = CList.begin(); ci != CList.end(); ci++ )
+      out_path += separator + *ci;
+  }
 
   return out_path;
 }
@@ -329,10 +329,10 @@ Kumu::PathCwd()
 {
   char cwd_buf [MaxFilePath];
   if ( _getcwd(cwd_buf, MaxFilePath) == 0 )
-    {
-      DefaultLogSink().Error("Error retrieving current working directory.");
-      return "";
-    }
+  {
+    DefaultLogSink().Error("Error retrieving current working directory.");
+    return "";
+  }
 
   return cwd_buf;
 }
@@ -342,11 +342,11 @@ std::string
 Kumu::PathMakeAbsolute(const std::string& Path, char separator)
 {
   if ( Path.empty() )
-    {
-      std::string tmpstr;
-      tmpstr = separator;
-      return tmpstr;
-    }
+  {
+    std::string tmpstr;
+    tmpstr = separator;
+    return tmpstr;
+  }
 
   if ( PathIsAbsolute(Path, separator) )
     return PathMakeCanonical(Path);
@@ -407,7 +407,7 @@ std::string
 Kumu::PathGetExtension(const std::string& Path)
 {
   std::string Basename = PathBasename(Path);
-  const char* p = strrchr(Basename.c_str(), '.'); 
+  const char* p = strrchr(Basename.c_str(), '.');
 
   if ( p++ == 0 )
     return "";
@@ -420,7 +420,7 @@ std::string
 Kumu::PathSetExtension(const std::string& Path, const std::string& Extension) // empty extension removes
 {
   std::string Basename = PathBasename(Path);
-  const char* p = strrchr(Basename.c_str(), '.'); 
+  const char* p = strrchr(Basename.c_str(), '.');
 
   if ( p != 0 )
     Basename = Basename.substr(0, p - Basename.c_str());
@@ -448,7 +448,7 @@ Kumu::PathJoin(const std::string& Path1, const std::string& Path2, const std::st
 //
 std::string
 Kumu::PathJoin(const std::string& Path1, const std::string& Path2,
-	       const std::string& Path3, const std::string& Path4, char separator)
+               const std::string& Path3, const std::string& Path4, char separator)
 {
   return Path1 + separator + Path2 + separator + Path3 + separator + Path4;
 }
@@ -465,41 +465,41 @@ Kumu::PathResolveLinks(const std::string& link_path, std::string& resolved_path,
   char link_buf[MaxFilePath];
 
   for ( i = in_list.begin(); i != in_list.end(); ++i )
+  {
+    assert ( *i != ".." && *i != "." );
+    out_list.push_back(*i);
+
+    for (;;)
     {
-      assert ( *i != ".." && *i != "." );
-      out_list.push_back(*i);
+      std::string next_link = ComponentsToAbsolutePath(out_list, separator);
+      ssize_t link_size = readlink(next_link.c_str(), link_buf, MaxFilePath);
 
-      for (;;)
-	{
-	  std::string next_link = ComponentsToAbsolutePath(out_list, separator);
-	  ssize_t link_size = readlink(next_link.c_str(), link_buf, MaxFilePath);
+      if ( link_size == -1 )
+      {
+        if ( errno == EINVAL )
+          break;
 
-	  if ( link_size == -1 )
-	    {
-	      if ( errno == EINVAL )
-		break;
+        DefaultLogSink().Error("%s: readlink: %s\n", next_link.c_str(), strerror(errno));
+        return false;
+      }
 
-	      DefaultLogSink().Error("%s: readlink: %s\n", next_link.c_str(), strerror(errno));
-	      return false;
-	    }
-	  
-	  assert(link_size < MaxFilePath);
-	  link_buf[link_size] = 0;
-	  std::string tmp_path;
-	  out_list.clear();
+      assert(link_size < MaxFilePath);
+      link_buf[link_size] = 0;
+      std::string tmp_path;
+      out_list.clear();
 
-	  if ( PathIsAbsolute(link_buf) )
-	    {
-	      tmp_path = link_buf;
-	    }
-	  else
-	    {
-	      tmp_path = PathJoin(PathDirname(next_link), link_buf);
-	    }
+      if ( PathIsAbsolute(link_buf) )
+      {
+        tmp_path = link_buf;
+      }
+      else
+      {
+        tmp_path = PathJoin(PathDirname(next_link), link_buf);
+      }
 
-	  PathToComponents(PathMakeCanonical(tmp_path), out_list, separator);
-	}
+      PathToComponents(PathMakeCanonical(tmp_path), out_list, separator);
     }
+  }
 
   resolved_path = ComponentsToAbsolutePath(out_list, separator);
   return true;
@@ -519,16 +519,16 @@ Kumu::PathResolveLinks(const std::string& link_path, std::string& resolved_path,
 //
 Kumu::PathList_t&
 Kumu::FindInPaths(const IPathMatch& Pattern, const Kumu::PathList_t& SearchPaths,
-		  Kumu::PathList_t& FoundPaths, bool one_shot, char separator)
+                  Kumu::PathList_t& FoundPaths, bool one_shot, char separator)
 {
   PathList_t::const_iterator si;
   for ( si = SearchPaths.begin(); si != SearchPaths.end(); si++ )
-    {
-      FindInPath(Pattern, *si, FoundPaths, one_shot, separator);
+  {
+    FindInPath(Pattern, *si, FoundPaths, one_shot, separator);
 
-      if ( one_shot && ! FoundPaths.empty() )
-	break;
-    }
+    if ( one_shot && ! FoundPaths.empty() )
+      break;
+  }
 
   return FoundPaths;
 }
@@ -536,29 +536,29 @@ Kumu::FindInPaths(const IPathMatch& Pattern, const Kumu::PathList_t& SearchPaths
 //
 Kumu::PathList_t&
 Kumu::FindInPath(const IPathMatch& Pattern, const std::string& SearchDir,
-		  Kumu::PathList_t& FoundPaths, bool one_shot, char separator)
+                 Kumu::PathList_t& FoundPaths, bool one_shot, char separator)
 {
   char name_buf[MaxFilePath];
   DirScanner Dir;
 
   if ( KM_SUCCESS(Dir.Open(SearchDir.c_str())) )
+  {
+    while ( KM_SUCCESS(Dir.GetNext(name_buf)) )
     {
-      while ( KM_SUCCESS(Dir.GetNext(name_buf)) )
-	{
-	  if ( name_buf[0] == '.' ) continue; // no hidden files
-	  std::string tmp_path = SearchDir + separator + name_buf;
+      if ( name_buf[0] == '.' ) continue; // no hidden files
+      std::string tmp_path = SearchDir + separator + name_buf;
 
-	  if ( PathIsDirectory(tmp_path.c_str()) )
-	    FindInPath(Pattern, tmp_path, FoundPaths, one_shot, separator);
-	  
-	  else if ( Pattern.Match(name_buf) )
-	    {
-	      FoundPaths.push_back(SearchDir + separator + name_buf);
-	      if ( one_shot )
-		break;
-	    }
-	}
+      if ( PathIsDirectory(tmp_path.c_str()) )
+        FindInPath(Pattern, tmp_path, FoundPaths, one_shot, separator);
+
+      else if ( Pattern.Match(name_buf) )
+      {
+        FoundPaths.push_back(SearchDir + separator + name_buf);
+        if ( one_shot )
+          break;
+      }
     }
+  }
 
   return FoundPaths;
 }
@@ -572,12 +572,12 @@ Kumu::PathMatchRegex::PathMatchRegex(const std::string& s)
   int result = regcomp(&m_regex, s.c_str(), REG_NOSUB); // (REG_EXTENDED|REG_NOSUB|REG_NEWLINE));
 
   if ( result )
-    {
-      char buf[128];
-      regerror(result, &m_regex, buf, 128);
-      DefaultLogSink().Error("PathMatchRegex: %s\n", buf);
-      regfree(&m_regex);
-    }
+  {
+    char buf[128];
+    regerror(result, &m_regex, buf, 128);
+    DefaultLogSink().Error("PathMatchRegex: %s\n", buf);
+    regfree(&m_regex);
+  }
 }
 
 Kumu::PathMatchRegex::PathMatchRegex(const PathMatchRegex& rhs) : IPathMatch() {
@@ -601,26 +601,26 @@ Kumu::PathMatchGlob::PathMatchGlob(const std::string& glob)
   std::string regex; // convert glob to regex
 
   for ( const char* p = glob.c_str(); *p != 0; p++ )
+  {
+    switch (*p)
     {
-      switch (*p)
-	{
-	case '.':  regex += "\\.";  break;
-	case '*':  regex += ".*";   break;
-	case '?':  regex += ".?";   break;
-	default:   regex += *p;
-	}
+      case '.':  regex += "\\.";  break;
+      case '*':  regex += ".*";   break;
+      case '?':  regex += ".?";   break;
+      default:   regex += *p;
     }
+  }
   regex += '$';
 
   int result = regcomp(&m_regex, regex.c_str(), REG_NOSUB);
 
   if ( result )
-    {
-      char buf[128];
-      regerror(result, &m_regex, buf, 128);
-      DefaultLogSink().Error("PathMatchRegex: %s\n", buf);
-      regfree(&m_regex);
-    }
+  {
+    char buf[128];
+    regerror(result, &m_regex, buf, 128);
+    DefaultLogSink().Error("PathMatchRegex: %s\n", buf);
+    regfree(&m_regex);
+  }
 }
 
 Kumu::PathMatchGlob::PathMatchGlob(const PathMatchGlob& rhs) : IPathMatch() {
@@ -690,9 +690,9 @@ Kumu::GetExecutablePath(const std::string& default_path)
 #endif
 
   if ( success )
-    {
-      return Kumu::PathMakeCanonical(path);
-    }
+  {
+    return Kumu::PathMakeCanonical(path);
+  }
 
   return default_path;
 }
@@ -719,17 +719,17 @@ Kumu::fsize_t
 Kumu::FileReader::Size() const
 {
 #ifdef KM_WIN32
-    LARGE_INTEGER size;
+  LARGE_INTEGER size;
     GetFileSizeEx(m_Handle, &size);
     return size.QuadPart;
 #else
   fstat_t info;
 
   if ( KM_SUCCESS(do_fstat(m_Handle, &info)) )
-    {
-      if ( info.st_mode & ( S_IFREG|S_IFLNK ) )
-        return(info.st_size);
-    }
+  {
+    if ( info.st_mode & ( S_IFREG|S_IFLNK ) )
+      return(info.st_size);
+  }
 #endif
 
   return 0;
@@ -749,11 +749,11 @@ Kumu::FileWriter::Writev(const byte_t* buf, ui32_t buf_len)
   KM_TEST_NULL_L(buf);
 
   if ( iov->m_Count >= IOVecMaxEntries )
-    {
-      DefaultLogSink().Error("The iovec is full! Only %u entries allowed before a flush.\n",
-			     IOVecMaxEntries);
-      return RESULT_WRITEFAIL;
-    }
+  {
+    DefaultLogSink().Error("The iovec is full! Only %u entries allowed before a flush.\n",
+                           IOVecMaxEntries);
+    return RESULT_WRITEFAIL;
+  }
 
   iov->m_iovec[iov->m_Count].iov_base = (char*)buf; // stupid iovec uses char*
   iov->m_iovec[iov->m_Count].iov_len = buf_len;
@@ -1152,10 +1152,10 @@ Kumu::FileWriter::OpenWrite(const std::string& filename)
   m_Handle = open(filename.c_str(), O_RDWR|O_CREAT|O_TRUNC, 0666);
 
   if ( m_Handle == -1L )
-    {
-      DefaultLogSink().Error("Error opening file %s: %s\n", filename.c_str(), strerror(errno));
-      return RESULT_FILEOPEN;
-    }
+  {
+    DefaultLogSink().Error("Error opening file %s: %s\n", filename.c_str(), strerror(errno));
+    return RESULT_FILEOPEN;
+  }
 
   m_IOVec = new h__iovec;
   return RESULT_OK;
@@ -1169,10 +1169,10 @@ Kumu::FileWriter::OpenModify(const std::string& filename)
   m_Handle = open(filename.c_str(), O_RDWR|O_CREAT, 0666);
 
   if ( m_Handle == -1L )
-    {
-      DefaultLogSink().Error("Error opening file %s: %s\n", filename.c_str(), strerror(errno));
-      return RESULT_FILEOPEN;
-    }
+  {
+    DefaultLogSink().Error("Error opening file %s: %s\n", filename.c_str(), strerror(errno));
+    return RESULT_FILEOPEN;
+  }
 
   m_IOVec = new h__iovec;
   return RESULT_OK;
@@ -1197,12 +1197,12 @@ Kumu::FileWriter::Writev(ui32_t* bytes_written)
     total_size += iov->m_iovec[i].iov_len;
 
   int write_size = writev(m_Handle, iov->m_iovec, iov->m_Count);
-  
+
   if ( write_size == -1L || write_size != total_size )
     return RESULT_WRITEFAIL;
 
   iov->m_Count = 0;
-  *bytes_written = write_size;  
+  *bytes_written = write_size;
   return RESULT_OK;
 }
 
@@ -1246,23 +1246,23 @@ Kumu::ReadFileIntoString(const std::string& filename, std::string& outString, ui
   Result_t result = File.OpenRead(filename);
 
   if ( KM_SUCCESS(result) )
+  {
+    fsize = File.Size();
+
+    if ( fsize > (Kumu::fpos_t)max_size )
     {
-      fsize = File.Size();
-
-      if ( fsize > (Kumu::fpos_t)max_size )
-	{
-	  DefaultLogSink().Error("%s: exceeds available buffer size (%u)\n", filename.c_str(), max_size);
-	  return RESULT_ALLOC;
-	}
-
-      if ( fsize == 0 )
-	{
-	  outString = "";
-	  return RESULT_OK;
-	}
-
-      result = ReadBuf.Capacity((ui32_t)fsize);
+      DefaultLogSink().Error("%s: exceeds available buffer size (%u)\n", filename.c_str(), max_size);
+      return RESULT_ALLOC;
     }
+
+    if ( fsize == 0 )
+    {
+      outString = "";
+      return RESULT_OK;
+    }
+
+    result = ReadBuf.Capacity((ui32_t)fsize);
+  }
 
   if ( KM_SUCCESS(result) )
     result = File.Read(ReadBuf.Data(), ReadBuf.Capacity(), &read_size);
@@ -1301,23 +1301,23 @@ Kumu::ReadFileIntoObject(const std::string& Filename, Kumu::IArchive& Object, ui
   Result_t result = Buffer.Capacity(file_size);
 
   if ( KM_SUCCESS(result) )
+  {
+    ui32_t read_count = 0;
+    FileReader Reader;
+
+    result = Reader.OpenRead(Filename);
+
+    if ( KM_SUCCESS(result) )
+      result = Reader.Read(Buffer.Data(), file_size, &read_count);
+
+    if ( KM_SUCCESS(result) )
     {
-      ui32_t read_count = 0;
-      FileReader Reader;
-
-      result = Reader.OpenRead(Filename);
-
-      if ( KM_SUCCESS(result) )
-	result = Reader.Read(Buffer.Data(), file_size, &read_count);
-    
-      if ( KM_SUCCESS(result) )
-	{
-	  assert(file_size == read_count);
-	  Buffer.Length(read_count);
-	  MemIOReader MemReader(&Buffer);
-	  result = Object.Unarchive(&MemReader) ? RESULT_OK : RESULT_READFAIL;
-	}
+      assert(file_size == read_count);
+      Buffer.Length(read_count);
+      MemIOReader MemReader(&Buffer);
+      result = Object.Unarchive(&MemReader) ? RESULT_OK : RESULT_READFAIL;
     }
+  }
 
   return result;
 }
@@ -1330,22 +1330,22 @@ Kumu::WriteObjectIntoFile(const Kumu::IArchive& Object, const std::string& Filen
   Result_t result = Buffer.Capacity(Object.ArchiveLength());
 
   if ( KM_SUCCESS(result) )
+  {
+    ui32_t write_count = 0;
+    FileWriter Writer;
+    MemIOWriter MemWriter(&Buffer);
+
+    result = Object.Archive(&MemWriter) ? RESULT_OK : RESULT_WRITEFAIL;
+
+    if ( KM_SUCCESS(result) )
     {
-      ui32_t write_count = 0;
-      FileWriter Writer;
-      MemIOWriter MemWriter(&Buffer);
-
-      result = Object.Archive(&MemWriter) ? RESULT_OK : RESULT_WRITEFAIL;
-
-      if ( KM_SUCCESS(result) )
-	{
-	  Buffer.Length(MemWriter.Length());
-	  result = Writer.OpenWrite(Filename);
-	}
-
-      if ( KM_SUCCESS(result) )
-	result = Writer.Write(Buffer.RoData(), Buffer.Length(), &write_count);
+      Buffer.Length(MemWriter.Length());
+      result = Writer.OpenWrite(Filename);
     }
+
+    if ( KM_SUCCESS(result) )
+      result = Writer.Write(Buffer.RoData(), Buffer.Length(), &write_count);
+  }
 
   return result;
 }
@@ -1361,24 +1361,24 @@ Kumu::ReadFileIntoBuffer(const std::string& Filename, Kumu::ByteString& Buffer, 
   Result_t result = Buffer.Capacity(file_size);
 
   if ( KM_SUCCESS(result) )
+  {
+    ui32_t read_count = 0;
+    FileReader Reader;
+
+    result = Reader.OpenRead(Filename);
+
+    if ( KM_SUCCESS(result) )
+      result = Reader.Read(Buffer.Data(), file_size, &read_count);
+
+    if ( KM_SUCCESS(result) )
     {
-      ui32_t read_count = 0;
-      FileReader Reader;
+      if ( file_size != read_count)
+        return RESULT_READFAIL;
 
-      result = Reader.OpenRead(Filename);
-
-      if ( KM_SUCCESS(result) )
-	result = Reader.Read(Buffer.Data(), file_size, &read_count);
-    
-      if ( KM_SUCCESS(result) )
-	{
-	  if ( file_size != read_count) 
-	    return RESULT_READFAIL;
-
-	  Buffer.Length(read_count);
-	}
+      Buffer.Length(read_count);
     }
-  
+  }
+
   return result;
 }
 
@@ -1394,7 +1394,7 @@ Kumu::WriteBufferIntoFile(const Kumu::ByteString& Buffer, const std::string& Fil
   if ( KM_SUCCESS(result) )
     result = Writer.Write(Buffer.RoData(), Buffer.Length(), &write_count);
 
-  if ( KM_SUCCESS(result) && Buffer.Length() != write_count) 
+  if ( KM_SUCCESS(result) && Buffer.Length() != write_count)
     return RESULT_WRITEFAIL;
 
   return result;
@@ -1414,25 +1414,25 @@ Kumu::DirScanner::Open(const std::string& dirname)
   Result_t result = RESULT_OK;
 
   if ( ( m_Handle = opendir(dirname.c_str()) ) == NULL )
+  {
+    switch ( errno )
     {
-      switch ( errno )
-	{
-	case ENOENT:
-	case ENOTDIR:
-	  result = RESULT_NOTAFILE;
-	case EACCES:
-	  result = RESULT_NO_PERM;
-	case ELOOP:
-	case ENAMETOOLONG:
-	  result = RESULT_PARAM;
-	case EMFILE:
-	case ENFILE:
-	  result = RESULT_STATE;
-	default:
-	  DefaultLogSink().Error("DirScanner::Open(%s): %s\n", dirname.c_str(), strerror(errno));
-	  result = RESULT_FAIL;
-	}
+      case ENOENT:
+      case ENOTDIR:
+        result = RESULT_NOTAFILE;
+      case EACCES:
+        result = RESULT_NO_PERM;
+      case ELOOP:
+      case ENAMETOOLONG:
+        result = RESULT_PARAM;
+      case EMFILE:
+      case ENFILE:
+        result = RESULT_STATE;
+      default:
+        DefaultLogSink().Error("DirScanner::Open(%s): %s\n", dirname.c_str(), strerror(errno));
+        result = RESULT_FAIL;
     }
+  }
 
   return result;
 }
@@ -1447,14 +1447,14 @@ Kumu::DirScanner::Close()
 
   if ( closedir(m_Handle) == -1 ) {
     switch ( errno )
-      {
+    {
       case EBADF:
       case EINTR:
-	return RESULT_STATE;
+        return RESULT_STATE;
       default:
-	DefaultLogSink().Error("DirScanner::Close(): %s\n", strerror(errno));
-	return RESULT_FAIL;
-      }
+        DefaultLogSink().Error("DirScanner::Close(): %s\n", strerror(errno));
+        return RESULT_FAIL;
+    }
   }
 
   m_Handle = NULL;
@@ -1474,12 +1474,12 @@ Kumu::DirScanner::GetNext(char* filename)
   struct dirent* entry;
 
   for (;;)
-    {
-      if ( ( entry = readdir(m_Handle)) == NULL )
-	return RESULT_ENDOFFILE;
+  {
+    if ( ( entry = readdir(m_Handle)) == NULL )
+      return RESULT_ENDOFFILE;
 
-      break;
-    }
+    break;
+  }
 
   strncpy(filename, entry->d_name, MaxFilePath);
   return RESULT_OK;
@@ -1497,25 +1497,25 @@ Kumu::DirScannerEx::Open(const std::string& dirname)
   Result_t result = RESULT_OK;
 
   if ( ( m_Handle = opendir(dirname.c_str()) ) == 0 )
+  {
+    switch ( errno )
     {
-      switch ( errno )
-	{
-	case ENOENT:
-	case ENOTDIR:
-	  result = RESULT_NOTAFILE;
-	case EACCES:
-	  result = RESULT_NO_PERM;
-	case ELOOP:
-	case ENAMETOOLONG:
-	  result = RESULT_PARAM;
-	case EMFILE:
-	case ENFILE:
-	  result = RESULT_STATE;
-	default:
-	  DefaultLogSink().Error("DirScanner::Open(%s): %s\n", dirname.c_str(), strerror(errno));
-	  result = RESULT_FAIL;
-	}
+      case ENOENT:
+      case ENOTDIR:
+        result = RESULT_NOTAFILE;
+      case EACCES:
+        result = RESULT_NO_PERM;
+      case ELOOP:
+      case ENAMETOOLONG:
+        result = RESULT_PARAM;
+      case EMFILE:
+      case ENFILE:
+        result = RESULT_STATE;
+      default:
+        DefaultLogSink().Error("DirScanner::Open(%s): %s\n", dirname.c_str(), strerror(errno));
+        result = RESULT_FAIL;
     }
+  }
 
   if ( KM_SUCCESS(result) )
     m_Dirname = dirname;
@@ -1532,19 +1532,19 @@ Kumu::DirScannerEx::Close()
     return RESULT_FILEOPEN;
 
   if ( closedir(m_Handle) == -1 )
+  {
+    switch ( errno )
     {
-      switch ( errno )
-	{
-	case EBADF:
-	case EINTR:
-	  KM_RESULT_STATE_HERE();
-	  return RESULT_STATE;
+      case EBADF:
+      case EINTR:
+        KM_RESULT_STATE_HERE();
+        return RESULT_STATE;
 
-	default:
-	  DefaultLogSink().Error("DirScanner::Close(): %s\n", strerror(errno));
-	  return RESULT_FAIL;
-	}
+      default:
+        DefaultLogSink().Error("DirScanner::Close(): %s\n", strerror(errno));
+        return RESULT_FAIL;
     }
+  }
 
   m_Handle = 0;
   return RESULT_OK;
@@ -1563,12 +1563,12 @@ Kumu::DirScannerEx::GetNext(std::string& next_item_name, DirectoryEntryType_t& n
   struct dirent* entry;
 
   for (;;)
-    {
-      if ( ( entry = readdir(m_Handle) ) == 0 )
-	return RESULT_ENDOFFILE;
+  {
+    if ( ( entry = readdir(m_Handle) ) == 0 )
+      return RESULT_ENDOFFILE;
 
-      break;
-    }
+    break;
+  }
 
   next_item_name.assign(entry->d_name, strlen(entry->d_name));
 
@@ -1595,7 +1595,7 @@ Kumu::DirScannerEx::GetNext(std::string& next_item_name, DirectoryEntryType_t& n
     }
 #else // __sun 
   switch ( entry->d_type )
-    {
+  {
     case DT_DIR:
       next_item_type = DET_DIR;
       break;
@@ -1610,7 +1610,7 @@ Kumu::DirScannerEx::GetNext(std::string& next_item_name, DirectoryEntryType_t& n
 
     default:
       next_item_type = DET_DEV;
-    }
+  }
 #endif // __sun
   return RESULT_OK;
 }
@@ -1634,25 +1634,25 @@ Kumu::CreateDirectoriesInPath(const std::string& Path)
   PathToComponents(Path, PathComps);
 
   while ( ! PathComps.empty() )
-    {
-      TmpPathComps.push_back(PathComps.front());
-      PathComps.pop_front();
-      std::string tmp_path = abs ? ComponentsToAbsolutePath(TmpPathComps) : ComponentsToPath(TmpPathComps);
+  {
+    TmpPathComps.push_back(PathComps.front());
+    PathComps.pop_front();
+    std::string tmp_path = abs ? ComponentsToAbsolutePath(TmpPathComps) : ComponentsToPath(TmpPathComps);
 
-      if ( ! PathIsDirectory(tmp_path) )
-	{
+    if ( ! PathIsDirectory(tmp_path) )
+    {
 #ifdef KM_WIN32
-	  if ( _mkdir(tmp_path.c_str()) != 0 )
+      if ( _mkdir(tmp_path.c_str()) != 0 )
 #else // KM_WIN32
-	  if ( mkdir(tmp_path.c_str(), 0777) != 0 )
+      if ( mkdir(tmp_path.c_str(), 0777) != 0 )
 #endif // KM_WIN32
-	    {
-	      DefaultLogSink().Error("CreateDirectoriesInPath mkdir %s: %s\n",
-				     tmp_path.c_str(), strerror(errno));
-	      return RESULT_DIR_CREATE;
-	    }
-	}
+      {
+        DefaultLogSink().Error("CreateDirectoriesInPath mkdir %s: %s\n",
+                               tmp_path.c_str(), strerror(errno));
+        return RESULT_DIR_CREATE;
+      }
     }
+  }
 
   return RESULT_OK;
 }
@@ -1666,7 +1666,7 @@ Kumu::DeleteFile(const std::string& filename)
     return RESULT_OK;
 
   switch ( errno )
-    {
+  {
     case ENOENT:
     case ENOTDIR: return RESULT_NOTAFILE;
 
@@ -1674,7 +1674,7 @@ Kumu::DeleteFile(const std::string& filename)
     case EBUSY:
     case EACCES:
     case EPERM:   return RESULT_NO_PERM;
-    }
+  }
 
   DefaultLogSink().Error("DeleteFile %s: %s\n", filename.c_str(), strerror(errno));
   return RESULT_FAIL;
@@ -1690,53 +1690,53 @@ h__DeletePath(const std::string& pathname)
   Result_t result = RESULT_OK;
 
   if ( ! PathIsDirectory(pathname) )
-    {
-      result = DeleteFile(pathname);
-    }
+  {
+    result = DeleteFile(pathname);
+  }
   else
+  {
     {
+      DirScanner TestDir;
+      char       next_file[Kumu::MaxFilePath];
+      result = TestDir.Open(pathname.c_str());
+
+      while ( KM_SUCCESS(result) && KM_SUCCESS(TestDir.GetNext(next_file)) )
       {
-	DirScanner TestDir;
-	char       next_file[Kumu::MaxFilePath];
-	result = TestDir.Open(pathname.c_str());
+        if ( next_file[0] == '.' )
+        {
+          if ( next_file[1] ==  0 )
+            continue; // don't delete 'this'
 
-	while ( KM_SUCCESS(result) && KM_SUCCESS(TestDir.GetNext(next_file)) )
-	  {
-	    if ( next_file[0] == '.' )
-	      {
-		if ( next_file[1] ==  0 )
-		  continue; // don't delete 'this'
-		
-		if ( next_file[1] == '.' && next_file[2] ==  0 )
-		  continue; // don't delete 'this' parent
-	      }
+          if ( next_file[1] == '.' && next_file[2] ==  0 )
+            continue; // don't delete 'this' parent
+        }
 
-	    result = h__DeletePath(pathname + std::string("/") + next_file);
-	  }
+        result = h__DeletePath(pathname + std::string("/") + next_file);
       }
-
-      if ( _rmdir(pathname.c_str()) != 0 )
-	{
-	  switch ( errno )
-	    {
-	    case ENOENT:
-	    case ENOTDIR:
-	      result = RESULT_NOTAFILE;
-	      break;
-
-	    case EROFS:
-	    case EBUSY:
-	    case EACCES:
-	    case EPERM:
-	      result = RESULT_NO_PERM;
-	      break;
-
-	    default:
-	      DefaultLogSink().Error("DeletePath %s: %s\n", pathname.c_str(), strerror(errno));
-	      result = RESULT_FAIL;
-	    }
-	}
     }
+
+    if ( _rmdir(pathname.c_str()) != 0 )
+    {
+      switch ( errno )
+      {
+        case ENOENT:
+        case ENOTDIR:
+          result = RESULT_NOTAFILE;
+          break;
+
+        case EROFS:
+        case EBUSY:
+        case EACCES:
+        case EPERM:
+          result = RESULT_NO_PERM;
+          break;
+
+        default:
+          DefaultLogSink().Error("DeletePath %s: %s\n", pathname.c_str(), strerror(errno));
+          result = RESULT_FAIL;
+      }
+    }
+  }
 
   return result;
 }
@@ -1764,13 +1764,13 @@ Kumu::DeleteDirectoryIfEmpty(const std::string& path)
     return result;
 
   while ( KM_SUCCESS(source_dir.GetNext(next_file)) )
-    {
-      if ( ( next_file[0] == '.' && next_file[1] == 0 )
-	   || ( next_file[0] == '.' && next_file[1] == '.' && next_file[2] == 0 ) )
-	continue;
+  {
+    if ( ( next_file[0] == '.' && next_file[1] == 0 )
+         || ( next_file[0] == '.' && next_file[1] == '.' && next_file[2] == 0 ) )
+      continue;
 
-      return RESULT_NOT_EMPTY; // anything other than "." and ".." indicates a non-empty directory
-    }
+    return RESULT_NOT_EMPTY; // anything other than "." and ".." indicates a non-empty directory
+  }
 
   return DeletePath(path);
 }
@@ -1817,31 +1817,31 @@ Kumu::FreeSpaceForPath(const std::string& path, Kumu::fsize_t& free_space, Kumu:
     }
 #else
   if ( statfs(path.c_str(), &s) == 0 )
+  {
+    if ( s.f_blocks < 1 )
     {
-      if ( s.f_blocks < 1 )
-	{
-	  DefaultLogSink().Error("File system %s has impossible size: %ld\n",
-				 path.c_str(), s.f_blocks);
-	  return RESULT_FAIL;
-	}
-
-      free_space = (Kumu::fsize_t)s.f_bsize * (Kumu::fsize_t)s.f_bavail;
-      total_space = (Kumu::fsize_t)s.f_bsize * (Kumu::fsize_t)s.f_blocks;
-      return RESULT_OK;
+      DefaultLogSink().Error("File system %s has impossible size: %ld\n",
+                             path.c_str(), s.f_blocks);
+      return RESULT_FAIL;
     }
 
+    free_space = (Kumu::fsize_t)s.f_bsize * (Kumu::fsize_t)s.f_bavail;
+    total_space = (Kumu::fsize_t)s.f_bsize * (Kumu::fsize_t)s.f_blocks;
+    return RESULT_OK;
+  }
+
   switch ( errno )
-    {
+  {
     case ENOENT:
     case ENOTDIR: return RESULT_NOTAFILE;
     case EACCES:  return RESULT_NO_PERM;
-    }
+  }
 
   DefaultLogSink().Error("FreeSpaceForPath statfs %s: %s\n", path.c_str(), strerror(errno));
   return RESULT_FAIL;
 #endif // __sun 
 #endif // KM_WIN32
-} 
+}
 
 
 //

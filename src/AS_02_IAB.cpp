@@ -79,12 +79,12 @@ AS_02::IAB::MXFWriter::RIP() const {
 
 Kumu::Result_t
 AS_02::IAB::MXFWriter::OpenWrite(
-  const std::string& filename,
-  const ASDCP::WriterInfo& Info,
-  const ASDCP::MXF::IABSoundfieldLabelSubDescriptor& sub,
-  const std::vector<ASDCP::UL>& conformsToSpecs,
-  const ASDCP::Rational& edit_rate,
-  const ASDCP::Rational& sample_rate) {
+    const std::string& filename,
+    const ASDCP::WriterInfo& Info,
+    const ASDCP::MXF::IABSoundfieldLabelSubDescriptor& sub,
+    const std::vector<ASDCP::UL>& conformsToSpecs,
+    const ASDCP::Rational& edit_rate,
+    const ASDCP::Rational& sample_rate) {
 
   /* are we already running */
 
@@ -162,13 +162,13 @@ AS_02::IAB::MXFWriter::OpenWrite(
     /* WriteAS02Header() takes ownership of desc and subdesc */
 
     result = this->m_Writer->WriteAS02Header(
-      "Clip wrapping of IA bitstreams as specified in SMPTE ST 2067-201",
-      UL(this->m_Writer->m_Dict->ul(MDD_IMF_IABEssenceClipWrappedContainer)),
-      "IA Bitstream",
-      UL(element_ul_bytes),
-      UL(this->m_Writer->m_Dict->ul(MDD_SoundDataDef)),
-      edit_rate,
-      &conformsToSpecs
+        "Clip wrapping of IA bitstreams as specified in SMPTE ST 2067-201",
+        UL(this->m_Writer->m_Dict->ul(MDD_IMF_IABEssenceClipWrappedContainer)),
+        "IA Bitstream",
+        UL(element_ul_bytes),
+        UL(this->m_Writer->m_Dict->ul(MDD_SoundDataDef)),
+        edit_rate,
+        &conformsToSpecs
     );
 
     if (result.Failure()) {
@@ -385,8 +385,8 @@ AS_02::IAB::MXFReader::OpenRead(const std::string& filename) {
     InterchangeObject* tmp_iobj = 0;
 
     this->m_Reader->m_HeaderPart.GetMDObjectByType(
-      this->m_Reader->m_Dict->Type(MDD_IABEssenceDescriptor).ul,
-      &tmp_iobj
+        this->m_Reader->m_Dict->Type(MDD_IABEssenceDescriptor).ul,
+        &tmp_iobj
     );
 
     if (!tmp_iobj) {
@@ -394,8 +394,8 @@ AS_02::IAB::MXFReader::OpenRead(const std::string& filename) {
     }
 
     this->m_Reader->m_HeaderPart.GetMDObjectByType(
-      this->m_Reader->m_Dict->Type(MDD_IABSoundfieldLabelSubDescriptor).ul,
-      &tmp_iobj
+        this->m_Reader->m_Dict->Type(MDD_IABSoundfieldLabelSubDescriptor).ul,
+        &tmp_iobj
     );
 
     if (!tmp_iobj) {
@@ -405,8 +405,8 @@ AS_02::IAB::MXFReader::OpenRead(const std::string& filename) {
     std::list<InterchangeObject*> ObjectList;
 
     this->m_Reader->m_HeaderPart.GetMDObjectsByType(
-      this->m_Reader->m_Dict->Type(MDD_Track).ul,
-      ObjectList
+        this->m_Reader->m_Dict->Type(MDD_Track).ul,
+        ObjectList
     );
 
     if (ObjectList.empty()) {
@@ -511,9 +511,9 @@ AS_02::IAB::MXFReader::ReadFrame(ui32_t frame_number, AS_02::IAB::MXFReader::Fra
       }
 
       ui32_t preambleLen = ((ui32_t)this->m_CurrentFrameBuffer[1 + buffer_offset] << 24) +
-        ((ui32_t)this->m_CurrentFrameBuffer[2 + buffer_offset] << 16) +
-        ((ui32_t)this->m_CurrentFrameBuffer[3 + buffer_offset] << 8) +
-        (ui32_t)this->m_CurrentFrameBuffer[4 + buffer_offset];
+                           ((ui32_t)this->m_CurrentFrameBuffer[2 + buffer_offset] << 16) +
+                           ((ui32_t)this->m_CurrentFrameBuffer[3 + buffer_offset] << 8) +
+                           (ui32_t)this->m_CurrentFrameBuffer[4 + buffer_offset];
 
       buffer_offset += preambleTLLen;
 
@@ -546,9 +546,9 @@ AS_02::IAB::MXFReader::ReadFrame(ui32_t frame_number, AS_02::IAB::MXFReader::Fra
       }
 
       ui32_t frameLen = ((ui32_t)this->m_CurrentFrameBuffer[buffer_offset + 1] << 24) +
-        ((ui32_t)this->m_CurrentFrameBuffer[buffer_offset + 2] << 16) +
-        ((ui32_t)this->m_CurrentFrameBuffer[buffer_offset + 3] << 8) +
-        (ui32_t)this->m_CurrentFrameBuffer[buffer_offset + 4];
+                        ((ui32_t)this->m_CurrentFrameBuffer[buffer_offset + 2] << 16) +
+                        ((ui32_t)this->m_CurrentFrameBuffer[buffer_offset + 3] << 8) +
+                        (ui32_t)this->m_CurrentFrameBuffer[buffer_offset + 4];
 
       buffer_offset += frameTLLen;
 

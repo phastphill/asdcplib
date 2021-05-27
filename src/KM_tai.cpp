@@ -43,10 +43,10 @@ The libtai source code is in the public domain.
 
 */
 
-  /*! \file    KM_tai.cpp
-    \version $Id$
-    \brief   portable time functions
-  */
+/*! \file    KM_tai.cpp
+  \version $Id$
+  \brief   portable time functions
+*/
 
 #include <KM_tai.h>
 #ifdef KM_WIN32
@@ -99,7 +99,7 @@ caldate_frommjd(Kumu::TAI::caldate* cd, i32_t day)
 static ui32_t times365[4] = { 0, 365, 730, 1095 } ;
 static ui32_t times36524[4] = { 0, 36524UL, 73048UL, 109572UL } ;
 static ui32_t montab[12] =
-{ 0, 31, 61, 92, 122, 153, 184, 214, 245, 275, 306, 337 } ;
+    { 0, 31, 61, 92, 122, 153, 184, 214, 245, 275, 306, 337 } ;
 /* month length after february is (306 * m + 5) / 10 */
 
 //

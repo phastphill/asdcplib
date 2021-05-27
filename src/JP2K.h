@@ -43,11 +43,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace ASDCP
 {
-namespace JP2K
-{
-  const byte_t Magic[] = {0xff, 0x4f, 0xff};
+  namespace JP2K
+  {
+    const byte_t Magic[] = {0xff, 0x4f, 0xff};
 
-  enum Marker_t
+    enum Marker_t
     {
       MRK_NIL = 0,
       MRK_SOC = 0xff4f, // Start of codestream
@@ -75,10 +75,10 @@ namespace JP2K
       MRK_COM = 0xff64, // Comment
     };
 
-  const char* GetMarkerString(Marker_t m);
+    const char* GetMarkerString(Marker_t m);
 
-  //
-  class Marker
+    //
+    class Marker
     {
       KM_NO_COPY_CONSTRUCT(Marker);
 
@@ -94,220 +94,220 @@ namespace JP2K
       void Dump(FILE* stream = 0) const;
     };
 
-  //
-  ASDCP::Result_t GetNextMarker(const byte_t**, Marker&);
+    //
+    ASDCP::Result_t GetNextMarker(const byte_t**, Marker&);
 
-  // accessor objects for marker segments
-  namespace Accessor
+    // accessor objects for marker segments
+    namespace Accessor
     {
       // image size
       class SIZ
-	{
-	  const byte_t* m_MarkerData;
-	  KM_NO_COPY_CONSTRUCT(SIZ);
-          SIZ();
+      {
+        const byte_t* m_MarkerData;
+        KM_NO_COPY_CONSTRUCT(SIZ);
+        SIZ();
 
-        public:
-          SIZ(const Marker& M)
-            {
-	      assert(M.m_Type == MRK_SIZ);
-	      m_MarkerData = M.m_Data;
-	    }
+      public:
+        SIZ(const Marker& M)
+        {
+          assert(M.m_Type == MRK_SIZ);
+          m_MarkerData = M.m_Data;
+        }
 
-	  ~SIZ() {}
+        ~SIZ() {}
 
-	  inline ui16_t Rsize()   const { return KM_i16_BE(*(ui16_t*)m_MarkerData); }
-	  inline ui32_t Xsize()   const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 2)); }
-	  inline ui32_t Ysize()   const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 6)); }
-	  inline ui32_t XOsize()  const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 10)); }
-	  inline ui32_t YOsize()  const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 14)); }
-	  inline ui32_t XTsize()  const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 18)); }
-	  inline ui32_t YTsize()  const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 22)); }
-	  inline ui32_t XTOsize() const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 26)); }
-	  inline ui32_t YTOsize() const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 30)); }
-	  inline ui16_t Csize()   const { return KM_i16_BE(*(ui16_t*)(m_MarkerData + 34)); }
-	  void ReadComponent(const ui32_t index, ImageComponent_t& IC) const;
-	  void Dump(FILE* stream = 0) const;
-	};
+        inline ui16_t Rsize()   const { return KM_i16_BE(*(ui16_t*)m_MarkerData); }
+        inline ui32_t Xsize()   const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 2)); }
+        inline ui32_t Ysize()   const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 6)); }
+        inline ui32_t XOsize()  const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 10)); }
+        inline ui32_t YOsize()  const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 14)); }
+        inline ui32_t XTsize()  const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 18)); }
+        inline ui32_t YTsize()  const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 22)); }
+        inline ui32_t XTOsize() const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 26)); }
+        inline ui32_t YTOsize() const { return KM_i32_BE(*(ui32_t*)(m_MarkerData + 30)); }
+        inline ui16_t Csize()   const { return KM_i16_BE(*(ui16_t*)(m_MarkerData + 34)); }
+        void ReadComponent(const ui32_t index, ImageComponent_t& IC) const;
+        void Dump(FILE* stream = 0) const;
+      };
 
       const int SGcodOFST = 1;
       const int SPcodOFST = 5;
 
       // coding style
       class COD
-	{
-	  const byte_t* m_MarkerData;
+      {
+        const byte_t* m_MarkerData;
 
-	  KM_NO_COPY_CONSTRUCT(COD);
-	  COD();
+        KM_NO_COPY_CONSTRUCT(COD);
+        COD();
 
-	public:
-	  COD(const Marker& M)
-	    {
-	      assert(M.m_Type == MRK_COD);
-	      m_MarkerData = M.m_Data;
-	    }
+      public:
+        COD(const Marker& M)
+        {
+          assert(M.m_Type == MRK_COD);
+          m_MarkerData = M.m_Data;
+        }
 
-	  ~COD() {}
-	  
-	  inline ui8_t  ProgOrder()        const { return *(m_MarkerData + SGcodOFST ); }
-	  inline ui16_t Layers()           const { return KM_i16_BE(*(ui16_t*)(m_MarkerData + SGcodOFST + 1));}
-	  inline ui8_t  DecompLevels()     const { return *(m_MarkerData + SPcodOFST); }
-	  inline ui8_t  CodeBlockWidth()   const { return *(m_MarkerData + SPcodOFST + 1) + 2; }
-	  inline ui8_t  CodeBlockHeight()  const { return *(m_MarkerData + SPcodOFST + 2) + 2; }
-	  inline ui8_t  CodeBlockStyle()   const { return *(m_MarkerData + SPcodOFST + 3); }
-	  inline ui8_t  Transformation()   const { return *(m_MarkerData + SPcodOFST + 4); }
+        ~COD() {}
 
-	  void Dump(FILE* stream = 0) const;
-	};
+        inline ui8_t  ProgOrder()        const { return *(m_MarkerData + SGcodOFST ); }
+        inline ui16_t Layers()           const { return KM_i16_BE(*(ui16_t*)(m_MarkerData + SGcodOFST + 1));}
+        inline ui8_t  DecompLevels()     const { return *(m_MarkerData + SPcodOFST); }
+        inline ui8_t  CodeBlockWidth()   const { return *(m_MarkerData + SPcodOFST + 1) + 2; }
+        inline ui8_t  CodeBlockHeight()  const { return *(m_MarkerData + SPcodOFST + 2) + 2; }
+        inline ui8_t  CodeBlockStyle()   const { return *(m_MarkerData + SPcodOFST + 3); }
+        inline ui8_t  Transformation()   const { return *(m_MarkerData + SPcodOFST + 4); }
+
+        void Dump(FILE* stream = 0) const;
+      };
 
       const int SqcdOFST = 1;
       const int SPqcdOFST = 2;
 
       enum QuantizationType_t
       {
-	QT_NONE,
-	QT_DERIVED,
-	QT_EXP
+        QT_NONE,
+        QT_DERIVED,
+        QT_EXP
       };
 
       const char* GetQuantizationTypeString(const QuantizationType_t m);
 
       // Quantization default
       class QCD
+      {
+        const byte_t* m_MarkerData;
+        ui32_t m_DataSize;
+
+        KM_NO_COPY_CONSTRUCT(QCD);
+        QCD();
+
+      public:
+        QCD(const Marker& M)
         {
-	  const byte_t* m_MarkerData;
-	  ui32_t m_DataSize;
+          assert(M.m_Type == MRK_QCD);
+          m_MarkerData = M.m_Data + 2;
+          m_DataSize = M.m_DataSize - 2;
+        }
 
-	  KM_NO_COPY_CONSTRUCT(QCD);
-	  QCD();
-
-	public:
-	  QCD(const Marker& M)
-	    {
-	      assert(M.m_Type == MRK_QCD);
-	      m_MarkerData = M.m_Data + 2;
-	      m_DataSize = M.m_DataSize - 2;
-	    }
-
-	  ~QCD() {}
-	  inline QuantizationType_t QuantizationType() const { return static_cast<QuantizationType_t>(*(m_MarkerData + SqcdOFST) & 0x03); }
-	  inline ui8_t  GuardBits() const { return (*(m_MarkerData + SqcdOFST) & 0xe0) >> 5; }
-	  void Dump(FILE* stream = 0) const;
-	};
+        ~QCD() {}
+        inline QuantizationType_t QuantizationType() const { return static_cast<QuantizationType_t>(*(m_MarkerData + SqcdOFST) & 0x03); }
+        inline ui8_t  GuardBits() const { return (*(m_MarkerData + SqcdOFST) & 0xe0) >> 5; }
+        void Dump(FILE* stream = 0) const;
+      };
 
       // a comment
       class COM
-	{
-	  bool          m_IsText;
-	  const byte_t* m_MarkerData;
-	  ui32_t        m_DataSize;
+      {
+        bool          m_IsText;
+        const byte_t* m_MarkerData;
+        ui32_t        m_DataSize;
 
-	  KM_NO_COPY_CONSTRUCT(COM);
-	  COM();
+        KM_NO_COPY_CONSTRUCT(COM);
+        COM();
 
-	public:
-	  COM(const Marker& M)
-	    {
-	      assert(M.m_Type == MRK_COM);
-	      m_IsText = M.m_Data[1] == 1;
-	      m_MarkerData = M.m_Data + 2;
-	      m_DataSize = M.m_DataSize - 2;
-	    }
+      public:
+        COM(const Marker& M)
+        {
+          assert(M.m_Type == MRK_COM);
+          m_IsText = M.m_Data[1] == 1;
+          m_MarkerData = M.m_Data + 2;
+          m_DataSize = M.m_DataSize - 2;
+        }
 
-	  ~COM() {}
-	  
-	  inline bool IsText() const { return m_IsText; }
-	  inline const byte_t* CommentData() const { return m_MarkerData; }
-	  inline ui32_t CommentSize() const { return m_DataSize; }
-	  void Dump(FILE* stream = 0) const;
-	};
+        ~COM() {}
+
+        inline bool IsText() const { return m_IsText; }
+        inline const byte_t* CommentData() const { return m_MarkerData; }
+        inline ui32_t CommentSize() const { return m_DataSize; }
+        void Dump(FILE* stream = 0) const;
+      };
 
       // Corresponding Profile
       class CPF {
 
-          const ui16_t* m_Data;
-		  ui16_t m_N;
+        const ui16_t* m_Data;
+        ui16_t m_N;
 
-          KM_NO_COPY_CONSTRUCT(CPF);
-          CPF();
+        KM_NO_COPY_CONSTRUCT(CPF);
+        CPF();
 
       public:
-          CPF(const Marker& M) {
-              assert(M.m_Type == MRK_CPF);
+        CPF(const Marker& M) {
+          assert(M.m_Type == MRK_CPF);
 
-              m_Data = (ui16_t*) M.m_Data;
-			  m_N = M.m_DataSize >> 1;
-          }
+          m_Data = (ui16_t*) M.m_Data;
+          m_N = M.m_DataSize >> 1;
+        }
 
-          ~CPF() {}
+        ~CPF() {}
 
-          inline ui16_t N() const { return m_N; }
+        inline ui16_t N() const { return m_N; }
 
-          inline ui16_t pcpf(ui16_t i) const { return KM_i16_BE(m_Data[2 * (i - 1)]); }
+        inline ui16_t pcpf(ui16_t i) const { return KM_i16_BE(m_Data[2 * (i - 1)]); }
 
-          void Dump(FILE* stream = 0) const;
+        void Dump(FILE* stream = 0) const;
       };
 
       // Profile
       class PRF {
 
-          const ui16_t* m_Data;
-		  ui16_t m_N;
+        const ui16_t* m_Data;
+        ui16_t m_N;
 
-          KM_NO_COPY_CONSTRUCT(PRF);
-          PRF();
+        KM_NO_COPY_CONSTRUCT(PRF);
+        PRF();
 
       public:
-          PRF(const Marker& M) {
-              assert(M.m_Type == MRK_PRF);
+        PRF(const Marker& M) {
+          assert(M.m_Type == MRK_PRF);
 
-			  m_Data = (ui16_t*) M.m_Data;
-			  m_N = M.m_DataSize >> 1;
-		  }
+          m_Data = (ui16_t*) M.m_Data;
+          m_N = M.m_DataSize >> 1;
+        }
 
-          ~PRF() {}
+        ~PRF() {}
 
-          inline ui16_t N() const { return m_N; }
+        inline ui16_t N() const { return m_N; }
 
-          inline ui16_t pprf(ui16_t i) const { return KM_i16_BE(m_Data[2 * (i - 1)]); }
+        inline ui16_t pprf(ui16_t i) const { return KM_i16_BE(m_Data[2 * (i - 1)]); }
 
-          void Dump(FILE* stream = 0) const;
+        void Dump(FILE* stream = 0) const;
       };
 
       // Extended capabilities
       class CAP {
 
-          const ui16_t* m_Data;
+        const ui16_t* m_Data;
 
-		  ui32_t m_Pcap;
+        ui32_t m_Pcap;
 
-		  i8_t m_N;
+        i8_t m_N;
 
-          KM_NO_COPY_CONSTRUCT(CAP);
-          CAP();
+        KM_NO_COPY_CONSTRUCT(CAP);
+        CAP();
 
       public:
-          CAP(const Marker& M) {
-              assert(M.m_Type == MRK_CAP);
+        CAP(const Marker& M) {
+          assert(M.m_Type == MRK_CAP);
 
-              m_Data = (ui16_t *) (M.m_Data + 4);
-			  m_Pcap = KM_i32_BE(*(ui32_t*)(M.m_Data));
-			  m_N = (M.m_DataSize - 4) >> 1;
-          }
+          m_Data = (ui16_t *) (M.m_Data + 4);
+          m_Pcap = KM_i32_BE(*(ui32_t*)(M.m_Data));
+          m_N = (M.m_DataSize - 4) >> 1;
+        }
 
-          ~CAP() {}
+        ~CAP() {}
 
-          inline ui32_t pcap() const { return m_Pcap; }
+        inline ui32_t pcap() const { return m_Pcap; }
 
-		  inline i8_t N() const { return m_N; }
+        inline i8_t N() const { return m_N; }
 
-          inline ui16_t ccap(ui16_t i) const { return KM_i16_BE(m_Data[2 * (i - 1)]); }
+        inline ui16_t ccap(ui16_t i) const { return KM_i16_BE(m_Data[2 * (i - 1)]); }
 
-          void Dump(FILE* stream = 0) const;
+        void Dump(FILE* stream = 0) const;
       };
     } // namespace Accessor
-} // namespace JP2K
+  } // namespace JP2K
 } // namespace ASDCP
 
 #endif // _JP2K_H_

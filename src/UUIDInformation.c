@@ -35,85 +35,85 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void UUIDSynthesize(LPUUIDINFORMATION pUUID)
 {
-	INT n;
+  INT n;
 
-	for(n = 0; n < 16; n ++){
-		pUUID->abyUUIDBytes[n] = (BYTE)(rand() & 0xFF);
-	}
+  for(n = 0; n < 16; n ++){
+    pUUID->abyUUIDBytes[n] = (BYTE)(rand() & 0xFF);
+  }
 
-	pUUID->abyUUIDBytes[6] &= 0x0F;
-	pUUID->abyUUIDBytes[6] |= 0x40;
+  pUUID->abyUUIDBytes[6] &= 0x0F;
+  pUUID->abyUUIDBytes[6] |= 0x40;
 
-	pUUID->abyUUIDBytes[8] &= 0x0F;
-	pUUID->abyUUIDBytes[8] |= 0xA0;
+  pUUID->abyUUIDBytes[8] &= 0x0F;
+  pUUID->abyUUIDBytes[8] |= 0xA0;
 }
 
 void UUIDPrint(	FILE				*pFilePtr,
-				LPUUIDINFORMATION	pUUID)
+                 LPUUIDINFORMATION	pUUID)
 {
-	if(pFilePtr != NULL){
-		INT n;
+  if(pFilePtr != NULL){
+    INT n;
 
-		for(n = 0; n < 16; n ++){
-			fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-	}
-	else{
-		INT n;
+    for(n = 0; n < 16; n ++){
+      fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+  }
+  else{
+    INT n;
 
-		for(n = 0; n < 16; n ++){
-			fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-	}
+    for(n = 0; n < 16; n ++){
+      fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+  }
 }
 
 void UUIDPrintFormated(	FILE				*pFilePtr,
-						LPUUIDINFORMATION	pUUID)
+                         LPUUIDINFORMATION	pUUID)
 {
-	if(pFilePtr != NULL){
-		INT n;
+  if(pFilePtr != NULL){
+    INT n;
 
-		for(n = 0; n < 4; n ++){
-			fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-		fprintf(pFilePtr,"-");
-		for(n = 4; n < 6; n ++){
-			fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-		fprintf(pFilePtr,"-");
-		for(n = 6; n < 8; n ++){
-			fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-		fprintf(pFilePtr,"-");
-		for(n = 8; n < 10; n ++){
-			fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-		fprintf(pFilePtr,"-");
-		for(n = 10; n < 16; n ++){
-			fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-	}
-	else{
-		INT n;
+    for(n = 0; n < 4; n ++){
+      fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+    fprintf(pFilePtr,"-");
+    for(n = 4; n < 6; n ++){
+      fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+    fprintf(pFilePtr,"-");
+    for(n = 6; n < 8; n ++){
+      fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+    fprintf(pFilePtr,"-");
+    for(n = 8; n < 10; n ++){
+      fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+    fprintf(pFilePtr,"-");
+    for(n = 10; n < 16; n ++){
+      fprintf(pFilePtr,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+  }
+  else{
+    INT n;
 
-		for(n = 0; n < 4; n ++){
-			fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-		fprintf(stdout,"-");
-		for(n = 4; n < 6; n ++){
-			fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-		fprintf(stdout,"-");
-		for(n = 6; n < 8; n ++){
-			fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-		fprintf(stdout,"-");
-		for(n = 8; n < 10; n ++){
-			fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-		fprintf(stdout,"-");
-		for(n = 10; n < 16; n ++){
-			fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
-		}
-	}
+    for(n = 0; n < 4; n ++){
+      fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+    fprintf(stdout,"-");
+    for(n = 4; n < 6; n ++){
+      fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+    fprintf(stdout,"-");
+    for(n = 6; n < 8; n ++){
+      fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+    fprintf(stdout,"-");
+    for(n = 8; n < 10; n ++){
+      fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+    fprintf(stdout,"-");
+    for(n = 10; n < 16; n ++){
+      fprintf(stdout,"%02x",pUUID->abyUUIDBytes[n]);
+    }
+  }
 }

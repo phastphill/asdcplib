@@ -128,15 +128,15 @@ main( int argc, char **argv )
   fputs("Watch your process monitor, memory usage should not change after startup.\n", stderr);
 
   while ( i-- )
-    {
-      a();
-      b();
-      c();
-      d();
+  {
+    a();
+    b();
+    c();
+    d();
 
-      if ( i && ( i % 1000 ) == 0 )
-	fputc('.', stderr);
-    }
+    if ( i && ( i % 1000 ) == 0 )
+      fputc('.', stderr);
+  }
 
   fputc('\n', stderr);
   return 0;

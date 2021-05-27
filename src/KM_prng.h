@@ -24,10 +24,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-  /*! \file    KM_prng.h
-    \version $Id$
-    \brief   Fortuna pseudo-random number generator
-  */
+/*! \file    KM_prng.h
+  \version $Id$
+  \brief   Fortuna pseudo-random number generator
+*/
 
 #ifndef _KM_PRNG_H_
 #define _KM_PRNG_H_
@@ -37,15 +37,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Kumu
 {
   class FortunaRNG
-    {
-      KM_NO_COPY_CONSTRUCT(FortunaRNG);
+  {
+    KM_NO_COPY_CONSTRUCT(FortunaRNG);
 
-    public:
-      FortunaRNG();
-      ~FortunaRNG();
-      const byte_t* FillRandom(byte_t* buf, ui32_t len);
-      const byte_t* FillRandom(ByteString&);
-    };
+  public:
+    FortunaRNG();
+    ~FortunaRNG();
+    const byte_t* FillRandom(byte_t* buf, ui32_t len);
+    const byte_t* FillRandom(ByteString&);
+  };
 
 
   // key_len must be <= 64 (larger values will be truncated)
