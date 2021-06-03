@@ -133,6 +133,11 @@ namespace AS_02 {
        * otherwise the reader is reset and the file is left is an undermined state.
        */
       Result_t Finalize();
+
+      Result_t WriteMetadata(const std::string &trackLabel, const std::string &mimeType, const std::string &dataDescription, const ASDCP::FrameBuffer& metadata_buf);
+
+      ui32_t m_GenericStreamID;
+      ui32_t m_NextTrackID;
     };
 
     /**
@@ -225,6 +230,7 @@ namespace AS_02 {
        * otherwise the file is closed and the reader reset
        */
       Result_t ReadFrame(ui32_t frame_number, Frame& frame);
+      Result_t ReadMetadata(const std::string &description, std::string &mimeType, ASDCP::FrameBuffer&);
 
       /**
        * Returns the number of IA Frame in the Track File.

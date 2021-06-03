@@ -31,7 +31,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AS_02_IAB.h"
 
 #include <iostream>
-#include <iomanip>
 #include <stdexcept>
 
 namespace Kumu {
@@ -54,7 +53,11 @@ static const int CLIP_BER_LENGTH_SIZE = 8;
 static const int RESERVED_KL_SIZE = ASDCP::SMPTE_UL_LENGTH + CLIP_BER_LENGTH_SIZE;
 
 
-AS_02::IAB::MXFWriter::MXFWriter() : m_ClipStart(0), m_State(ST_BEGIN) {
+AS_02::IAB::MXFWriter::MXFWriter() : m_ClipStart(0),
+                                     m_State(ST_BEGIN),
+                                     m_GenericStreamID(2),
+                                     m_NextTrackID(2)
+{
 }
 
 AS_02::IAB::MXFWriter::~MXFWriter() {}
@@ -623,6 +626,149 @@ AS_02::IAB::MXFReader::Reset() {
   this->m_Reader.set(NULL);
   this->m_State = ST_READER_BEGIN;
 }
+
+Result_t
+AS_02::IAB::MXFReader::ReadMetadata(const std::string &description, std::string &mimeType, ASDCP::FrameBuffer& FrameBuffer)
+{
+  if ( ! m_Reader->m_File.IsOpen() )
+  {
+    return RESULT_INIT;
+  }
+
+  Result_t result = RESULT_OK;
+
+  std::list<InterchangeObject*> objects;
+  if (KM_SUCCESS(m_Reader->m_HeaderPart.GetMDObjectsByType(m_Reader->OBJ_TYPE_ARGS(GenericStreamTextBasedSet), objects)))
+  {
+    for (std::list<InterchangeObject*>::iterator it = objects.begin(); it != objects.end(); it++)
+    {
+      GenericStreamTextBasedSet* set = static_cast<GenericStreamTextBasedSet*>(*it);
+      if (set->TextDataDescription == description)
+      {
+        mimeType = set->TextMIMEMediaType;
+        unsigned int GSBodySID = set->GenericStreamSID;
+
+        // need to find GSPartition with the given SID
+        RIP::const_pair_iterator pi ;
+        for ( pi = m_Reader->m_RIP.PairArray.begin(); pi != m_Reader->m_RIP.PairArray.end() && ASDCP_SUCCESS(result); pi++ )
+        {
+          if (pi->BodySID != GSBodySID)
+          {
+            continue;
+          }
+          result = m_Reader->m_File.Seek((*pi).ByteOffset);
+          if (!ASDCP_SUCCESS(result))
+            return result;
+
+          Partition TmpPart(m_Reader->m_Dict);
+          result = TmpPart.InitFromFile(m_Reader->m_File);
+          if (!ASDCP_SUCCESS(result))
+            return result;
+
+          KLReader Reader;
+          result = Reader.ReadKLFromFile(m_Reader->m_File);
+          if (!ASDCP_SUCCESS(result))
+            return result;
+          // extend buffer capacity to hold the data
+          result = FrameBuffer.Capacity((ui32_t)Reader.Length());
+          if (!ASDCP_SUCCESS(result))
+            return result;
+          // read the data into the supplied buffer
+          ui32_t read_count;
+          result = m_Reader->m_File.Read(FrameBuffer.Data(), (ui32_t)Reader.Length(), &read_count);
+          if (!ASDCP_SUCCESS(result))
+            return result;
+          if (read_count != Reader.Length())
+            return RESULT_READFAIL;
+
+          FrameBuffer.Size(read_count);
+          break; // found the partition and processed it
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
+Result_t
+AS_02::IAB::MXFWriter::WriteMetadata(const std::string &trackLabel, const std::string &mimeType, const std::string &dataDescription, const ASDCP::FrameBuffer& metadata_buf)
+{
+  // In this section add Descriptive Metadata elements to the Header
+  //
+
+  m_Writer->m_HeaderPart.m_Preface->DMSchemes.push_back(UL(m_Writer->m_Dict->ul(MDD_MXFTextBasedFramework))); // See section 7.1 Table 3 ST RP 2057
+
+  // DM Static Track and Static Track are the same
+  StaticTrack* NewTrack = new StaticTrack(m_Writer->m_Dict);
+  m_Writer->m_HeaderPart.AddChildObject(NewTrack);
+  m_Writer->m_FilePackage->Tracks.push_back(NewTrack->InstanceUID);
+  NewTrack->TrackName = trackLabel;
+  NewTrack->TrackID = m_NextTrackID++;
+
+  Sequence* Seq = new Sequence(m_Writer->m_Dict);
+  m_Writer->m_HeaderPart.AddChildObject(Seq);
+  NewTrack->Sequence = Seq->InstanceUID;
+  Seq->DataDefinition = UL(m_Writer->m_Dict->ul(MDD_DescriptiveMetaDataDef));
+  Seq->Duration.set_has_value();
+  m_Writer->m_DurationUpdateList.push_back(&Seq->Duration.get());
+
+  DMSegment* Segment = new DMSegment(m_Writer->m_Dict);
+  m_Writer->m_HeaderPart.AddChildObject(Segment);
+  Seq->StructuralComponents.push_back(Segment->InstanceUID);
+  Segment->EventComment = "SMPTE RP 2057 Generic Stream Text-Based Set";
+  Segment->DataDefinition = UL(m_Writer->m_Dict->ul(MDD_DescriptiveMetaDataDef));
+  if (!Segment->Duration.empty())
+  {
+    m_Writer->m_DurationUpdateList.push_back(&Segment->Duration.get());
+  }
+
+  TextBasedDMFramework* framework = new TextBasedDMFramework(m_Writer->m_Dict);
+  m_Writer->m_HeaderPart.AddChildObject(framework);
+  Segment->DMFramework = framework->InstanceUID;
+
+  GenericStreamTextBasedSet *set = new GenericStreamTextBasedSet(m_Writer->m_Dict);
+  m_Writer->m_HeaderPart.AddChildObject(set);
+  framework->ObjectRef = set->InstanceUID;
+
+  set->TextDataDescription = dataDescription;
+  set->PayloadSchemeID = UL(m_Writer->m_Dict->ul(MDD_MXFTextBasedFramework));
+  set->TextMIMEMediaType = mimeType;
+  set->RFC5646TextLanguageCode = "en";
+  set->GenericStreamSID = m_GenericStreamID;
+
+  // before we set up a new partition
+  // make sure we write out the Body partition index
+  m_Writer->FlushIndexPartition();
+
+  //
+  // This section sets up the Generic Streaming Partition where we are storing the text-based metadata
+  //
+  Kumu::fpos_t here = m_Writer->m_File.Tell();
+
+  // create generic stream partition header
+  static UL GenericStream_DataElement(m_Writer->m_Dict->ul(MDD_GenericStream_DataElement));
+  ASDCP::MXF::Partition GSPart(m_Writer->m_Dict);
+
+  GSPart.MajorVersion = m_Writer->m_HeaderPart.MajorVersion;
+  GSPart.MinorVersion = m_Writer->m_HeaderPart.MinorVersion;
+  GSPart.ThisPartition = here;
+  GSPart.PreviousPartition = m_Writer->m_RIP.PairArray.back().ByteOffset;
+  GSPart.OperationalPattern = m_Writer->m_HeaderPart.OperationalPattern;
+  GSPart.BodySID = m_GenericStreamID++;
+
+  m_Writer->m_RIP.PairArray.push_back(RIP::PartitionPair(GSPart.BodySID, here));
+  GSPart.EssenceContainers = m_Writer->m_HeaderPart.EssenceContainers;
+
+  static UL gs_part_ul(m_Writer->m_Dict->ul(MDD_GenericStreamPartition));
+  GSPart.WriteToFile(m_Writer->m_File, gs_part_ul);
+
+  Result_t result = Write_EKLV_Packet(m_Writer->m_File, *(m_Writer->m_Dict), m_Writer->m_HeaderPart, m_Writer->m_Info, m_Writer->m_CtFrameBuf, m_Writer->m_FramesWritten,
+                             m_Writer->m_StreamOffset, metadata_buf, GenericStream_DataElement.Value(), MXF_BER_LENGTH, 0, 0);
+
+  return result;
+}
+
 
 //
 // end AS_02_IAB.cpp
