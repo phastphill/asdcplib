@@ -30,7 +30,7 @@ endif("${isSystemDir}" STREQUAL "-1")
 configure_file("${PROJECT_SOURCE_DIR}/src/info.in" "${PROJECT_BINARY_DIR}/src/info.h")
 
 # Add the binary tree to the search path for include files so that we will find info.h.
-include_directories("${PROJECT_BINARY_DIR}/src")
+include_directories("${PROJECT_BINARY_DIR}/src" "/usr/local/include")
 add_subdirectory(src)
 
 set(CPACK_GENERATOR ZIP)
