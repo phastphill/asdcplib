@@ -20,6 +20,7 @@ src/.libs
 build/
 .idea/
 cmake-build-debug/
+.DS_Store
 
 ###
 # some tool dirs
