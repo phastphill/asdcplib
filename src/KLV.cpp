@@ -234,12 +234,14 @@ ASDCP::KLVFilePacket::InitFromFile(const Kumu::FileReader& Reader)
     return RESULT_FAIL;
   }
 
+#if 0
   if ( tmp_size > MAX_KLV_PACKET_LENGTH )
   {
     Kumu::ui64Printer tmp_size_str(tmp_size);
     DefaultLogSink().Error("Packet length %s exceeds internal limit\n", tmp_size_str.c_str());
     return RESULT_FAIL;
   }
+#endif
 
   ui32_t remainder = 0;
   ui32_t ber_len = Kumu::BER_length(tmp_data + SMPTE_UL_LENGTH);
