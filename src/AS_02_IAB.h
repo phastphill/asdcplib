@@ -132,8 +132,9 @@ namespace AS_02 {
        * @return RESULT_OK indicates that the frame is written and additional frames can be written, 
        * otherwise the reader is reset and the file is left is an undermined state.
        */
-      Result_t Finalize();
+      Result_t FinalizeMxf();
 
+      Result_t FinalizeClip();
       Result_t WriteMetadata(const std::string &trackLabel, const std::string &mimeType, const std::string &dataDescription, const ASDCP::FrameBuffer& metadata_buf);
 
       ui32_t m_GenericStreamID;

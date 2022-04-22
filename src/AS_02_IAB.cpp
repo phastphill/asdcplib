@@ -267,7 +267,7 @@ AS_02::IAB::MXFWriter::WriteFrame(const ui8_t* frame, ui32_t sz) {
 }
 
 Result_t
-AS_02::IAB::MXFWriter::Finalize() {
+AS_02::IAB::MXFWriter::FinalizeClip() {
 
   /* are we running */
 
@@ -285,7 +285,7 @@ AS_02::IAB::MXFWriter::Finalize() {
 
     result = this->m_Writer->m_File.Seek(m_ClipStart + ASDCP::SMPTE_UL_LENGTH);
 
-    byte_t clip_buffer[CLIP_BER_LENGTH_SIZE] = { 0 };
+    byte_t clip_buffer[CLIP_BER_LENGTH_SIZE] = {0};
 
     ui64_t size = static_cast<ui64_t>(this->m_Writer->m_StreamOffset) /* total size of the KLV */ - RESERVED_KL_SIZE;
 
@@ -306,15 +306,27 @@ AS_02::IAB::MXFWriter::Finalize() {
     if (result.Failure()) {
       throw Kumu::RuntimeError(result);
     }
+  }
+  catch (Kumu::RuntimeError e) {
+    this->Reset();
+    result = e.GetResult();
+  }
+  return result;
+}
 
-    /* write footer */
 
+Result_t
+AS_02::IAB::MXFWriter::FinalizeMxf() {
+
+  Result_t result = RESULT_OK;
+
+  /* write footer */
+  try {
     result = this->m_Writer->WriteAS02Footer();
 
     if (result.Failure()) {
       throw Kumu::RuntimeError(result);
     }
-
   } catch (Kumu::RuntimeError e) {
 
     /* nothing to do since we are about to reset */
@@ -727,7 +739,7 @@ AS_02::IAB::MXFWriter::WriteMetadata(const std::string &trackLabel, const std::s
   m_Writer->m_HeaderPart.AddChildObject(framework);
   Segment->DMFramework = framework->InstanceUID;
 
-  GenericStreamTextBasedSet *set = new GenericStreamTextBasedSet(m_Writer->m_Dict);
+  GenericStreamTextBasedSet* set = new GenericStreamTextBasedSet(m_Writer->m_Dict);
   m_Writer->m_HeaderPart.AddChildObject(set);
   framework->ObjectRef = set->InstanceUID;
 
@@ -762,6 +774,8 @@ AS_02::IAB::MXFWriter::WriteMetadata(const std::string &trackLabel, const std::s
 
   static UL gs_part_ul(m_Writer->m_Dict->ul(MDD_GenericStreamPartition));
   GSPart.WriteToFile(m_Writer->m_File, gs_part_ul);
+
+
 
   Result_t result = Write_EKLV_Packet(m_Writer->m_File, *(m_Writer->m_Dict), m_Writer->m_HeaderPart, m_Writer->m_Info, m_Writer->m_CtFrameBuf, m_Writer->m_FramesWritten,
                              m_Writer->m_StreamOffset, metadata_buf, GenericStream_DataElement.Value(), MXF_BER_LENGTH, 0, 0);
